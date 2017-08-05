@@ -76,8 +76,7 @@ in
               password anything
 
               noaccomp
-              nopocomp
-              lock
+              nopcomp
               noipdefault
               defaultroute
               +ipv6
@@ -100,12 +99,12 @@ in
       networking = {
         hostName = "r5s";
         useDHCP = false;
-        firewall.enable = true;
+        firewall.enable = lib.mkForce false;
         firewall.allowedTCPPorts = [
           22
           53
-          #67
-          #68
+          67
+          68
           80
           88
           443
@@ -113,8 +112,8 @@ in
         ];
         firewall.allowedUDPPorts = [
           53
-          #67
-          #68
+          67
+          68
           51820
         ];
         enableIPv6 = lib.mkForce true;
@@ -267,7 +266,7 @@ in
             matchConfig.Name = "br0";
             bridgeConfig = { };
             vlan = [ "vlan-iot" ];
-            address = [ "192.168.4.2/24" ];
+            address = [ "192.168.4.1/24" ];
             routes = lib.optionals devmode [ { Gateway = "192.168.4.1"; } ];
             DHCP = "no";
             networkConfig = {
@@ -278,8 +277,20 @@ in
           };
           "40-vlan-iot" = {
             matchConfig.Name = "vlan-iot";
-            address = [ "192.168.5.2/24" ];
-            routes = lib.optionals devmode [ { Gateway = "192.168.5.1"; } ];
+            address = [ "192.168.5.1/24" ];
+            routes = [
+              {
+                Gateway = "192.168.5.1";
+                Table = 5;
+              }
+            ];
+            routingPolicyRules = [
+              {
+                Family = "both";
+                From = "192.168.5.0/24";
+                Table = 5;
+              }
+            ];
             DHCP = "no";
             networkConfig = {
               DHCPServer = "no";
@@ -324,11 +335,12 @@ in
             "/mqtt.iot/192.168.4.5"
             "/darach.org.uk/192.168.4.5"
             "/etcd.darach.org.uk/192.168.4.5"
-            "/r5s.darach.org.uk/192.168.4.2"
+            "/r5s.darach.org.uk/192.168.4.1"
           ];
           except-interface = [
             "ppp0"
             "wan0"
+            "wg0"
           ];
           stop-dns-rebind = true;
           rebind-localhost-ok = true;
@@ -347,17 +359,17 @@ in
             "set:iot,192.168.5.50,192.168.5.200,255.255.255.0,12h"
           ];
           dhcp-option = [
-            "lan,option:router,192.168.4.2"
-            "lan,option:dns-server,192.168.4.2"
+            "lan,option:router,192.168.4.1"
+            "lan,option:dns-server,192.168.4.1"
             "lan,option:domain-name,darach.org.uk"
-            "iot,option:router,192.168.5.2"
-            "iot,option:dns-server,192.168.5.2"
+            "iot,option:router,192.168.5.1"
+            "iot,option:dns-server,192.168.5.1"
             "iot,option:domain-name,iot"
           ];
         };
       };
       systemd.services.pihole-ftl = {
-        serviceConfig.StateDirectory = "/var/lib/misc";
+        serviceConfig.StateDirectory = "pihole";
         serviceConfig.RuntimeDirectory = "pihole";
         serviceConfig.BindPaths = [ "/var/lib/misc" ];
       };
@@ -386,10 +398,7 @@ in
               "1.1.1.1"
               "1.1.1.2"
             ];
-            interface = [
-              "br0"
-              "iot-vlan@br0"
-            ];
+            interface = "";
           };
           webserver = {
             api = {
@@ -408,6 +417,7 @@ in
       };
       systemd.tmpfiles.rules = [
         "f /etc/pihole/versions 0644 pihole pihole - -"
+        "d /var/lib/misc 0777 root root - -"
       ];
       system.stateVersion = lib.mkDefault "25.11";
     };
