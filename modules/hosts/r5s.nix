@@ -7,6 +7,8 @@
 let
   inherit (config.flake.modules) nixos home-manager;
   devmode = false;
+  main_ip = "192.168.4.2";
+  iot_ip = "192.168.5.2";
 in
 {
   configurations.nixos.r5s.module =
@@ -61,7 +63,7 @@ in
         '';
       };
       services.pppd = {
-        enable = true;
+        enable = false;
 
         peers = {
           cuckoo = {
@@ -118,7 +120,7 @@ in
         ];
         enableIPv6 = lib.mkForce true;
         nftables = {
-          enable = true;
+          enable = false;
           ruleset = ''
             table inet filter {
               #enable flow offloading for better throughput
@@ -141,8 +143,8 @@ in
                 iifname "ppp0" drop
 
                 # mDNS for avahi reflection
-                iifname "iot-vlan@br0" tcp dport { llmnr } counter accept
-                iifname "iot-vlan@br0" udp dport { mdns, llmnr } counter accept
+                iifname "iot-vlan" tcp dport { llmnr } counter accept
+                iifname "iot-vlan" udp dport { mdns, llmnr } counter accept
                 }
                chain forward {
                  type filter hook forward priority filter; policy drop;
@@ -171,7 +173,7 @@ in
         };
 
         nat = {
-          enable = true;
+          enable = false;
           enableIPv6 = true;
           externalInterface = "ppp0";
           internalInterfaces = [
@@ -214,40 +216,6 @@ in
             };
             vlanConfig.Id = 5;
           };
-          "50-wg0" = {
-            netdevConfig = {
-              Kind = "wireguard";
-              Name = "wg0";
-            };
-            wireguardConfig = {
-              RouteTable = "main";
-              FirewallMark = 42;
-              ListenPort = 51820;
-              PrivateKeyFile = "${config.sops.secrets."wireguard/server/private".path}";
-            };
-            wireguardPeers = [
-              {
-                # Neil's iPhone
-                PublicKey = "DNxpMqjysu33ZC82l+4fov2+7p4eA8pp2ZsVHG4Kuzs=";
-                AllowedIPs = [ "192.168.9.9/32" ];
-              }
-              {
-                # Neil's Laptop
-                PublicKey = "jzq1KL7o110tOiOUu1qAoi5HlMKcN3fpkRhYm7WakQQ=";
-                AllowedIPs = [ "192.168.9.7/32" ];
-              }
-              {
-                # Marion's iPad
-                PublicKey = "1IKRTwh+cckkkffgdKAojX1TI3ceUoE8jN/EQDEmvW4=";
-                AllowedIPs = [ "192.168.9.21/32" ];
-              }
-              {
-                # Marion's iPhone
-                PublicKey = "yWcgqaFB35liq1nKsDyzPjGdkp2FV1w38EQGjsO1y3g=";
-                AllowedIPs = [ "192.168.9.22/32" ];
-              }
-            ];
-          };
         };
         networks = {
           "30-lan1" = {
@@ -266,8 +234,8 @@ in
             matchConfig.Name = "br0";
             bridgeConfig = { };
             vlan = [ "vlan-iot" ];
-            address = [ "192.168.4.1/24" ];
-            routes = lib.optionals devmode [ { Gateway = "192.168.4.1"; } ];
+            address = [ "${main_ip}/24" ];
+            routes = lib.optionals devmode [ { Gateway = "${main_ip}"; } ];
             DHCP = "no";
             networkConfig = {
               DHCPServer = "no";
@@ -277,38 +245,21 @@ in
           };
           "40-vlan-iot" = {
             matchConfig.Name = "vlan-iot";
-            address = [ "192.168.5.1/24" ];
-            routes = [
-              {
-                Gateway = "192.168.5.1";
-                Table = 5;
-              }
-            ];
-            routingPolicyRules = [
-              {
-                Family = "both";
-                From = "192.168.5.0/24";
-                Table = 5;
-              }
-            ];
             DHCP = "no";
+            address = [ "${iot_ip}/24" ];
+            routes = lib.optionals devmode [
+              {
+                Destination = "${iot_ip}/24";
+                Gateway = "${iot_ip}";
+              }
+              { Gateway = "${main_ip}"; }
+            ];
             networkConfig = {
               DHCPServer = "no";
               IPv6AcceptRA = false;
             };
-            dhcpServerStaticLeases = [
-            ];
             linkConfig.RequiredForOnline = "routable";
           };
-          "50-wg0" = {
-            matchConfig.Name = "wg0";
-            address = [ "192.168.9.2/32" ];
-            networkConfig = {
-              IPv4Forwarding = true;
-              IPv6Forwarding = true;
-            };
-          };
-
         };
       };
 
@@ -317,7 +268,7 @@ in
         reflector = true;
         allowInterfaces = [
           "br0"
-          "vlan-iot@br0"
+          "vlan-iot"
         ];
       };
       services.resolved.enable = false;
@@ -335,7 +286,8 @@ in
             "/mqtt.iot/192.168.4.5"
             "/darach.org.uk/192.168.4.5"
             "/etcd.darach.org.uk/192.168.4.5"
-            "/r5s.darach.org.uk/192.168.4.1"
+            "/r5s.darach.org.uk/${main_ip}"
+            "/r5s.iot/${iot_ip}"
           ];
           except-interface = [
             "ppp0"
@@ -351,28 +303,32 @@ in
             "7c:2f:80:89:1b:9e,192.168.4.6"
           ];
           domain = [
-            "darach.org.uk,192.168.4.1/24,local"
-            "iot,192.168.5.1/24,local"
+            "darach.org.uk,${main_ip}/24,local"
+            "iot,${iot_ip}/24,local"
           ];
           dhcp-range = [
             "set:lan,192.168.4.100,192.168.4.200,255.255.255.0,12h"
             "set:iot,192.168.5.50,192.168.5.200,255.255.255.0,12h"
           ];
           dhcp-option = [
-            "lan,option:router,192.168.4.1"
-            "lan,option:dns-server,192.168.4.1"
+            "lan,option:router,${main_ip}"
+            "lan,option:dns-server,${main_ip}"
             "lan,option:domain-name,darach.org.uk"
-            "iot,option:router,192.168.5.1"
-            "iot,option:dns-server,192.168.5.1"
+            "iot,option:router,${iot_ip}"
+            "iot,option:dns-server,${iot_ip}"
             "iot,option:domain-name,iot"
           ];
         };
       };
-      systemd.services.pihole-ftl = {
+      systemd.services.pihole-ftl = lib.mkIf config.services.pihole-ftl.enable {
         serviceConfig.StateDirectory = "pihole";
         serviceConfig.RuntimeDirectory = "pihole";
         serviceConfig.BindPaths = [ "/var/lib/misc" ];
       };
+      systemd.tmpfiles.rules = lib.mkIf config.services.pihole-ftl.enable [
+        "f /etc/pihole/versions 0644 pihole pihole - -"
+        "d /var/lib/misc 0777 root root - -"
+      ];
       services.pihole-ftl = {
         enable = true;
         lists = [
@@ -412,13 +368,9 @@ in
         useDnsmasqConfig = true;
       };
       services.pihole-web = {
-        enable = true;
+        enable = config.services.pihole-ftl.enable;
         ports = [ 88 ];
       };
-      systemd.tmpfiles.rules = [
-        "f /etc/pihole/versions 0644 pihole pihole - -"
-        "d /var/lib/misc 0777 root root - -"
-      ];
       system.stateVersion = lib.mkDefault "25.11";
     };
 }
