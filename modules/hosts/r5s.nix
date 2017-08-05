@@ -136,39 +136,42 @@ in
               chain input {
                 type filter hook input priority filter;  policy drop;
                 # Allow trusted networks access to the router
-                iifname { "lo", "br0", "wg0" } counter accept
+                iifname { "lo", "br0", "vlan-iot", "wg0" } counter accept
 
                 # Allow returning traffic from ppp0 and drop everything else
-                iifname "ppp0" ct state { established, related } counter accept
-                iifname "ppp0" drop
+                #iifname "ppp0" ct state { established, related } counter accept
+                #iifname "ppp0" drop
 
                 # mDNS for avahi reflection
-                iifname "iot-vlan" tcp dport { llmnr } counter accept
-                iifname "iot-vlan" udp dport { mdns, llmnr } counter accept
+                iifname "vlan-iot" tcp dport { llmnr } counter accept
+                iifname "vlan-iot" udp dport { mdns, llmnr } counter accept
                 }
+
                chain forward {
                  type filter hook forward priority filter; policy drop;
                  # enable flow offloading for better througput
                  #ip protocol { tcp, udp } flow offload @f
 
                  # Allow trusted network wan access
-                 iifname { "lo", "br0", "wg0" } 
-                   oifname { "ppp0" } 
-                   counter accept comment "Trusted network to WAN"
-                 iifname { "ppp0" } 
-                   oifname { "lo", "br0", "wg0" } 
-                   ct state established, related counter accept comment "Return established connection data"
+                # iifname { "lo", "br0", "wg0" } 
+                #   oifname { "ppp0" } 
+                #   counter accept comment "Trusted network to WAN"
+                # iifname { "ppp0" } 
+                #   oifname { "lo", "br0", "wg0" } 
+                #   ct state established, related counter accept comment "Return established connection data"
+                iifname { "vlan-iot" } ip daddr 192.168.4.5 counter accept
+                iifname { "br0" } oifname { "vlan-iot" } ct state established, related counter accept
                  }
                }
-               table ip nat {
-                 chain prerouting {
-                   type nat hook prerouting priority filter; policy accept;
-                   }
-                 chain postrouting {
-                   type nat hook postrouting priority filter; policy accept;
-                   oifname "ppp0" masquerade
-                 }
-               }
+               #table ip nat {
+               #  chain prerouting {
+               #    type nat hook prerouting priority filter; policy accept;
+               #    }
+               #  chain postrouting {
+               #    type nat hook postrouting priority filter; policy accept;
+               #    oifname "ppp0" masquerade
+               #  }
+               #}
           '';
         };
 
@@ -235,9 +238,14 @@ in
             bridgeConfig = { };
             vlan = [ "vlan-iot" ];
             address = [ "${main_ip}/24" ];
-            routes = lib.optionals devmode [ { Gateway = "${main_ip}"; } ];
+            routes = [
+              {
+                Gateway = "${main_ip}";
+              }
+            ];
             DHCP = "no";
             networkConfig = {
+              IPv4Forwarding = true;
               DHCPServer = "no";
               IPv6AcceptRA = false;
             };
@@ -247,14 +255,13 @@ in
             matchConfig.Name = "vlan-iot";
             DHCP = "no";
             address = [ "${iot_ip}/24" ];
-            routes = lib.optionals devmode [
+            routes = [
               {
-                Destination = "${iot_ip}/24";
-                Gateway = "${iot_ip}";
+                Gateway = "${main_ip}";
               }
-              { Gateway = "${main_ip}"; }
             ];
             networkConfig = {
+              IPv4Forwarding = true;
               DHCPServer = "no";
               IPv6AcceptRA = false;
             };
