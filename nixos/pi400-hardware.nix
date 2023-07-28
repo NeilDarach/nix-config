@@ -8,25 +8,61 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "usbhid" "uas" ];
+  boot.supportedFilesystems = [ "vfat" "zfs" ];
+  boot.kernelPackages = lib.mkForce config.boot.zfs.package.latestCompatibleLinuxPackages;
+
+  boot.zfs.devNodes = "/dev/disk/by-id/usb-Micron_Crucial_X8_SSD_2152E480EFD6-0:0";
+  boot.initrd.availableKernelModules = [ "xhci_pci" "usbhid" "uas" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
   boot.initrd.kernelModules = [ ];
+  boot.initrd.postDeviceCommands = lib.mkAfter ''
+    zpool import -f pi400
+    zfs rollback -r pi400/local/root@blank
+    '';
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = lib.mkForce "/dev/disk/by-uuid/c8e986b0-026b-4d9b-8645-12b95d8183d6";
-      fsType = "ext4";
+    { device = lib.mkForce "pi400/local/root";
+      fsType = lib.mkForce "zfs";
+      neededForBoot = true;
+    };
+
+  fileSystems."/nix" =
+    { device = "pi400/local/nix";
+      fsType = "zfs";
+      neededForBoot = true;
+    };
+
+  fileSystems."/persist" =
+    { device = "pi400/safe/persist";
+      fsType = "zfs";
+      neededForBoot = true;
+    };
+
+  fileSystems."/home" =
+    { device = "pi400/safe/home";
+      fsType = "zfs";
+    };
+
+  fileSystems."/etc/nixos" =
+    { device = "/persist/etc/nixos";
+      fsType = "none";
+      options = [ "bind" ];
+      depends = [ "/persist" ];
+      neededForBoot = true;
+    };
+
+  fileSystems."/var/log" =
+    { device = "/persist/var/log";
+      fsType = "none";
+      options = [ "bind" ];
+      depends = [ "/persist" ];
+      neededForBoot = true;
     };
 
   fileSystems."/boot" =
-    { device = lib.mkForce "/dev/disk/by-uuid/2178-694E";
+    { device = lib.mkForce "/dev/disk/by-label/FIRMWARE";
       fsType = "vfat";
-    };
-
-  fileSystems."/home" = 
-    {
-    device = "rpool/safe/home";
-    fsType = "zfs"; 
     };
 
   swapDevices = [ ];
