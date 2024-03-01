@@ -20,7 +20,7 @@
     editor = "nvim";
     };
 
-  pkgs = {
+  pkgs = import nixpkgs {
     system = systemSettings.system;
     config = { allowUnfree = true;
                allowUnfreePredicate = ( _: true ); };
