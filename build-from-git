@@ -1,0 +1,1 @@
+nix-shell -p git --command "nix run github:ndarach/nixos-flakes --extra-experimental-features nix-command --extra-experimental-features flakes"
