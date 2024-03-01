@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/sh 
 
 nix-shell -p git --command "git clone https://github.com/NeilDarach/nix-config ~/.dotfiles"
 sudo nixos-generate-config --show-hardware-config > ~/.dotfiles/system/hardware-configuration.nix
