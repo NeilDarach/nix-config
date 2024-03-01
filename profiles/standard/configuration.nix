@@ -31,17 +31,17 @@
     LC_TIME = systemSettings.locale;
     };
 
-  environment.systemPackages = with pkgs; [
-    neovim
-    tmux
-    git
-    wget
-    curl
-    home-manager
-    ];
+  #environment.systemPackages = with pkgs; [
+    #neovim
+    #tmux
+    #git
+    #wget
+    #curl
+    #home-manager
+    #];
 
-  environment.shells = with pkgs; [ bash ];
-  usrs.defaultUserShell = pkgs.bash;
+  #environment.shells = with pkgs; [ bash ];
+  #usrs.defaultUserShell = pkgs.bash;
   programs.bash.enable = true;
 
   system.stateVersion = "22.11";
