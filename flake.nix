@@ -1,7 +1,7 @@
 { 
-  description = "Flake to set up the HA Yellow"
+  description = "Flake to set up the HA Yellow";
 
-  outputs = inputs@{self, nixpkgs, ... }:
+  outputs = inputs@{self, nixpkgs, home-manager, ... }:
   let
   # --- System Settings ---
   systemSettings = {
@@ -10,7 +10,7 @@
     profile = "standard";
     timezone = "Europe/London";
     locale = "en_GB.UTF-8";
-    }
+    };
 
   userSettings = {
     username = "neil";
@@ -29,7 +29,7 @@
   lib = nixpkgs.lib;
 
   supportedSystems = [
-    aarch64-linux
+    "aarch64-linux"
     ];
 
   forAllSystems = inputs.nixpkgs.lib.genAttrs supportedSystems;
@@ -51,7 +51,7 @@
     nixosConfigurations = {
       system = lib.nixosSystem {
         system = systemSettings.system;
-	modules = [ ./. + "/profiles"+("/"+systemSettings.profile)+"/configuration.nix") ];
+	modules = [ (./. + "/profiles"+("/"+systemSettings.profile)+"/configuration.nix") ];
 	specialArgs = {
 	  inherit systemSettings;
 	  inherit userSettings;
