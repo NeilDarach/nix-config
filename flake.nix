@@ -1,7 +1,7 @@
 { 
   description = "Flake to set up the HA Yellow";
 
-  outputs = inputs@{self, nixpkgs, home-manager, ... }:
+  outputs = inputs@{self, nixpkgs, nixos-hardware, home-manager, ... }:
   let
   # --- System Settings ---
   systemSettings = {
@@ -80,6 +80,8 @@
 
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     };
   }
 

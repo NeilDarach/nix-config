@@ -1,8 +1,9 @@
-{ ... }: {
+{ pkgs, lib, systemSettings, userSettings, ... }: {
   imports = [
     ../../system/hardware-configuration.nix
-    ../../system/time.nix
-    ../../system/bluetooth.nix
+    ../../system/hardware/time.nix
+    ../../system/hardware/bluetooth.nix
+    ./pi.nix
     ];
 
   nix.nixPath = [ "nixos-config=$HOME/.dotfiles/system/configuration.nix" ];
@@ -11,10 +12,10 @@
     experimental-features = nix-command flakes
     '';
 
-  nix.pkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfree = true;
 
 
-  networking.hostname = systemSettings.hostname;
+  networking.hostName = systemSettings.hostname;
 
 
   time.timeZone = systemSettings.timezone;
@@ -31,18 +32,17 @@
     LC_TIME = systemSettings.locale;
     };
 
-  #environment.systemPackages = with pkgs; [
-    #neovim
-    #tmux
-    #git
-    #wget
-    #curl
-    #home-manager
-    #];
+  environment.systemPackages = with pkgs; [
+    neovim
+    tmux
+    git
+    wget
+    curl
+    home-manager
+    ];
 
-  #environment.shells = with pkgs; [ bash ];
-  #usrs.defaultUserShell = pkgs.bash;
-  programs.bash.enable = true;
+  environment.shells = with pkgs; [ bash ];
+  users.defaultUserShell = pkgs.bash;
 
   system.stateVersion = "22.11";
   }
