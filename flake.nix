@@ -51,10 +51,12 @@
     nixosConfigurations = {
       system = lib.nixosSystem {
         system = systemSettings.system;
-	modules = [ (./. + "/profiles"+("/"+systemSettings.profile)+"/configuration.nix") ];
+	modules = [ nixos-hardware.nixosModules.raspberry-pi-4
+	            (./. + "/profiles"+("/"+systemSettings.profile)+"/configuration.nix") ];
 	specialArgs = {
 	  inherit systemSettings;
 	  inherit userSettings;
+	  inherit nixos-hardware;
 	  };
 	};
       };
@@ -81,7 +83,7 @@
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
     };
   }
 

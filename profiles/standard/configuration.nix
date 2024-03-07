@@ -1,4 +1,4 @@
-{ pkgs, lib, systemSettings, userSettings, ... }: {
+{ pkgs, lib, systemSettings, userSettings, nixos-hardware, ... }: {
   imports = [
     ../../system/hardware-configuration.nix
     ../../system/hardware/time.nix
