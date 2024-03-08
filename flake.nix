@@ -1,7 +1,12 @@
 { 
   description = "Flake to set up the HA Yellow";
-
-  outputs = inputs@{self, nixpkgs, nixos-hardware, home-manager, ... }:
+  nixConfig = { 
+    extra-substituters = [ "https://raspberry-pi-nix.cachix.org" ];
+    extra-trusted-public-keys = [
+      "raspberry-pi-nix.cachix.org-1:WmV2rdSangxW0rZjY/tBvBDSaNFQ3DyEQsVw8EvHn90="
+      ];
+    };
+  outputs = inputs@{self, nixpkgs, nixos-hardware, home-manager, raspberry-pi-nix, ... }:
   let
   # --- System Settings ---
   systemSettings = {
@@ -28,6 +33,24 @@
 
   lib = nixpkgs.lib;
 
+  nix.distributedBuilds = false;
+  nix.buildMachines = [
+    { hostName = "nixos-build";
+      systems = [ "aarch64-linux" ];
+      maxJobs = 8;
+      speedFactor = 2;
+      supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+      }
+      ];
+  programs.ssh.extraConfig = ''
+    Host nixos-build
+    HostName nixos-build.darach.org.uk
+    port 22
+    user neil
+    IdentitiesOnly yes
+    IdentityFile /root/.ssh/id_nixos-build
+    '';
+
   supportedSystems = [
     "aarch64-linux"
     ];
@@ -52,11 +75,13 @@
       system = lib.nixosSystem {
         system = systemSettings.system;
 	modules = [ nixos-hardware.nixosModules.raspberry-pi-4
+	            raspberry-pi-nix.nixosModules.raspberry-pi
 	            (./. + "/profiles"+("/"+systemSettings.profile)+"/configuration.nix") ];
 	specialArgs = {
 	  inherit systemSettings;
 	  inherit userSettings;
 	  inherit nixos-hardware;
+	  inherit raspberry-pi-nix;
 	  };
 	};
       };
@@ -84,6 +109,8 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     nixos-hardware.url = "github:NixOS/nixos-hardware";
+
+    raspberry-pi-nix.url = "github:tstat/raspberry-pi-nix/master";
     };
   }
 

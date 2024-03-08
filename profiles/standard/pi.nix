@@ -3,26 +3,49 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
 
-{ config, lib, pkgs, nixos-hardware, ... }:
+{ config, lib, nixpkgs, pkgs, nixos, nixos-hardware, raspberry-pi-nix, ... }:
 
 {
   imports =
     [ 
       ../../system/hardware-configuration.nix
     ];
+#  modules = [
+#    raspberry-pi-nix.nixosModules.raspberry-pi 
+#    ];
+
+  nixpkgs.overlays = [ 
+    (final: prev: {
+      pipewire = prev.pipewire.overrideAttrs (o: {
+        patches = (o.patches or [ ]) ++ [ (./. + "/libcamera.patch") ];
+	});
+      })
+    ];
 
   hardware = {
-    raspberry-pi."4".apply-overlays-dtmerge.enable = true;
-    deviceTree = {
-      enable = true;
-      filter = "*rpi-4-*.dtb";
-    };
+    #raspberry-pi."4".apply-overlays-dtmerge.enable = true;
+    #deviceTree = {
+    #  enable = true;
+    #  filter = "*rpi-4-*.dtb";
+    #};
+    bluetooth.enable = true;
+    raspberry-pi = {
+      config = {
+        all = {
+	  base-dt-params = {
+	    krnbt = {
+	      enable = true;
+	      value = "on";
+	      };
+	    };
+          };
+	};
+      };
   };
 
   console.enable = true;
 
   boot = {
-    kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
     loader = {
       # Use the extlinux boot loader. (NixOS wants to enable GRUB by default)
       grub.enable = false;
@@ -31,6 +54,8 @@
       };
     supportedFilesystems = [ "zfs" "ext4" ];
     };
+
+  boot.kernelPackages = pkgs.lib.mkForce pkgs.linuxKernel.packages.linux_rpi4;
 
   networking.hostId = "95849594";
   # Pick only one of the below networking options.
