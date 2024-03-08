@@ -44,5 +44,5 @@
   environment.shells = with pkgs; [ bash ];
   users.defaultUserShell = pkgs.bash;
 
-  system.stateVersion = "22.11";
+  system.stateVersion = "23.11";
   }
