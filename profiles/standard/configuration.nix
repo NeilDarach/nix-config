@@ -16,6 +16,7 @@
 
 
   networking.hostName = systemSettings.hostname;
+  services.openssh.enable = true;
 
 
   time.timeZone = systemSettings.timezone;
