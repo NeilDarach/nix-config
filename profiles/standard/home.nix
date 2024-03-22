@@ -5,7 +5,7 @@
   programs.home-manager.enable = true;
 
   imports = [ ../../user/shell/sh.nix
-              ../../user/app/git/git.nix
+              ../../user/app/git.nix
 	      ];
 
   home.stateVersion = "22.11"; # Please read the comment before changing
