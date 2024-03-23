@@ -8,13 +8,13 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "nvme" ];
-  boot.initrd.kernelModules = [ ];
+  boot.initrd.availableKernelModules = [ "zfs" "nvme" ];
+  boot.initrd.kernelModules = [ "zfs" "nvme" ];
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { #device = "/dev/disk/by-uuid/44444444-4444-4444-8888-888888888888";
+    { device = lib.mkForce "/dev/disk/by-label/NIXOS_NVME";
       fsType = "ext4";
     };
 
