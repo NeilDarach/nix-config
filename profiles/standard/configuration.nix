@@ -6,6 +6,19 @@
     ./pi.nix
     ];
 
+  sops.defaultSopsFile = ../../secrets/common.json;
+  sops.defaultSopsFormat = "json";
+  sops.age.sshKeyPaths = [ "/root/.ssh/id_ed25519" ];
+  sops.secrets.hostKeys_hayellow = {
+    mode = "0400";
+    path = "/etc/ssh/ssh_host_ed25519_key";
+    };
+
+  sops.secrets.hostKeys_hayellow_pub = {
+    mode = "0466";
+    path = "/etc/ssh/ssh_host_ed25519_key.pub";
+    };
+   
   nix.nixPath = [ "nixos-config=$HOME/.dotfiles/system/configuration.nix" ];
   nix.package = pkgs.nixFlakes;
   nix.extraOptions = ''
@@ -41,6 +54,8 @@
   services.openssh.knownHosts.nixos-build.hostNames = [ "nixos-build.darach.org.uk" ];
   services.openssh.knownHosts.nixos-build.publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ9qKrfo5/UkLCIU9kYNvzHkfVPpajZtvie7FHqMain1"; 
 
+  services.openssh.hostKeys = [ ];
+
   programs.ssh.extraConfig = ''
 Host nixos-build
     HostName nixos-build.darach.org.uk
@@ -67,6 +82,7 @@ Host nixos-build
     };
 
   environment.systemPackages = with pkgs; [
+    age
     binutils
     neovim
     tmux
@@ -76,6 +92,8 @@ Host nixos-build
     home-manager
     docker
     nix-output-monitor
+    sops
+    ssh-to-age
     ];
 
   environment.shells = with pkgs; [ bash ];

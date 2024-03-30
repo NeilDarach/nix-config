@@ -1,0 +1,9 @@
+keys:
+  - &host_hayellow age1xzjevxcnhq30yf0qrmfe72yfcv8sldyt2rxd0g4hkqa22psx4vvs596qqq
+  - &user_root_hayellow age1zer9pg3g93km429u49rsv498p7f999ftt3uu5gttff0hu9cezqpq5unf8s
+creation_rules:
+  - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+        - *host_hayellow
+        - *user_root_hayellow

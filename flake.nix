@@ -6,7 +6,7 @@
       "raspberry-pi-nix.cachix.org-1:WmV2rdSangxW0rZjY/tBvBDSaNFQ3DyEQsVw8EvHn90="
       ];
     };
-  outputs = inputs@{self, nixpkgs, nixos-hardware, home-manager, raspberry-pi-nix, ... }:
+  outputs = inputs@{self, nixpkgs, nixos-hardware, home-manager, raspberry-pi-nix, sops-nix, ... }:
   let
   # --- System Settings ---
   systemSettings = {
@@ -58,12 +58,15 @@
         system = systemSettings.system;
 	modules = [ nixos-hardware.nixosModules.raspberry-pi-4
 	            raspberry-pi-nix.nixosModules.raspberry-pi
-	            (./. + "/profiles"+("/"+systemSettings.profile)+"/configuration.nix") ];
+	            (./. + "/profiles"+("/"+systemSettings.profile)+"/configuration.nix")
+		    sops-nix.nixosModules.sops 
+		  ];
 	specialArgs = {
 	  inherit systemSettings;
 	  inherit userSettings;
 	  inherit nixos-hardware;
 	  inherit raspberry-pi-nix;
+	  inherit sops-nix;
 	  };
 	};
       };
@@ -93,6 +96,8 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
     raspberry-pi-nix.url = "github:tstat/raspberry-pi-nix/master";
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     };
   }
 
