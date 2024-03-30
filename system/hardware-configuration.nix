@@ -18,6 +18,11 @@
       fsType = "ext4";
     };
 
+  fileSystems."/boot" =
+    { device = lib.mkForce "/dev/disk/by-label/FIRMWARE";
+      fsType = "vfat";
+    };
+
   swapDevices = [ ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking

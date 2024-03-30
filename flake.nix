@@ -33,24 +33,6 @@
 
   lib = nixpkgs.lib;
 
-  nix.distributedBuilds = false;
-  nix.buildMachines = [
-    { hostName = "nixos-build";
-      systems = [ "aarch64-linux" ];
-      maxJobs = 8;
-      speedFactor = 2;
-      supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
-      }
-      ];
-  programs.ssh.extraConfig = ''
-    Host nixos-build
-    HostName nixos-build.darach.org.uk
-    port 22
-    user neil
-    IdentitiesOnly yes
-    IdentityFile /root/.ssh/id_nixos-build
-    '';
-
   supportedSystems = [
     "aarch64-linux"
     ];
