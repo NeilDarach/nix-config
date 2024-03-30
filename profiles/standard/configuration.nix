@@ -42,6 +42,7 @@
     };
 
   environment.systemPackages = with pkgs; [
+    binutils
     neovim
     tmux
     git
@@ -49,6 +50,7 @@
     curl
     home-manager
     docker
+    nix-output-monitor
     ];
 
   environment.shells = with pkgs; [ bash ];
