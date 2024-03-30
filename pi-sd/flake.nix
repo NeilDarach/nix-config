@@ -7,7 +7,19 @@
     system = "aarch64-linux";
     pkgs = import nixpkgs {
              inherit system;
+
+    overlays = [
+      (final: prev: {
+        ubootRaspberryPi4_64bit = (prev.ubootRaspberryPi4_64bit.override  {
+           extraPatches =  [ (./. + "/u-boot-nvme.patch") ];
+        }).overrideAttrs (o: {
+           postInstall = '' 
+	   '';
+        });
+      })
+    ];
 	     };
+
     nixosConfigurations.rpi4 = nixpkgs.lib.nixosSystem {
       inherit system pkgs;
       modules = [
@@ -17,6 +29,11 @@
 	    time.timeZone = "Europe/London";
 	    i18n.defaultLocale = "en_GB.UTF-8";
 	    sdImage.compressImage = false;
+	    sdImage.expandOnBoot = false;
+	    sdImage.firmwareSize = 500;
+	    sdImage.populateFirmwareCommands = ''
+	    cp "${pkgs.ubootRaspberryPi4_64bit}"/u-boot.bin firmware/u-boot-rpi4.bin.nvme
+	    '';
 	    console.keyMap = "uk";
 
 	    users.users.root.openssh.authorizedKeys.keys = [
