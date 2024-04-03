@@ -6,7 +6,7 @@
       "raspberry-pi-nix.cachix.org-1:WmV2rdSangxW0rZjY/tBvBDSaNFQ3DyEQsVw8EvHn90="
       ];
     };
-  outputs = inputs@{self, nixpkgs, nixos-hardware, home-manager, raspberry-pi-nix, sops-nix, ... }:
+  outputs = inputs@{self, nixpkgs, nixos-hardware, home-manager, raspberry-pi-nix, sops-nix, flake-utils, ... }:
   let
   # --- System Settings ---
   systemSettings = {
@@ -29,18 +29,27 @@
     system = systemSettings.system;
     config = { allowUnfree = true;
                allowUnfreePredicate = ( _: true ); };
+
+    pkgs.overlays = [ (final: prev: rec {
+      bootstrap = prev.callPackage ./. + "pkgs/bootstrap/flake.nix" {}; 
+      } ) ];
     };
 
   lib = nixpkgs.lib;
+
 
   supportedSystems = [
     "aarch64-linux"
     ];
 
   forAllSystems = inputs.nixpkgs.lib.genAttrs supportedSystems;
+  localOverlay = prev: final: {
+    bootstrap = final.callPackage ./pkgs/bootstrap/flake.nix {} ; };
 
   nixpkgsFor = forAllSystems (system:
-    import inputs.nixpkgs { inherit system; });
+    import inputs.nixpkgs { 
+    overlays = [ localOverlay ];
+    inherit system; });
 
   in {
     homeConfigurations = {
@@ -54,12 +63,19 @@
 	};
       };
     nixosConfigurations = {
+      inherit pkgs;
       system = lib.nixosSystem {
         system = systemSettings.system;
 	modules = [ nixos-hardware.nixosModules.raspberry-pi-4
 	            raspberry-pi-nix.nixosModules.raspberry-pi
 	            (./. + "/profiles"+("/"+systemSettings.profile)+"/configuration.nix")
+#		    ( + "/pkgs/bootstrap/flake.nix")
 		    sops-nix.nixosModules.sops 
+		    home-manager.nixosModules.home-manager {
+		      home-manager.useGlobalPkgs = true;
+		      home-manager.useUserPackages = true;
+		      home-manager.users.root = import ./users/root.nix;
+		      }
 		  ];
 	specialArgs = {
 	  inherit systemSettings;
@@ -98,6 +114,7 @@
     raspberry-pi-nix.url = "github:tstat/raspberry-pi-nix/master";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+    flake-utils.url = "github:numtide/flake-utils";
     };
   }
 

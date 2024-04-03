@@ -9,16 +9,28 @@
   sops.defaultSopsFile = ../../secrets/common.json;
   sops.defaultSopsFormat = "json";
   sops.age.sshKeyPaths = [ "/root/.ssh/id_ed25519" ];
-  sops.secrets.hostKeys_hayellow = {
-    mode = "0400";
-    path = "/etc/ssh/ssh_host_ed25519_key";
+  sops.secrets = {
+    hostKeys_hayellow = {
+      mode = "0400";
+      path = "/etc/ssh/ssh_host_ed25519_key";
+      };
+
+    hostKeys_hayellow_pub = {
+      mode = "0444";
+      path = "/etc/ssh/ssh_host_ed25519_key.pub";
+      };
+
+    userKeys_common_nixosbuild = {
+      mode = "0400";
+      path = "/root/.ssh/id_nixos-build";
+      };
+
+    userKeys_common_nixosbuild_pub = {
+      mode = "0444";
+      path = "/root/.ssh/id_nixos-build.pub";
+      };
     };
 
-  sops.secrets.hostKeys_hayellow_pub = {
-    mode = "0466";
-    path = "/etc/ssh/ssh_host_ed25519_key.pub";
-    };
-   
   nix.nixPath = [ "nixos-config=$HOME/.dotfiles/system/configuration.nix" ];
   nix.package = pkgs.nixFlakes;
   nix.extraOptions = ''
@@ -37,6 +49,8 @@
 
 
   nixpkgs.config.allowUnfree = true;
+  #nixpkgs.overlays = [ (final: prev: { bootstrap = "";} )];
+
 
   virtualisation.docker.enable = true;
   virtualisation.docker.enableOnBoot = true;
@@ -85,6 +99,7 @@ Host nixos-build
     age
     binutils
     neovim
+    bootstrap
     tmux
     git
     wget
@@ -109,7 +124,7 @@ Host nixos-build
 
   users.users.root = {
     openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIJ0nGtONOY4QnJs/xj+N4rKf4pCWfl25BOfc8hEczUg neil.darach@gmail.com" ];
-    };
+  };
 
   system.stateVersion = "23.11";
   }

@@ -8,8 +8,8 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "zfs" "nvme" ];
-  boot.initrd.kernelModules = [ "zfs" "nvme" ];
+  boot.initrd.availableKernelModules = [ "nvme" ];
+  boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
 
@@ -19,8 +19,14 @@
     };
 
   fileSystems."/boot" =
-    { device = lib.mkForce "/dev/disk/by-label/FIRMWARE";
+    { device = lib.mkForce "/dev/disk/by-label/NIXOS_FIRMWARE-694E";
       fsType = "vfat";
+    };
+
+  fileSystems."/boot/firmware" =
+    { device = lib.mkForce "/boot";
+      fsType = lib.mkForce "none";
+      options = [ "bind" ];
     };
 
   swapDevices = [ ];
@@ -30,9 +36,9 @@
   # still possible to use this option, but it's recommended to use it in conjunction
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
+  # networking.interfaces.docker0.useDHCP = lib.mkDefault true;
   # networking.interfaces.end0.useDHCP = lib.mkDefault true;
   # networking.interfaces.wlan0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
-  powerManagement.cpuFreqGovernor = lib.mkDefault "ondemand";
 }
