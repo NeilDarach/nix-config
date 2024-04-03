@@ -8,7 +8,7 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "nvme" ];
+  boot.initrd.availableKernelModules = [ "nvme" "zfs" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
@@ -19,7 +19,7 @@
     };
 
   fileSystems."/boot" =
-    { device = lib.mkForce "/dev/disk/by-label/NIXOS_FIRMWARE-694E";
+    { device = lib.mkForce "/dev/disk/by-label/NIXOS_FIRMWARE";
       fsType = "vfat";
     };
 

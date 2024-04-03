@@ -8,6 +8,8 @@
   }: {
   imports = [ 
     ./hardware-configuration.nix
+    inputs.nixos-hardware.nixosModules.raspberry-pi-4
+    inputs.raspberry-pi-nix.nixosModules.raspberry-pi
     ];
 
   nixpkgs = {
@@ -119,14 +121,30 @@ Host nixos-build
     supportedFilesystems = [ "zfs" "ext4" ];
     };
 
+  hardware = {
+    #raspberry-pi."4".apply-overlays-dtmerge.enable = true;
+    #deviceTree = {
+    #  enable = true;
+    #  filter = "*rpi-4-*.dtb";
+    #};
+    bluetooth.enable = true;
+    raspberry-pi = {
+      config = {
+        all = {
+	  base-dt-params = {
+	    krnbt = {
+	      enable = true;
+	      value = "on";
+	      };
+	    };
+          };
+	};
+      };
+  };
+
+  console.enable = true;
+
   networking.hostId = "95849594";
-
-
-
-
-
-
-
 
 
   system.stateVersion = "23.11";

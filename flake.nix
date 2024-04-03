@@ -1,10 +1,27 @@
 { 
   description = "Flake to set up standard Linux servers";
 
+  nixConfig = { };
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
+
+    home-manager.url = "github:nix-community/home-manager/release-23.11";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
+
+    raspberry-pi-nix.url = "github:tstat/raspberry-pi-nix";
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+    flake-utils.url = "github:numtide/flake-utils";
+    };
+
   outputs = {
     self,
     nixpkgs,
     home-manager,
+    nixos-hardware,
+    raspberry-pi-nix,
     ... } @ inputs: let
       inherit (self) outputs;
       systems = [
@@ -36,20 +53,7 @@
 	];
       };
     };
-
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
-
-    home-manager.url = "github:nix-community/home-manager/release-23.11";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
-
-    nixos-hardware.url = "github:NixOS/nixos-hardware";
-
-    raspberry-pi-nix.url = "github:tstat/raspberry-pi-nix/master";
-    sops-nix.url = "github:Mic92/sops-nix";
-    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
-    flake-utils.url = "github:numtide/flake-utils";
-    };
   };
+
 }
 
