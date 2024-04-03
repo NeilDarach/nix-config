@@ -10,6 +10,7 @@
     ./hardware-configuration.nix
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
     inputs.raspberry-pi-nix.nixosModules.raspberry-pi
+    inputs.sops-nix.nixosModules.sops
     ];
 
   nixpkgs = {
@@ -47,6 +48,20 @@
       supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
       }
       ];
+
+  sops = {
+    defaultSopsFile = ../secrets/common.json;
+    defaultSopsFormat = "json";
+    age.sshKeyPaths = [ "/root/.ssh/id_ed25519" ];
+    secrets.hostKeys_hayellow = {
+      mode = "0400";
+      path = "/etc/ssh/ssh_host_ed25519_key";
+      };
+    secrets.hostKeys_hayellow_pub = {
+      mode = "0466";
+      path = "/etc/ssh/ssh_host_ed25519_key.pub";
+      };
+    };
 
   networking.hostName = "hayellow";
 
@@ -146,6 +161,13 @@ Host nixos-build
 
   networking.hostId = "95849594";
 
+  environment.systemPackages = with pkgs; [
+    binutils
+    neovim
+    tmux
+    wget
+    curl
+    ];
 
   system.stateVersion = "23.11";
   }

@@ -22,6 +22,7 @@
     home-manager,
     nixos-hardware,
     raspberry-pi-nix,
+    sops-nix,
     ... } @ inputs: let
       inherit (self) outputs;
       systems = [

@@ -1,4 +1,5 @@
 Based on https://github.com/librephoenix/nixos-config/
+Switched to https://github.com/Misterio77/nix-starter-configs
 
 Install the basic SD nixos image
   Connect the USB-C recovery jumper
