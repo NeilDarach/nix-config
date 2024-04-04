@@ -19,7 +19,7 @@
     };
 
   fileSystems."/boot" =
-    { device = lib.mkForce "/dev/disk/by-label/NIXOS_FIRMWARE";
+    { device = lib.mkForce "/dev/disk/by-label/FIRMWARE";
       fsType = "vfat";
     };
 
