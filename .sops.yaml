@@ -1,9 +1,12 @@
 keys:
+  - &nixos_build age1jme6x0s7z27zrdtusktzs76jkq6685rc8x4rkt7c6s2nq50tsquqfkpj9q
   - &host_hayellow age1xzjevxcnhq30yf0qrmfe72yfcv8sldyt2rxd0g4hkqa22psx4vvs596qqq
   - &user_root_hayellow age1zer9pg3g93km429u49rsv498p7f999ftt3uu5gttff0hu9cezqpq5unf8s
 creation_rules:
   - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
       - age:
+        - *nixos_build
         - *host_hayellow
         - *user_root_hayellow
+
