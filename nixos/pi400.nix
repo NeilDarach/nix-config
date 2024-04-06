@@ -67,6 +67,12 @@
 
   home-manager.users.root = {
       home.stateVersion = "23.11";
+      programs.bash = {
+        enable = true;
+	sessionVariables = {
+	  EDITOR = "nvim";
+	  };
+	};
       programs.git = {
         enable = true;
 	extraConfig = {
