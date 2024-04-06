@@ -43,6 +43,12 @@
 	    ./nixos/configuration.nix
 	    ];
 	  };
+        pi400 = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs outputs; };
+	  modules = [
+	    ./nixos/pi400.nix
+	    ];
+	  };
 	};
 
     homeConfigurations = {
