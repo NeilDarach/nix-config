@@ -12,6 +12,11 @@ creation_rules:
       - *recovery_key
       - *pi400
       - *neil
+  - path_regex: hosts/yellow/secrets.(ya?ml|json)$
+    key_groups:
+    - age:
+      - *recovery_key
+      - *neil
   - path_regex: hosts/common/secrets.(ya?ml|json)$
     key_groups:
     - age:

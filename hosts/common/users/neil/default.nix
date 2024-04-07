@@ -22,11 +22,22 @@
       packages = [ pkgs.home-manager ];
       };
 
-    sops.secrets.neil-password = {
-      sopsFile = ../../secrets.json;
+    sops.secrets = {
+      neil-password = {
+        sopsFile = ../../secrets.json;
+        format = "json";
+        neededForUsers = true;
+        };
+
+    ssh_nixos-build_key = {
       format = "json";
-      neededForUsers = true;
+      sopsFile = ../../secrets.json;
+      path = "/home/neil/.ssh/id_nixos-build";
+      mode = "0400";
+      owner = "neil";
+      group = "users";
       };
+    };
 
     home-manager.users.neil = import ../../../../home/neil/${config.networking.hostName}.nix;
   }

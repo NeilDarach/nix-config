@@ -53,12 +53,10 @@
 	};
 
     homeConfigurations = {
-      "neil@hayellow" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.aarch64-linux;
+      "neil@yellow" = lib.homeManagerConfiguration {
+        modules = [ ./home/neil/yellow.nix ];
+        pkgs = pkgsFor.aarch64-linux;
 	extraSpecialArgs = { inherit inputs outputs; };
-	modules = [
-	  ./home-manager/home.nix
-	];
       };
       "neil@pi400" = lib.homeManagerConfiguration {
         modules = [ ./home/neil/pi400.nix ];
