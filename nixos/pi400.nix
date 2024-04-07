@@ -135,7 +135,7 @@ Host nixos-build
     port 22
     user neil
     IdentitiesOnly yes
-    IdentityFile /root/.ssh/id_nixos-build
+    IdentityFile ~/.ssh/id_nixos-build
     AddressFamily inet
     '';
     

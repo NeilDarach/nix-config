@@ -1,6 +1,6 @@
 {
   pkgs ? import <nixpkgs> { },
 } : rec {
-  bootstrap = pkgs.callPackage ./bootstrap.nix { };
+  bootstrap = pkgs.callPackage ./bootstrap { };
   default = bootstrap;
   }
