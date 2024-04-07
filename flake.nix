@@ -10,6 +10,8 @@
 
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
+    impermanence.url = "github:nix-community/impermanence";
+
     raspberry-pi-nix.url = "github:tstat/raspberry-pi-nix";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -40,17 +42,12 @@
       nixosModules = import ./modules/nixos;  
       homeManagerModules = import ./modules/home-manager;
 
+
       nixosConfigurations = {
-        hayellow = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs outputs; };
-	  modules = [
-	    ./nixos/configuration.nix
-	    ];
-	  };
         pi400 = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
 	  modules = [
-	    ./nixos/pi400.nix
+	    ./hosts/pi400
 	    ];
 	  };
 	};
@@ -62,6 +59,11 @@
 	modules = [
 	  ./home-manager/home.nix
 	];
+      };
+      "neil@pi400" = lib.homeManagerConfiguration {
+        modules = [ ./home/neil/pi400.nix ];
+        pkgs = pkgsFor.aarch64-linux;
+	extraSpecialArgs = { inherit inputs outputs; };
       };
     };
   };
