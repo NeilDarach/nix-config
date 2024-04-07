@@ -25,14 +25,18 @@
     sops-nix,
     ... } @ inputs: let
       inherit (self) outputs;
+      lib = nixpkgs.lib // home-manager.lib;
       systems = [
         "aarch64-linux"
 	];
 
-      forAllSystems = nixpkgs.lib.genAttrs systems;
+      forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
+      pkgsFor = lib.genAttrs systems ( system:
+        import nixpkgs { inherit system; config.allowUnfree = true; });
     in {
-      packages = forAllSystems (system: import ./pkgs nixpkgs.legacyPackages.${system});
-      overlays = import ./overlays {inherit inputs; };
+      inherit lib;
+      packages = forEachSystem (pkgs: import ./pkgs { inherit pkgs; });
+      overlays = import ./overlays {inherit inputs outputs; };
       nixosModules = import ./modules/nixos;  
       homeManagerModules = import ./modules/home-manager;
 
