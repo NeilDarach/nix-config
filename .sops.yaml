@@ -2,7 +2,7 @@ keys:
   - &users:
     - &neil age1ynrxqlq47e9ctd5d4gv59rvlp7j78gy6yctg30d4wvpv6wl4nc8svjjaht
   - &hosts:
-    - &pi400 age1sn4cneymvs45frdx07r6fnwq4vplaqpwnwzey786s82hsajr8czsqnsqrd
+    - &pi400 age1q3ty8xy4n6mnr5p8vdrt7737q8rgmy4gltmp84d4aawtwyyzl9ksjtdz9z
 creation_rules:
   - path regex: hosts/pi400/secrets.(ya?ml|json)$
     key_groups:

@@ -10,7 +10,9 @@
     ./distributed-build.nix
     ./optin-persistence.nix
     ./openssh.nix
+    ./security.nix
     ./locale.nix
+    ./nix.nix
     ] ++ (builtins.attrValues outputs.nixosModules);
 
   home-manager.extraSpecialArgs = {

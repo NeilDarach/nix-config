@@ -12,7 +12,32 @@
 {
   imports = [ inputs.impermanence.nixosModules.impermanence ];
 
-  environment.persistence = { };
+   environment.persistence."/persist" = {
+    directories = [
+      "/etc/nixos"
+      "/etc/NetworkManager/system-connections"
+      "/var/lib/chrony"
+      "/var/lib/bluetooth"
+      "/root/.config"
+      ];
+    files = [
+      "/etc/machine-id"
+      "/etc/wireguard/wg0"
+      ];
+    };
+
   programs.fuse.userAllowOther = true;
+
+  system.activationScripts.persistent-dirs.text = 
+    let
+      mkHomePersist = 
+        user: lib.optionalString user.createHome ''
+	  mkdir -p /persist/${user.home}
+	  chown ${user.name}:${user.group} /persist/${user.home}
+	  chmod ${user.homeMode} /persist/${user.home}
+	  '';
+      users = lib.attrValues config.users.users;
+    in
+      lib.concatLines (map mkHomePersist users);
 
 }
