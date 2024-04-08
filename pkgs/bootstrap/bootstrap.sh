@@ -1,21 +1,28 @@
 case $1 in 
+  "") cat <<EOF
+$0 zfs yellow /dev/nvme0n1
+$0 mount yellow /dev/mmcblk0p1
+$0 close yellow
+EOF
+;;
+    
   "zfs") 
 cat <<-EOF
-  zpool create -f               
-    -m none	                
-    -R /mnt                   
-    -o ashift=12               
-    -o listsnapshots=on        
-    -O acltype=posix           
-    -O compression=lz4          
-    -O canmount=off             
-    -O atime=off                
-    -O relatime=on              
-    -O recordsize=64K          
-    -O dnodesize=auto         
-    -O xattr=sa              
-    -O normalization=formD  
-    -O secondarycache=none  
+  zpool create -f               \\
+    -m none	                \\
+    -R /mnt                   \\
+    -o ashift=12               \\
+    -o listsnapshots=on        \\
+    -O acltype=posix           \\
+    -O compression=lz4          \\
+    -O canmount=off             \\
+    -O atime=off                \\
+    -O relatime=on              \\
+    -O recordsize=64K          \\
+    -O dnodesize=auto         \\
+    -O xattr=sa              \\
+    -O normalization=formD  \\
+    -O secondarycache=none  \\
     $2 "$3"
 
   zfs create -p -v -o secondarycache=none -o mountpoint=legacy $2/local/root

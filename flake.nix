@@ -50,6 +50,12 @@
 	    ./hosts/pi400
 	    ];
 	  };
+        yellow = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs outputs; };
+	  modules = [
+	    ./hosts/yellow
+	    ];
+	  };
 	};
 
     homeConfigurations = {

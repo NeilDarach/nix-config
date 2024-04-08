@@ -10,7 +10,7 @@
     ../common/optional/ephemeral-zfs.nix 
     ];
 
-  boot.zfs.devNodes = "/dev/disk/by-id/??";
+  boot.zfs.devNodes = "/dev/disk/by-id/nvme-WD_Blue_SN570_500GB_2239CA452011";
   boot.initrd.availableKernelModules = [ "xhci_pci" "usbhid" "uas" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
 
   boot = {
