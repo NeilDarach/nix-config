@@ -38,6 +38,7 @@
 
 	    users.users.root.openssh.authorizedKeys.keys = [
               "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIJ0nGtONOY4QnJs/xj+N4rKf4pCWfl25BOfc8hEczUg neil.darach@gmail.com"
+              "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN03gXcnqBMtsi1oD1xM1QJjFhgfzCwW+aez5FMfoHKl nixos-build"
 	      ];
 
 	    services.openssh = {

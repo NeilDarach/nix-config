@@ -10,6 +10,8 @@
 
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
+    impermanence.url = "github:nix-community/impermanence";
+
     raspberry-pi-nix.url = "github:tstat/raspberry-pi-nix";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -25,33 +27,41 @@
     sops-nix,
     ... } @ inputs: let
       inherit (self) outputs;
+      lib = nixpkgs.lib // home-manager.lib;
       systems = [
         "aarch64-linux"
 	];
 
-      forAllSystems = nixpkgs.lib.genAttrs systems;
+      forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
+      pkgsFor = lib.genAttrs systems ( system:
+        import nixpkgs { inherit system; config.allowUnfree = true; });
     in {
-      packages = forAllSystems (system: import ./pkgs nixpkgs.legacyPackages.${system});
-      overlays = import ./overlays {inherit inputs; };
+      inherit lib;
+      packages = forEachSystem (pkgs: import ./pkgs { inherit pkgs; });
+      overlays = import ./overlays {inherit inputs outputs; };
       nixosModules = import ./modules/nixos;  
       homeManagerModules = import ./modules/home-manager;
 
+
       nixosConfigurations = {
-        hayellow = nixpkgs.lib.nixosSystem {
+        pi400 = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
 	  modules = [
-	    ./nixos/configuration.nix
+	    ./hosts/pi400
 	    ];
 	  };
 	};
 
     homeConfigurations = {
-      "neil@hayellow" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.aarch64-linux;
+      "neil@yellow" = lib.homeManagerConfiguration {
+        modules = [ ./home/neil/yellow.nix ];
+        pkgs = pkgsFor.aarch64-linux;
 	extraSpecialArgs = { inherit inputs outputs; };
-	modules = [
-	  ./home-manager/home.nix
-	];
+      };
+      "neil@pi400" = lib.homeManagerConfiguration {
+        modules = [ ./home/neil/pi400.nix ];
+        pkgs = pkgsFor.aarch64-linux;
+	extraSpecialArgs = { inherit inputs outputs; };
       };
     };
   };
