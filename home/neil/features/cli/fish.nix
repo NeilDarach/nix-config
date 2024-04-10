@@ -38,7 +38,7 @@
           switch $lineno
             case 1
               commandline -f history-search-backward
-              history merge
+              #history merge
             case '*'
               commandline -f up-line
           end

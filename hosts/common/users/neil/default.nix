@@ -29,9 +29,10 @@
         neededForUsers = true;
         };
 
-    ssh_nixos-build_key = {
+    ssh_nixos-build_key_neil = {
       format = "json";
       sopsFile = ../../secrets.json;
+      key = "ssh_nixos-build_key";
       path = "/home/neil/.ssh/id_nixos-build";
       mode = "0400";
       owner = "neil";

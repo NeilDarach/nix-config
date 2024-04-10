@@ -4,6 +4,7 @@
     ./hardware-configuration.nix
     ../common/global
     ../common/users/neil
+    ../common/users/root
     ];
 
   networking = {
