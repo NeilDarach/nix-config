@@ -11,10 +11,21 @@ function showUsage() {
 	${SCRIPT} close <poolName>
 	${SCRIPT} install <host> <poolName> <zfsDevice> <bootDevice>
 	${SCRIPT} info <host>
+	${SCRIPT} switch <host> 
 	EOF
 }
 
 # https://git.2li.ch/Nebucatnetzer/nixos/src/branch/master/scripts/update-all-machines
+#
+function showSwitch() {
+  local host 
+  if [[ $# != 1 ]] ; then echo "${SCRIPT} ${CMD} <host>"; return 1 ; fi
+  host=$1
+  cat <<-EOF
+	SSH_NIXOPTS="-t -i ~/.ssh/id_nixos-build" nixos-rebuild switch -j auto --use-remote-sudo --target-host ${host} --flake github:NeilDarach/nix-config#${host}
+	EOF
+}
+  	
 
 function showInstall() {
   local host pool zfsDevice bootDevice
@@ -124,6 +135,8 @@ case ${CMD} in
   "install") showInstall $*
 	  ;;
   "info") showInfo $*
+	  ;;
+  "switch") showSwitch $*
 	  ;;
   *) showUsage 
 	  ;;

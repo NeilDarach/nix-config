@@ -3,6 +3,7 @@ keys:
     - &neil age1ynrxqlq47e9ctd5d4gv59rvlp7j78gy6yctg30d4wvpv6wl4nc8svjjaht
   - &hosts:
     - &pi400 age1q3ty8xy4n6mnr5p8vdrt7737q8rgmy4gltmp84d4aawtwyyzl9ksjtdz9z
+    - &yellow age1u9wcp88wscxzjlgs6s4cxq7rt8gr0sf8gh9c2v2ps6g6u6lympcslv8htr
   - &recovery:
     - &recovery_key age1zlllg9jenfywwzar00cd7l82tvnazlj7p06ugdjmwhgghxvts30q3pdzzp
 creation_rules:
@@ -16,12 +17,14 @@ creation_rules:
     key_groups:
     - age:
       - *recovery_key
+      - *yellow
       - *neil
   - path_regex: hosts/common/secrets.(ya?ml|json)$
     key_groups:
     - age:
       - *recovery_key
       - *pi400
+      - *yellow
       - *neil
   - path_regex: home/neil/secrets.(ya?ml|json)$
     key_groups:
