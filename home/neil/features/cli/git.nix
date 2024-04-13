@@ -7,5 +7,6 @@
 	email = "neil.darach@gmail.com";
 	};
       };
+    ignores = [ ".direnv" "result" ];
     };
   }

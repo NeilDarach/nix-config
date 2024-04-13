@@ -10,6 +10,7 @@
    inputs.impermanence.nixosModules.home-manager.impermanence
     ../features/cli
     ../features/nvim
+    ./direnv.nix
     ] ++ (builtins.attrValues outputs.homeManagerModules);
 
   nixpkgs = {

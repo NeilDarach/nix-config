@@ -1,7 +1,10 @@
 { 
+  # References at  https://github.com/EmergentMind/nix-config
+  #                https://github.com/Misterio77/nix-starter-configs
+
   description = "Flake to set up standard Linux servers";
 
-  nixConfig = { };
+  nixConfig = { }; 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
 
@@ -42,7 +45,7 @@
       nixosModules = import ./modules/nixos;  
       homeManagerModules = import ./modules/home-manager;
 
-
+      devShells = forEachSystem (pkgs: import ./shell.nix { inherit pkgs; });
       nixosConfigurations = {
         pi400 = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };

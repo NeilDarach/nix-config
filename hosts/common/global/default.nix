@@ -1,6 +1,7 @@
 { 
   inputs,
   outputs,
+  pkgs,
   ...
   } : {
   imports = [ 
@@ -14,6 +15,10 @@
     ./locale.nix
     ./nix.nix
     ] ++ (builtins.attrValues outputs.nixosModules);
+
+ environment.systemPackages = builtins.attrValues {
+    inherit (pkgs)
+      just; };
 
   home-manager.extraSpecialArgs = {
     inherit inputs outputs;
