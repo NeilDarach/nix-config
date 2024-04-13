@@ -13,12 +13,10 @@
     package = pkgs.nixVersions.nix_2_18;
 
     settings = {
+      trusted-users = [ "root" "@wheel" ];
       auto-optimise-store = lib.mkDefault true;
-      experimental-features = [
-        "nix-command"
-        "flakes"
-        "repl-flake"
-      ];
+      experimental-features = [ "nix-command" "flakes" "repl-flake" ];
+      flake-registry = "";
     };
     gc = {
       automatic = true;
@@ -29,9 +27,8 @@
 
     # Add each flake input as a registry
     # To make nix3 commands consistent with the flake
-    registry = (lib.mapAttrs (_: flake: {inherit flake;})) ((lib.filterAttrs (_: lib.isType "flake")) inputs);
-
-    nixPath = [ "nixpkgs=${inputs.nixpkgs.outPath}" ] ++ (lib.mapAttrsToList (key: value: "${key}=${value.to.path}") config.nix.registry);
+    registry = lib.mapAttrs (_: value: { flake = value; }) inputs;
+    nixPath = [ "nixpkgs=${inputs.nixpkgs.outPath}" ];
 
   };
 }

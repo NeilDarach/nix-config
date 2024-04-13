@@ -1,0 +1,5 @@
+{
+  programs.just = {
+    enable = true;
+    };
+  }

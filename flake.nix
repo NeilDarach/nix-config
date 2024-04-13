@@ -45,7 +45,20 @@
       nixosModules = import ./modules/nixos;  
       homeManagerModules = import ./modules/home-manager;
 
-      devShells = forEachSystem (pkgs: import ./shell.nix { inherit pkgs; });
+      devShells = forEachSystem (pkgs: {
+        default = pkgs.mkShell {
+          NIX_CONFIG = "extra-experimental-features = nix-command flakes repl-flake";
+          nativeBuildInputs = builtins.attrValues {
+            inherit (pkgs)
+              # Required for pre-commit hook 'nixpkgs-fmt' only on Darwin
+              # REF: <https://discourse.nixos.org/t/nix-shell-rust-hello-world-ld-linkage-issue/17381/4>
+              libiconv
+              nix home-manager git just pre-commit
+              age ssh-to-age sops;
+            };
+          };
+        });
+
       nixosConfigurations = {
         pi400 = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };

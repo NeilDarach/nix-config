@@ -9,27 +9,26 @@
     users.mutableUsers = false;
     users.users.root = {
       isNormalUser = false;
-      openssh.authorizedKeys.keys = [ (builtins.readFile ../../../../home/neil/ssh.pub) 
-                                      (builtins.readFile ../../id_nixos-build.pub) ];
+      openssh.authorizedKeys.keys = [ (builtins.readFile ../../public_keys/neil_id_ed25519.pub) 
+                                      (builtins.readFile ../../public_keys/id_nixos-build.pub) ];
       hashedPasswordFile = config.sops.secrets.root-password.path;
       packages = [ pkgs.home-manager ];
       };
 
     sops.secrets = {
       root-password = {
-        sopsFile = ../../secrets.json;
-        format = "json";
+        sopsFile = ../../secrets.yaml;
+	key = "passwords/root";
         neededForUsers = true;
         };
 
-    ssh_nixos-build_key_root = {
-      format = "json";
-      sopsFile = ../../secrets.json;
-      key = "ssh_nixos-build_key";
-      path = "/root/.ssh/id_nixos-build";
-      mode = "0400";
-      owner = "root";
-      group = "root";
-      };
+      ssh_nixos-build_key_root = {
+        sopsFile = ../../secrets.yaml;
+        key = "private_keys/nixos-build";
+        path = "/root/.ssh/id_nixos-build";
+        mode = "0400";
+        owner = "root";
+        group = "root";
+        };
     };
   }

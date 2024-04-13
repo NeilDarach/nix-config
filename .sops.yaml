@@ -30,5 +30,6 @@ creation_rules:
     key_groups:
     - age:
       - *recovery_key
+      - *pi400
       - *yellow
       - *neil
