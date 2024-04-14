@@ -37,6 +37,8 @@ function showInstall() {
   cat <<-EOF
 	ssh root@${host} -i ~/.ssh/id_nixos-build "nix run git:NeilDarach/nix-config#bootstrap zfs ${pool} ${zfsDevice} | bash"
 	ssh root@${host} -i ~/.ssh/id_nixos-build "nix run git:NeilDarach/nix-config#bootstrap zfs ${pool} ${bootDevice} | bash"
+	ssh root@${host} -i ~/.ssh/id_nixos-build "mkdir -p /mnt/nixos/persist/etc/ssh"
+	sops --decrypt --extract '["host_keys"]["${pool}"]' hosts/common/secrets.yaml | ssh root@${host} -i ~/.ssh/id_nixos-build "cat > /mnt/nixos/persist/etc/ssh/host_ed25519_key"
 	ssh root@${host} -i ~/.ssh/id_nixos-build "nixos-install --root /mnt/nixos --flake github:NeilDarach/nix-config#${pool}"
 	ssh root@${host} -i ~/.ssh/id_nixos-build "nix run git:NeilDarach/nix-config#close ${pool} ${bootDevice} | bash"
 	EOF
