@@ -73,7 +73,6 @@
         };
       defaultSopsFile = ../secrets.yaml;
       };
-    };
 
   programs.neovim.enable = true;
   programs.bash = {
