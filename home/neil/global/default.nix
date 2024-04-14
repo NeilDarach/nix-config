@@ -44,7 +44,7 @@
       };
 
     file.public_key = {
-      target = "${config.home.homeDirectory}/.ssh/id_ed25519.pub}";
+      target = "${config.home.homeDirectory}/.ssh/id_ed25519.pub";
       source = ../id_ed25519.pub;
       };
 
@@ -89,7 +89,7 @@
         EDITOR = "nvim";
         };
       };
-    }
+    };
 
   }
 
