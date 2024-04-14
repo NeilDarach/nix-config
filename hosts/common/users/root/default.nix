@@ -9,7 +9,7 @@
     users.mutableUsers = false;
     users.users.root = {
       isNormalUser = false;
-      openssh.authorizedKeys.keys = [ (builtins.readFile ../../public_keys/neil_id_ed25519.pub) 
+      openssh.authorizedKeys.keys = [ (builtins.readFile ../../../../home/neil/id_ed25519.pub) 
                                       (builtins.readFile ../../public_keys/id_nixos-build.pub) ];
       hashedPasswordFile = config.sops.secrets.root-password.path;
       packages = [ pkgs.home-manager ];

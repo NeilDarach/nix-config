@@ -5,6 +5,7 @@
     ../common/core
     ../common/users/neil
     ../common/users/root
+    ../common/users/guest
     ];
 
   networking = {

@@ -17,10 +17,11 @@
 	"git"
 	];
 
-      openssh.authorizedKeys.keys = [ (builtins.readFile ../../../common/public_keys/neil_id_ed25519.pub) ];
-      hashedPasswordFile = config.sops.secrets.password_neil.path;
+      openssh.authorizedKeys.keys = [ (builtins.readFile ../../../../home/neil/id_ed25519.pub) ];
+      hashedPasswordFile = config.sops.secrets."password_neil".path;
       packages = [ pkgs.home-manager ];
       };
+
 
     sops.secrets = {
       password_neil = {
@@ -38,7 +39,8 @@
         };
 
       ssh_private_key_neil = {
-        key = "private_keys/neil";
+        sopsFile=../../../../home/neil/secrets.yaml;
+        key = "private_keys/id_ed25519";
         path = "/home/neil/.ssh/id_ed25519";
         mode = "0400";
         owner = "neil";

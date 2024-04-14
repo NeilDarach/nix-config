@@ -85,6 +85,11 @@
         pkgs = pkgsFor.aarch64-linux;
 	extraSpecialArgs = { inherit inputs outputs; };
       };
+      "guest@pi400" = lib.homeManagerConfiguration {
+        modules = [ ./home/guest/pi400.nix ];
+        pkgs = pkgsFor.aarch64-linux;
+	extraSpecialArgs = { inherit inputs outputs; };
+      };
     };
   };
 
