@@ -8,7 +8,7 @@ function showUsage() {
   cat <<-EOF
 	${SCRIPT} zfs <poolName> <zfsDevice>
 	${SCRIPT} mount <poolName> <bootDevice>
-	${SCRIPT} close <poolName>
+	${SCRIPT} close <poolName> <bootDevice>
 	${SCRIPT} install <host> <poolName> <zfsDevice> <bootDevice>
 	${SCRIPT} info <host>
 	${SCRIPT} switch <host> 
@@ -30,10 +30,14 @@ function showSwitch() {
 function showInstall() {
   local host pool zfsDevice bootDevice
   if [[ $# != 4 ]] ; then echo "${SCRIPT} ${CMD} <host> <poolName> <zfsDevice> <bootDevice>"; return 1 ; fi
+  host=$1
+  pool=$2
+  zfsDevice=$3
+  bootDevice=$4
   cat <<-EOF
 	ssh root@${host} -i ~/.ssh/id_nixos-build "nix run git:NeilDarach/nix-config#bootstrap zfs ${pool} ${zfsDevice} | bash"
 	ssh root@${host} -i ~/.ssh/id_nixos-build "nix run git:NeilDarach/nix-config#bootstrap zfs ${pool} ${bootDevice} | bash"
-	ssh root@${host} -i ~/.ssh/id_nixos-build "nixos-install --mount /mnt/nixos --flake git:NeilDarach/nix-config#${pool}"
+	ssh root@${host} -i ~/.ssh/id_nixos-build "nixos-install --root /mnt/nixos --flake github:NeilDarach/nix-config#${pool}"
 	ssh root@${host} -i ~/.ssh/id_nixos-build "nix run git:NeilDarach/nix-config#close ${pool} ${bootDevice} | bash"
 	EOF
 }
@@ -108,12 +112,13 @@ function showMount() {
 
 function showClose() {
   local pool
-  if [[ $# != 1 ]] ; then echo "${SCRIPT} ${CMD} <poolName>"; return 1 ; fi
+  if [[ $# != 2 ]] ; then echo "${SCRIPT} ${CMD} <poolName> <bootDevice>"; return 1 ; fi
   pool=$1
+  bootDevice=$2
   cat <<-EOF
 	umount -R /mnt/nixos
-	zpool export $2
-	sfdisk -A $3 1
+	zpool export ${pool}
+	sfdisk -A ${bootDevice} 1
 	EOF
   return 0
 }

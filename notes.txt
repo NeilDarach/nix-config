@@ -54,3 +54,6 @@ Setting up a secrets file
 
 
 
+
+
+For a first install, need to copy the host key to /mnt/nixos/persist/etc/ssh/ssh_host_ed25519_key
