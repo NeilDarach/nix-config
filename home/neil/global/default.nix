@@ -42,6 +42,10 @@
     sessionVariables = {
       FLAKE = "$HOME/Documents/NixConfig";
       };
+    packages = builtins.attrValues {
+      inherit (pkgs)
+      screen; # required by dunst
+      };
 
     file.public_key = {
       target = "${config.home.homeDirectory}/.ssh/id_ed25519.pub";
@@ -83,12 +87,7 @@
     tmux.enable = true;
     neovim.enable = true;
     home-manager.enable = true;
-    bash = {
-      enable = true;
-      sessionVariables = {
-        EDITOR = "nvim";
-        };
-      };
+    bash.enable = true;
     };
 
   }

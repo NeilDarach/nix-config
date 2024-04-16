@@ -20,6 +20,7 @@
       shell = pkgs.fish;
       extraGroups = [
         "wheel"
+	"dialout"
 	] ++ ifTheyExist [
 	"docker"
 	"git"
