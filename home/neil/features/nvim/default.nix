@@ -5,7 +5,9 @@ let
 in
 {
   imports = [
+  ./globalsettings.nix
   ./colorscheme.nix
+  ./whichkey.nix
   ];
 
   programs.neovim = {
