@@ -1,12 +1,15 @@
 { pkgs, ... }: {
   programs.neovim = {
     plugins = with pkgs.vimPlugins; [
-      gruvbox-material
+      onedark-nvim
       ];
     extraLuaConfig = /* lua */ ''
-    vim.o.termguicolors = true;
-    vim.cmd('colorscheme gruvbox-material')
-    vim.g.gruvbox_material_background = 'hard'
+    require('onedark').setup  {
+      style = 'dark', -- Default theme style. Choose between 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer' and 'light'
+      }
+
+    vim.cmd.colorscheme 'onedark'
+    vim.o.background = 'dark'
     '';
     };
   }

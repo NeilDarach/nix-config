@@ -8,6 +8,7 @@ in
   ./globalsettings.nix
   ./colorscheme.nix
   ./whichkey.nix
+  ./nvim-tree.nix
   ];
 
   programs.neovim = {
