@@ -22,5 +22,8 @@ in
       which-key-nvim
       (fromGitHub { inherit pkgs; rev="ac7ad3c8e61630d15af1f6266441984f54f54fd2"; ref="main"; user="elihunter173"; repo="dirbuf.nvim"; })
       ];
+    extraLuaConfig = ''
+      require('local')
+      '';
     };
   }
