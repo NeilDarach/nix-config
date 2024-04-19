@@ -16,6 +16,7 @@
       ];
     users.mutableUsers = false;
     users.users.guest = {
+      uid = 1000;
       isNormalUser = true;
       shell = pkgs.fish;
       extraGroups = [

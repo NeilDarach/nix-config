@@ -16,6 +16,7 @@
 
     users.mutableUsers = false;
     users.users.neil = {
+      uid = 1001;
       isNormalUser = true;
       shell = pkgs.fish;
       extraGroups = [
