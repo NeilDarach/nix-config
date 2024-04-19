@@ -9,8 +9,8 @@
   imports = [ 
    inputs.impermanence.nixosModules.home-manager.impermanence
    inputs.sops-nix.homeManagerModules.sops
+   inputs.neovim-flake.homeManagerModules.default
     ../features/cli
-    ../features/nvim
     ./direnv.nix
     ] ++ (builtins.attrValues outputs.homeManagerModules);
 
@@ -26,9 +26,9 @@
     settings = {
       experimental-features = [
         "nix-command"
-	"flakes"
-	"repl-flake"
-	];
+      "flakes"
+      "repl-flake"
+  ];
       };
     };
 
@@ -57,12 +57,12 @@
     #persistence = {
       #homeDirectory = {
         #directories = [
-	  #"Documents"
-	  #"Downloads"
-	  #".local/bin"
-	  #".local/share/nix"
-	  #];
-	#allowOther = true;
+    #"Documents"
+    #"Downloads"
+    #".local/bin"
+    #".local/share/nix"
+    #];
+  #allowOther = true;
         #};
       #};
     };
@@ -70,22 +70,52 @@
     sops = {
       age = { 
         sshKeyPaths = [ "${config.home.homeDirectory}/.ssh/id_ed25519" ];
-	keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
-	};
+        keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
+        };
       defaultSopsFile = ../secrets.yaml;
 
       secrets = {
-        sshBuildKey = {
-	  sopsFile = ../../../hosts/common/secrets.yaml;
-	  key = "private_keys/nixos-build";
-	  path = "${config.home.homeDirectory}/.ssh/id_nixos-build";
-	  };
-	};
+          sshBuildKey = {
+          sopsFile = ../../../hosts/common/secrets.yaml;
+          key = "private_keys/nixos-build";
+          path = "${config.home.homeDirectory}/.ssh/id_nixos-build";
+          };
+        };
       };
 
   programs = {
     tmux.enable = true;
-    neovim.enable = true;
+    neovim-flake = {
+      enable = true;
+      settings = {
+        vim = {
+          viAlias = true;
+          vimAlias = true;
+          theme = {
+            enable = true;
+            name = "onedark";
+            extraConfig = ''vim.o.background = "dark" '';
+            };
+          mapLeaderSpace = true;
+          luaConfigRC.global = /* lua */ ''
+            vim.cmd("set expandtab")
+            vim.cmd("set tabstop=2")
+            vim.cmd("set softtabstop=2")
+            vim.cmd("set shiftwidth=2")
+            '';
+          lsp = {
+            enable = true; 
+          };
+          filetree.nvimTree = {
+            enable = true;
+            mappings.toggle = "<leader>fe";
+            openOnSetup = false;
+            actions.openFile.quitOnOpen = true;
+
+            };
+          };
+        };
+      };
     home-manager.enable = true;
     bash.enable = true;
     };

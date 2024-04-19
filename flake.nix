@@ -19,6 +19,10 @@
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     flake-utils.url = "github:numtide/flake-utils";
+    neovim-flake = { 
+      url = "github:notashelf/neovim-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+      };
     };
 
   outputs = {
@@ -28,6 +32,7 @@
     nixos-hardware,
     raspberry-pi-nix,
     sops-nix,
+    neovim-flake,
     ... } @ inputs: let
       inherit (self) outputs;
       lib = nixpkgs.lib // home-manager.lib;
@@ -40,10 +45,13 @@
         import nixpkgs { inherit system; config.allowUnfree = true; });
     in {
       inherit lib;
-      packages = forEachSystem (pkgs: import ./pkgs { inherit pkgs; });
+      packages = forEachSystem (pkgs: import ./pkgs { 
+         inherit pkgs; 
+         });
       overlays = import ./overlays {inherit inputs outputs; };
       nixosModules = import ./modules/nixos;  
       homeManagerModules = import ./modules/home-manager;
+
 
       devShells = forEachSystem (pkgs: {
         default = pkgs.mkShell {
@@ -76,12 +84,14 @@
 
     homeConfigurations = {
       "neil@yellow" = lib.homeManagerConfiguration {
-        modules = [ ./home/neil/yellow.nix ];
+        modules = [
+                    ./home/neil/yellow.nix ];
         pkgs = pkgsFor.aarch64-linux;
 	extraSpecialArgs = { inherit inputs outputs; };
       };
       "neil@pi400" = lib.homeManagerConfiguration {
-        modules = [ ./home/neil/pi400.nix ];
+        modules = [
+                    ./home/neil/pi400.nix ];
         pkgs = pkgsFor.aarch64-linux;
 	extraSpecialArgs = { inherit inputs outputs; };
       };

@@ -30,6 +30,7 @@
       }
 
     wk.register({
+      ["<leader>f"] = { name = "file" },
       ["<leader>fe"] = { "<cmd>NvimTreeToggle<cr>", "Files" },
       })
     '';
