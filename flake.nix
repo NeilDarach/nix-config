@@ -86,13 +86,13 @@
       "neil@yellow" = lib.homeManagerConfiguration {
         modules = [
                     ./home/neil/yellow.nix ];
-        pkgs = pkgsFor;
+        pkgs = pkgsFor.aarch64-linux;
 	      extraSpecialArgs = { inherit inputs outputs; };
         };
       "neil@pi400" = lib.homeManagerConfiguration {
         modules = [
                     ./home/neil/pi400.nix ];
-        pkgs = pkgsFor;
+        pkgs = pkgsFor.aarch64-linux;
 	      extraSpecialArgs = { inherit inputs outputs; };
         };
       "guest@pi400" = lib.homeManagerConfiguration {
