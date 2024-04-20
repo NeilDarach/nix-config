@@ -27,7 +27,7 @@
       enable = true;
       filter = "*rpi-4-*.dtb";
       };
-    bluetooth.enable = false;
+    bluetooth.enable = true;
     raspberry-pi = {
       config = {
         all = {
