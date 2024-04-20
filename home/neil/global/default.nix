@@ -40,6 +40,7 @@
     stateVersion = lib.mkDefault "23.11";
     sessionPath = [ "$HOME/.local/bin" ];
     sessionVariables = {
+      EDITOR = "nvim";
       FLAKE = "$HOME/Documents/NixConfig";
       };
     packages = builtins.attrValues {
