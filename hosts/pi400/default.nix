@@ -15,6 +15,8 @@
     useDHCP = true;
   };
 
+  localServices.homeassistant.enable = true;
+
   console.enable = true;
   system.stateVersion = "23.11";
 }
