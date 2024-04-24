@@ -5,11 +5,17 @@
   ...
 }: let
   inherit (lib) mkIf;
-  enabled = config.localServices.homeassistant.enable;
   baseDir = "/services/homeassistant";
-  pool = config.networking.hostName;
+  inherit (config.localServices.homeassistant) pool enable;
 in {
-  config = mkIf enabled {
+  options = {
+    localServices.homeassistant.pool = lib.mkOption {
+      default = config.networking.hostName;
+      type = lib.types.str;
+    };
+  };
+
+  config = mkIf enable {
     networking.firewall.allowedTCPPorts = [8123];
     virtualisation = {
       oci-containers = {
