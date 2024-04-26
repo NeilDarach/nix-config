@@ -17,6 +17,24 @@ in {
 
   config = mkIf enable {
     networking.firewall.allowedTCPPorts = [8123];
+    users.groups = {
+      homeassistant = {
+        gid = 8123;
+      };
+    };
+    users.users.homeassistant = {
+      uid = 8123;
+      group = "homeassistant";
+      extraGroups = ["systemd-journal"];
+      createHome = false;
+      home = "/services/homeassistant";
+      isNormalUser = true;
+      shell = pkgs.bash;
+      openssh.authorizedKeys.keys = [
+        (builtins.readFile ../../../../home/neil/id_ed25519.pub)
+      ];
+      hashedPassword = "!";
+    };
     virtualisation = {
       oci-containers = {
         backend = "podman";
