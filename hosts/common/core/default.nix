@@ -29,9 +29,6 @@
   users.groups = {
     bluetooth = {};
   };
-  services.udev.extraRules = ''
-    KERNEL=="rfkill", SUBSYSTEM=="misc", GROUP="bluetooth", MODE="0664"
-  '';
   home-manager.extraSpecialArgs = {
     inherit inputs outputs;
   };
