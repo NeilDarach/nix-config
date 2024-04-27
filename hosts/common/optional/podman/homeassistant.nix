@@ -7,37 +7,14 @@
   inherit (lib) mkIf;
   baseDir = "/services/homeassistant";
   inherit (config.localServices.homeassistant) pool enable;
-  tribut =
-    pkgs.fetchFromGitHub
-    {
-      owner = "tribut";
-      repo = "homeassistant-docker-venv";
-      rev = "52cbfdc494676c91d2575755559dfd38fd5d88cc";
-      hash = "sha256-j+TsxbJNQQsNEtwfJfWsZBVB2RRSotGjyizZ0qdSNjA=";
-    };
-  habase = pkgs.dockerTools.buildImage {
-    name = "homeassistant";
-    tag = "latest";
-    fromImage = pkgs.dockerTools.pullImage {
-      imageName = "homeassistant/home-assistant";
-      imageDigest = "sha256:73b70d36610466a46f1ae3b890bc43f06b48a1ac98b4f28c5d52cf424e476cd5";
-      sha256 = "08inhwjanb8cjqxpp0yrzfs79wbkv8q451f2j4dpd1n00mdma0jp";
-      finalImageName = "homeassistant/home-assistant";
-      finalImageTag = "stable";
-    };
-    copyToRoot = pkgs.buildEnv {
-      name = "rootless";
-      paths = [tribut];
-      extraPrefix = "/etc/services.d/home-assistant";
-    };
-    config = {
-      Cmd = ["/init"];
-      WorkingDir = "/config";
-      Volumes = {
-        "/config" = {};
-        "/run/dbus" = {};
-      };
-    };
+  img = pkgs.dockerTools.pullImage {
+    # nix-prefetch-docker  --os linux --arch arm64 --image-name linuxserver/homeassistant --image-tag 2024.4.4
+
+    imageName = "linuxserver/homeassistant";
+    imageDigest = "sha256:ac7117fced74c60b5449301c3eb419a9d00fb776da6b60efd6a91a182b561356";
+    sha256 = "0kmf2fqwll8mgmx3i4lkjd28qq50i0mwszr0ivqwdmfdpw2i8wq7";
+    finalImageName = "linuxserver/homeassistant";
+    finalImageTag = "2024.4.4";
   };
 in {
   options = {
@@ -72,8 +49,8 @@ in {
         backend = "podman";
         containers = {
           homeassistant = {
-            image = "homeassistant:latest";
-            imageFile = habase;
+            image = "linuxserver/homeassistant:2024.4.4";
+            imageFile = img;
             environment = {
               "TZ" = "Europe/London";
               "PUID" = "8123";
@@ -86,7 +63,8 @@ in {
             extraOptions = [
               "--name=homeassistant"
               "--network=host"
-              "--privileged"
+              "--cap-add=NET_ADMIN"
+              "--cap-add=NET_RAW"
             ];
             autoStart = true;
           };
