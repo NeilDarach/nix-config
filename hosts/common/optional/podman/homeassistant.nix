@@ -7,6 +7,38 @@
   inherit (lib) mkIf;
   baseDir = "/services/homeassistant";
   inherit (config.localServices.homeassistant) pool enable;
+  tribut =
+    pkgs.fetchFromGitHub
+    {
+      owner = "tribut";
+      repo = "homeassistant-docker-venv";
+      rev = "52cbfdc494676c91d2575755559dfd38fd5d88cc";
+      hash = "sha256-j+TsxbJNQQsNEtwfJfWsZBVB2RRSotGjyizZ0qdSNjA=";
+    };
+  habase = pkgs.dockerTools.buildImage {
+    name = "homeassistant";
+    tag = "latest";
+    fromImage = pkgs.dockerTools.pullImage {
+      imageName = "homeassistant/home-assistant";
+      imageDigest = "sha256:73b70d36610466a46f1ae3b890bc43f06b48a1ac98b4f28c5d52cf424e476cd5";
+      sha256 = "08inhwjanb8cjqxpp0yrzfs79wbkv8q451f2j4dpd1n00mdma0jp";
+      finalImageName = "homeassistant/home-assistant";
+      finalImageTag = "stable";
+    };
+    copyToRoot = pkgs.buildEnv {
+      name = "rootless";
+      paths = [tribut];
+      extraPrefix = "/etc/services.d/home-assistant";
+    };
+    config = {
+      Cmd = ["/init"];
+      WorkingDir = "/config";
+      Volumes = {
+        "/config" = {};
+        "/run/dbus" = {};
+      };
+    };
+  };
 in {
   options = {
     localServices.homeassistant.pool = lib.mkOption {
@@ -40,9 +72,12 @@ in {
         backend = "podman";
         containers = {
           homeassistant = {
-            image = "homeassistant/home-assistant:stable";
+            image = "homeassistant:latest";
+            imageFile = habase;
             environment = {
               "TZ" = "Europe/London";
+              "PUID" = "8123";
+              "PGID" = "8123";
             };
             volumes = [
               "${baseDir}:/config"
