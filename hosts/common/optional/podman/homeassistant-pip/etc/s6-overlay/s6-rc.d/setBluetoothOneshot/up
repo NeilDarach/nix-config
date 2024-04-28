@@ -1,0 +1,2 @@
+foreground { echo 'Setting up bluetooth' }
+foreground { /usr/local/bin/setBluetoothCapabilities.sh }
