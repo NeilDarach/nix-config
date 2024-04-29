@@ -17,13 +17,56 @@
     finalImageTag = "2024.4.4";
   };
 
+  ha-overlay = pkgs.stdenv.mkDerivation {
+    name = "ha-overlay";
+    version = "1.0";
+    phases = ["installPhase"];
+    installPhase = ''
+      mkdir -p $out/pkgs
+      for src in $srcs ; do
+        cp ''$src $out/pkgs/''${src#*-}
+      done
+      mkdir -p $out/etc/s6-overlay/s6-rc.d/{setBluetoothOneshot,svc-homeassistant/dependencies.d,user/contents.d}
+      echo "oneshot" > $out/etc/s6-overlay/s6-rc.d/setBluetoothOneshot/type
+      echo "/usr/local/bin/setBluetoothCapabilities.sh" > $out/etc/s6-overlay/s6-rc.d/setBluetoothOneshot/up
+      touch $out/etc/s6-overlay/s6-rc.d/user/contents.d/setBluetoothOneshot
+      touch $out/etc/s6-overlay/s6-rc.d/svc-homeassistant/dependencies.d/setBluetoothOneshot
+      echo "#!/usr/bin/with-contenv bash" >> $out/etc/s6-overlay/s6-rc.d/svc-homeassistant/run
+      echo "# shellcheck shell=bash" >> $out/etc/s6-overlay/s6-rc.d/svc-homeassistant/run
+      echo "setcap 'cap_net_bind_service,cap_net_raw,cap_net_admin+eip' /usr/local/bin/python3.12" >> $out/etc/s6-overlay/s6-rc.d/svc-homeassistant/run
+      echo 'if [[ -z "''${DISABLE_JEMALLOC+x}" ]]; then' >> $out/etc/s6-overlay/s6-rc.d/svc-homeassistant/run
+      echo "  export LD_PRELOAD=\"/usr/local/lib/libjemalloc.so.2\"" >> $out/etc/s6-overlay/s6-rc.d/svc-homeassistant/run
+      echo "  export MALLOC_CONF=\"background_thread:true,metadata_thp:auto,dirty_decay_ms:20000,muzzy_decay_ms:20000\"" >> $out/etc/s6-overlay/s6-rc.d/svc-homeassistant/run
+      echo "fi" >> $out/etc/s6-overlay/s6-rc.d/svc-homeassistant/run
+      echo "exec \\" >> $out/etc/s6-overlay/s6-rc.d/svc-homeassistant/run
+      echo "    s6-notifyoncheck -d -n 60 -w 5000 -c \"nc -z localhost 8123\" \\" >> $out/etc/s6-overlay/s6-rc.d/svc-homeassistant/run
+      echo "    s6-setuidgid abc python3 -m homeassistant -c /config" >> $out/etc/s6-overlay/s6-rc.d/svc-homeassistant/run
+      mkdir -p $out/usr/local/bin
+      echo "#!/bin/bash" >> $out/usr/local/bin/setBluetoothCapabilities.sh
+      echo "pip install --no-index --find-links file:///pkgs aioblescan janus" >> $out/usr/local/bin/setBluetoothCapabilities.sh
+      chmod +x $out/usr/local/bin/setBluetoothCapabilities.sh
+    '';
+    srcs = [
+      (pkgs.fetchurl
+        {
+          url = "https://files.pythonhosted.org/packages/2a/4c/b8e1a16c5baf299b540dd4a21c1b804651d9d7a1b2f459557d94f16c2baa/aioblescan-0.2.14-py3-none-any.whl";
+          hash = "sha256-HjiXe8IH9lisHiHbIaWOlBup2mw2KoifQRPYDhz4b70=";
+        })
+      (pkgs.fetchurl
+        {
+          url = "https://files.pythonhosted.org/packages/c1/84/7bfe436fa6a4943eecb17c2cca9c84215299684575376d664ea6bf294439/janus-1.0.0-py3-none-any.whl";
+          hash = "sha256-JZbqVIJxHB7j7y32wpCq83ChPFWgB4Juj3wy1pbR0Ao=";
+        })
+    ];
+  };
+
   ha = pkgs.dockerTools.buildImage {
     name = "local/homeassistant";
     tag = "local";
     fromImage = img;
     copyToRoot = pkgs.buildEnv {
       name = "homeassistant-pips";
-      paths = [./homeassistant-pip];
+      paths = [ha-overlay];
     };
     #    runAsRoot = ''
     #!/bin/bash
