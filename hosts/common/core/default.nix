@@ -7,6 +7,7 @@
   imports =
     [
       inputs.home-manager.nixosModules.home-manager
+      inputs.fps.nixosModules.programs-sqlite
       ./fish.nix
       ./sops.nix
       ./distributed-build.nix

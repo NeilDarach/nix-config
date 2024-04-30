@@ -25,6 +25,10 @@
       url = "github:notashelf/neovim-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    fps = {
+      url = "github:wamserma/flake-programs-sqlite";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -35,6 +39,7 @@
     raspberry-pi-nix,
     sops-nix,
     neovim-flake,
+    fps,
     ...
   } @ inputs: let
     inherit (self) outputs;

@@ -503,6 +503,27 @@
         "type": "github"
       }
     },
+    "fps": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "utils": "utils"
+      },
+      "locked": {
+        "lastModified": 1714475708,
+        "narHash": "sha256-CmR9/VUt8lj45BR0SfWc1WifIvbhav1qeWe4rMO6joY=",
+        "owner": "wamserma",
+        "repo": "flake-programs-sqlite",
+        "rev": "d78e73b04155cfa76f40410c4d2a5dc818a495d6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "wamserma",
+        "repo": "flake-programs-sqlite",
+        "type": "github"
+      }
+    },
     "gesture-nvim": {
       "flake": false,
       "locked": {
@@ -1768,7 +1789,7 @@
       "inputs": {
         "naersk": "naersk",
         "nixpkgs": "nixpkgs",
-        "utils": "utils"
+        "utils": "utils_2"
       },
       "locked": {
         "lastModified": 1669555118,
@@ -1787,6 +1808,7 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
+        "fps": "fps",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
         "neovim-flake": "neovim-flake",
@@ -2125,7 +2147,7 @@
         "nixpkgs": "nixpkgs_2",
         "superdirt-src": "superdirt-src",
         "tidal-src": "tidal-src",
-        "utils": "utils_2",
+        "utils": "utils_3",
         "vim-tidal-src": "vim-tidal-src",
         "vowel-src": "vowel-src"
       },
@@ -2222,6 +2244,21 @@
     },
     "utils": {
       "locked": {
+        "lastModified": 1678901627,
+        "narHash": "sha256-U02riOqrKKzwjsxc/400XnElV+UtPUQWpANPlyazjH0=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "93a2b84fc4b70d9e089d029deacc3583435c2ed6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "utils_2": {
+      "locked": {
         "lastModified": 1656928814,
         "narHash": "sha256-RIFfgBuKz6Hp89yRr7+NR5tzIAbn52h8vT6vXkYjZoM=",
         "owner": "numtide",
@@ -2235,7 +2272,7 @@
         "type": "github"
       }
     },
-    "utils_2": {
+    "utils_3": {
       "inputs": {
         "systems": "systems_4"
       },
