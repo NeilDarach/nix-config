@@ -113,7 +113,7 @@
             console.enable = true;
             sdImage = {
               compressImage = false;
-              expandOnBoot = false;
+              expandOnBoot = true;
               firmwareSize = 500;
               populateRootCommands = ''
                  mkdir -p ./files/boot
@@ -129,10 +129,15 @@
 
             services.openssh = {
               enable = true;
-              knownHosts.nixos-build.hostNames = ["nixos-build.darach.org.uk"];
-              knownHosts.nixos-build.publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ9qKrfo5/UkLCIU9kYNvzHkfVPpajZtvie7FHqMain1";
+              knownHosts = {
+                nixos-build.hostNames = ["nixos-build.darach.org.uk"];
+                nixos-build.publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ9qKrfo5/UkLCIU9kYNvzHkfVPpajZtvie7FHqMain1";
+                github.hostNames = ["github.com"];
+                github.publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
+              };
             };
 
+            nix.settings.experimental-features = ["nix-command" "flakes" "repl-flake"];
             nix.distributedBuilds = true;
             nix.buildMachines = [
               {

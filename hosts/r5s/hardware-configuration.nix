@@ -10,11 +10,6 @@
     ../common/optional/ephemeral-zfs.nix
   ];
 
-  fileSystems."/boot" = lib.mkForce {
-    device = lib.mkForce "/dev/disk/by-id/mmc-AJTD4R_0xd9bdb60e-part1";
-    fsType = "ext4";
-  };
-
   boot = {
     #zfs.devNodes = "/dev/disk/by-id/nvme-KINGSTON_SNV2S250G_50026B7785183EEF";
     initrd.availableKernelModules = [
