@@ -11,41 +11,44 @@ keys:
 creation_rules:
   - path_regex: hosts/pi400/secrets.(ya?ml|json)$
     key_groups:
-    - age:
-      - *recovery_key
-      - *pi400
-      - *neil
+      - age:
+          - *recovery_key
+          - *pi400
+          - *neil
   - path_regex: hosts/yellow/secrets.(ya?ml|json)$
     key_groups:
-    - age:
-      - *recovery_key
-      - *yellow
-      - *neil
+      - age:
+          - *recovery_key
+          - *yellow
+          - *neil
   - path_regex: hosts/r5s/secrets.(ya?ml|json)$
     key_groups:
-    - age:
-      - *recovery_key
-      - *r5s
-      - *neil
+      - age:
+          - *recovery_key
+          - *r5s
+          - *neil
   - path_regex: hosts/common/secrets.(ya?ml|json)$
     key_groups:
-    - age:
-      - *recovery_key
-      - *pi400
-      - *yellow
-      - *neil
+      - age:
+          - *recovery_key
+          - *pi400
+          - *r5s
+          - *yellow
+          - *neil
   - path_regex: home/neil/secrets.(ya?ml|json)$
     key_groups:
-    - age:
-      - *recovery_key
-      - *pi400
-      - *yellow
-      - *neil
+      - age:
+          - *recovery_key
+          - *pi400
+          - *yellow
+          - *r5s
+          - *neil
   - path_regex: home/guest/secrets.(ya?ml|json)$
     key_groups:
-    - age:
-      - *recovery_key
-      - *pi400
-      - *neil
-      - *yellow
-      - *guest
+      - age:
+          - *recovery_key
+          - *pi400
+          - *neil
+          - *r5s
+          - *yellow
+          - *guest
