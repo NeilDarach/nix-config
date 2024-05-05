@@ -24,6 +24,8 @@
       (pkgs)
       just
       wget
+      vim
+      git
       ;
   };
 
