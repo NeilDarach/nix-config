@@ -60,17 +60,15 @@
 
       generic-extlinux-compatible = {
         enable = true;
-        useGenerationDeviceTree = true;
-      };
+        };
     };
     supportedFilesystems = ["vfat" "zfs" "ext4" "f2fs" "exfat"];
   };
 
   hardware = {
     deviceTree = {
-      #name = "../../rk3568-nanopi-r5s.dtb";
-      filter = "*nanopi-r5s*";
-    };
+      name = "rockchip/rk3568-nanopi-r5s.dtb";
+          };
   };
 
   nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
