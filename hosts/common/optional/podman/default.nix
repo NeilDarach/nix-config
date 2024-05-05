@@ -18,6 +18,9 @@ in {
     virtualisation = {
       containers = {
         enable = true;
+        containersConf.settings.containers = {
+          log_size_max = 10485760;
+        };
         storage = {
           settings = {
             storage = {
