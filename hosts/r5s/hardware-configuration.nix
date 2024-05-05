@@ -41,6 +41,13 @@
       "dw_hdmi_i2s_audio"
       "dw_mipi_dsi"
     ];
+    kernelPatches = [
+      {
+        name = "rockchip-r5s";
+        patch = ./rk3568-nanopi-r5s.patch;
+      }
+    ];
+
     kernelParams = [
       "console=tty1"
       "console=ttyS2,1500000"
@@ -61,7 +68,8 @@
 
   hardware = {
     deviceTree = {
-      name = "../../rk3568-nanopi-r5s.dtb";
+      #name = "../../rk3568-nanopi-r5s.dtb";
+      filter = "*nanopi-r5s*";
     };
   };
 
