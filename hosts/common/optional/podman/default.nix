@@ -9,9 +9,14 @@
 in {
   imports = [
     ./homeassistant.nix
+    ./catcam.nix
   ];
   options.localServices.homeassistant = {
     enable = mkEnableOption "Enable homeassistant on this host";
+  };
+
+  options.localServices.catcam = {
+    enable = mkEnableOption "Enable Frigate to monitor catcam on this host";
   };
 
   config = mkIf cfg.homeassistant.enable {

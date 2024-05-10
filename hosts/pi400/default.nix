@@ -15,7 +15,10 @@
     useDHCP = true;
   };
 
-  localServices.homeassistant.enable = true;
+  localServices = {
+    homeassistant.enable = true;
+    catcam.enable = true;
+  };
 
   console.enable = true;
   system.stateVersion = "23.11";
