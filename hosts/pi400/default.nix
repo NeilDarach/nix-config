@@ -17,7 +17,6 @@
 
   localServices = {
     homeassistant.enable = true;
-    catcam.enable = true;
   };
 
   console.enable = true;

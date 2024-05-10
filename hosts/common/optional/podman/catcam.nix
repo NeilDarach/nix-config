@@ -50,7 +50,7 @@ in {
         containers = {
           catcam = {
             imageFile = img;
-            image = "ghcr.io/blakeblackshear/frigate";
+            image = "ghcr.io/blakeblackshear/frigate:stable";
             environment = {
               FRIGATE_RTSP_PASSWORD = "password";
             };
