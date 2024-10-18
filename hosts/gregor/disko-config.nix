@@ -3,7 +3,7 @@
     disk = {
       main = {
         type = "disk";
-        device = "/dev/sdx";
+        device = "/dev/disk/by-id/ata-KINGSTON_SV300S37A240G_50026B7762013410";
         content = {
           type = "gpt";
           partitions = {
@@ -37,7 +37,6 @@
         rootFsOptions = {
           canmount = "off";
           acltype = "posix";
-          listsnapshots = "on";
           atime = "off";
           relatime = "on";
           recordsize = "64k";
@@ -45,39 +44,38 @@
           xattr = "sa";
           normalization = "formD";
           secondarycache = "none";
-          ashift = "12";
           "com.sun:auto-snapshot" = "false";
         };
 
         datasets = {
-          local = {
+          weak = {
             type = "zfs_fs";
             options."com.sun:auto-snapshot" = "false";
             options.mountpoint = "none";
           };
-          "local/root" = {
+          "weak/root" = {
             type = "zfs_fs";
             mountpoint = "/";
             options.mountpoint = "legacy";
             postCreateHook =
-              "zfs list -t snapshot -H -o name | grep -E '^local/root@blank$' || zfs snapshot local/root@blank";
+              "zfs list -t snapshot -H -o name | grep -E '^weak/root@blank$' || zfs snapshot zroot/weak/root@blank";
           };
-          "local/nix" = {
+          "weak/nix" = {
             type = "zfs_fs";
             mountpoint = "/nix";
             options.mountpoint = "legacy";
           };
-          stored = {
+          strong = {
             type = "zfs_fs";
             options."com.sun:auto-snapshot" = "true";
             options.mountpoint = "none";
           };
-          "stored/persist" = {
+          "strong/persist" = {
             type = "zfs_fs";
             mountpoint = "/persist";
             options.mountpoint = "legacy";
           };
-          "stored/home" = {
+          "strong/home" = {
             type = "zfs_fs";
             mountpoint = "/home";
             options.mountpoint = "legacy";
