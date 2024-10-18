@@ -26,6 +26,12 @@
         networkmanager.enable = true;
     };
 
+    fileSystems."/home" = {
+        device = "silent/home";
+        fsType = "zfs";
+        neededForBoot = true;
+    };
+
     environment =  {
         shellAliases.nr = "sudo rm -rf /tmp/system && sudo git clone --branch gregor https://github.com/NeilDarach/nix-config /tmp/system && sudo nixos-rebuild switch --flake /tmp/system/.#gregor";
     };
