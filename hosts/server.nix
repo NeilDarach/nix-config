@@ -24,7 +24,7 @@
   boot.loader = {
     systemd-boot.enable = true;
     efi.canTouchEfiVariables = true;
-    efi.efiSystemMountPoint = "/boot";
+    efi.efiSysMountPoint = "/boot";
     timeout = 3;
   };
 
@@ -46,6 +46,12 @@
 
   users.defaultUserShell = pkgs.fish;
   users.users = {
+    root = {
+      hashedPasswordFile = config.sops.secrets.root_password_hashed.path;
+      openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIJ0nGtONOY4QnJs/xj+N4rKf4pCWfl25BOfc8hEczUg neil.darach@gmail.com"
+      ];
+      };
     ${user} = {
       hashedPasswordFile = config.sops.secrets.user_password_hashed.path;
       isNormalUser = true;
@@ -59,6 +65,7 @@
   };
 
   programs.htop.enable = true;
+  programs.fish.enable = true;
   environment = {
     defaultPackages = [ ];
     systemPackages = with pkgs; [
@@ -86,7 +93,7 @@
       PermitRootLogin = "prohibit-password";
       PasswordAuthentication = false;
       StreamLocalBindUnlink = "yes";
-      GatwayPorts = "clientspecified";
+      GatewayPorts = "clientspecified";
     };
   };
 
