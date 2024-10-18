@@ -2,17 +2,19 @@
   imports = [
     ./hardware-configuration.nix
     ./disko-config.nix
-    ../server.nix 
+    ../server.nix
     ../../home
   ];
   sops.age.keyFile = "/persist/var/lib/sops-nix/key.txt";
   sops.defaultSopsFormat = "yaml";
-  sops.secrets.user_password_hashed.neededForUsers = true;
-  sops.secrets.root_password_hashed.neededForUsers = true;
   sops.defaultSopsFile = ../../secrets/secrets.yaml;
 
-  sops.secrets."sshd_hostkey_gregor_rsa" = { };
-  sops.secrets."sshd_hostkey_gregor_ed25519" = { };
+  sops.secrets = {
+    "sshd_hostkey_gregor_rsa" = { };
+    "sshd_hostkey_gregor_ed25519" = { };
+    "user_password_hashed" = { neededForUsers = true; };
+    "root_password_hashed" = { neededForUsers = true; };
+  };
 
   networking = {
     hostName = "gregor";
