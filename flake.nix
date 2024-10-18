@@ -19,10 +19,11 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixNvim.url = "github:NeilDarach/nixNvim";
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, disko, sops-nix
-    , hardware, impermanence, ... }@inputs:
+    , hardware, impermanence, nixNvim, ... }@inputs:
     let
       user = "neil";
       inherit (self) outputs;
