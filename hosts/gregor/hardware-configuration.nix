@@ -4,26 +4,18 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  imports =
-    [ (modulesPath + "/installer/scan/not-detected.nix")
-    ];
+  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ata_piix" "usbhid" "usb_storage" "uas" "sd_mod" ];
+  boot.initrd.availableKernelModules =
+    [ "xhci_pci" "ehci_pci" "ata_piix" "usbhid" "usb_storage" "uas" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
+  boot.initrd.systemd.enable = lib.mkDefault true;
   boot.initrd.systemd.services.rollback = {
     description = "Rollback the root filesystem to a pristine state on boot";
-    wantedBy = [
-      "initrd.target"
-    ];
-    after = [
-      "zfs-import-zroot.service"
-    ];
-    before = [ 
-      "sysroot.mount" 
-    ];
-    path = with pkgs; [
-      zfs
-    ];
+    wantedBy = [ "initrd.target" ];
+    after = [ "zfs-import-zroot.service" ];
+    before = [ "sysroot.mount" ];
+    path = with pkgs; [ zfs ];
     unitConfig.DefaultDependencies = "no";
     serviceConfig.Type = "oneshot";
     script = ''
@@ -38,9 +30,6 @@
     autoScrub.pools = [ "zroot" ];
     trim.enable = true;
   };
-
-
- 
 
   boot.kernelModules = [ "kvm-intel" ];
   boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
@@ -57,5 +46,6 @@
   # networking.interfaces.enp4s0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.cpu.intel.updateMicrocode =
+    lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

@@ -1,5 +1,5 @@
 # default server settings
-{ inputs, outputs, lib, config, pkgs, user, ... }: {
+{ inputs, outputs, lib, config, pkgs, user,  ... }: {
   imports = [ ];
   nixpkgs = {
     overlays = [ ];
@@ -51,7 +51,7 @@
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIJ0nGtONOY4QnJs/xj+N4rKf4pCWfl25BOfc8hEczUg neil.darach@gmail.com"
       ];
-      };
+    };
     ${user} = {
       hashedPasswordFile = config.sops.secrets.user_password_hashed.path;
       isNormalUser = true;
@@ -95,6 +95,16 @@
       StreamLocalBindUnlink = "yes";
       GatewayPorts = "clientspecified";
     };
+    hostKeys = [
+      {
+        path = "/run/secrets/sshd_hostkey_gregor_rsa";
+        type = "rsa";
+      }
+      {
+        path = "/run/secrets/sshd_hostkey_gregor_ed25519";
+        type = "ed25519";
+      }
+    ];
   };
 
   system = {
