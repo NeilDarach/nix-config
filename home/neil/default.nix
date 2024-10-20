@@ -15,6 +15,7 @@
         EDITOR = "vim";
       };
       home.packages = with pkgs; [
+        bat
         ripgrep
         direnv
         fd
