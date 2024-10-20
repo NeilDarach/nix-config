@@ -4,7 +4,7 @@
     ./disko-config.nix
     ./impermanence.nix
     ../server.nix
-    ../../home
+    ../../home/neil
   ];
   sops.age.keyFile = "/persist/var/lib/sops-nix/key.txt";
   sops.defaultSopsFormat = "yaml";
