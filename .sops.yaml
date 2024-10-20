@@ -1,5 +1,5 @@
 keys:
-  - &gregor age19jzcaspvpg3k8ay27ncx88wp6a3hn0perxc8q2cqfxela9nhgstsklmp82
+  - &gregor age1p2t907nsf35h03pxtjn63suv4lhfvqqg45jyzj8f5r6ekk5sjcnqlr589z
   - &neil age1ynrxqlq47e9ctd5d4gv59rvlp7j78gy6yctg30d4wvpv6wl4nc8svjjaht
 creation_rules:
   - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
