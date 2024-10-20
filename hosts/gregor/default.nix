@@ -45,4 +45,25 @@
     user = "plex";
     group = "plex";
   };
+
+    services.transmission = {
+        enable = true;
+        package = pkgs.transmission_4;
+        user = "transmission";
+        group = "transmission";
+        openFirewall = true;
+        openPeerPorts = true;
+        openRPCPort = true;
+        downloadDirPermissions = "770";
+        home = "/var/lib/transmission";
+        settings = {
+            download-queue-enabled = true;
+            download-queue-size = 5;
+            encryption = 1;
+            rpc-authentication-required = false;
+            rpc-bind-address = "0.0.0.0";
+            rpc-host-whitelist-enabled = false;
+            rpc-whitelist-enabled = false;
+        };
+    };
 }
