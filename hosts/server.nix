@@ -44,6 +44,9 @@
     };
   };
 
+    security.sudo.extraConfig = ''
+        Defaults lecture = never
+    '';
   users.defaultUserShell = pkgs.fish;
   users.users = {
     root = {
@@ -59,7 +62,7 @@
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIJ0nGtONOY4QnJs/xj+N4rKf4pCWfl25BOfc8hEczUg neil.darach@gmail.com"
       ];
-      extraGroups = [ "wheel" "docker" ];
+      extraGroups = [ "wheel" "docker" "transmission" "plex" ];
       packages = with pkgs; [ neovim docker ];
     };
   };

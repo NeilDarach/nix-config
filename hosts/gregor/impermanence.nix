@@ -8,6 +8,7 @@
       "/var/lib/bluetooth"
       "/var/lib/plex"
       "/var/lib/nixos"
+      "/var/lib/transmission"
     ];
 
     files = [ "/etc/machine-id" ];
