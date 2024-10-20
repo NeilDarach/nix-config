@@ -52,7 +52,7 @@
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIJ0nGtONOY4QnJs/xj+N4rKf4pCWfl25BOfc8hEczUg neil.darach@gmail.com"
       ];
     };
-    ${user} = {
+    ${user.userId} = {
       hashedPasswordFile = config.sops.secrets.user_password_hashed.path;
       isNormalUser = true;
       shell = pkgs.fish;
@@ -60,7 +60,7 @@
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIJ0nGtONOY4QnJs/xj+N4rKf4pCWfl25BOfc8hEczUg neil.darach@gmail.com"
       ];
       extraGroups = [ "wheel" "docker" ];
-      packages = with pkgs; [ docker ];
+      packages = with pkgs; [ neovim docker ];
     };
   };
 
@@ -106,7 +106,7 @@
       }
     ];
   };
-
+ 
   system = {
     stateVersion = "24.05";
     autoUpgrade.enable = true;

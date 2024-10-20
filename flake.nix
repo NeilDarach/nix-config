@@ -25,7 +25,11 @@
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, disko, sops-nix
     , hardware, impermanence, nixNvim, ... }@inputs:
     let
-      user = "neil";
+      neil = {
+        userId = "neil";
+        email = "neil.darach@gmail.com";
+        name = "Neil Darach";
+      };
       inherit (self) outputs;
       #systems = [ "aarch64-linux" "i686-linux" "x86_64-linux" "aarch64-darwin" ];
       #forAllSystems = nixpkgs.lib.genAttrs systems;
@@ -34,7 +38,7 @@
 
       nixosConfigurations = {
         gregor = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit user inputs outputs; };
+          specialArgs = { inherit inputs outputs; user = neil; };
           modules = [
             ./hosts/gregor
             disko.nixosModules.disko
@@ -46,7 +50,7 @@
                 useGlobalPkgs = true;
                 useUserPackages = true;
                 extraSpecialArgs = { inherit inputs; };
-                users.${user}.imports = [ ];
+                users.${neil.userId}.imports = [ ];
               };
             }
           ];
