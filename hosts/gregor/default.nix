@@ -2,6 +2,7 @@
   imports = [
     ./hardware-configuration.nix
     ./disko-config.nix
+    ./impermanence.nix
     ../server.nix
     ../../home
   ];
