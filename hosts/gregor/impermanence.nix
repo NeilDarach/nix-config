@@ -6,6 +6,7 @@
       "/etc/nixos"
       "/etc/NetworkManager"
       "/var/lib/bluetooth"
+      "/var/lib/plex"
       "/var/lib/nixos"
     ];
 

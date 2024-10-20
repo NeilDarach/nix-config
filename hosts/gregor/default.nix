@@ -34,4 +34,12 @@
     shellAliases.nr =
       "sudo rm -rf /tmp/system && sudo git clone --branch gregor https://github.com/NeilDarach/nix-config /tmp/system && sudo nixos-rebuild switch --flake /tmp/system/.#gregor";
   };
+
+  services.plex = {
+    enable = true;
+    dataDir = "/var/lib/plex";
+    openFirewall = true;
+    user = "plex";
+    group = "plex";
+  };
 }
