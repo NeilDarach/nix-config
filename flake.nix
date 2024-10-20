@@ -20,10 +20,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixNvim.url = "github:NeilDarach/nixNvim";
+    msgQ.url = "github:NeilDarach/msg_q";
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, disko, sops-nix
-    , hardware, impermanence, nixNvim, ... }@inputs:
+    , hardware, impermanence, msgQ, nixNvim, ... }@inputs:
     let
       neil = {
         userId = "neil";
