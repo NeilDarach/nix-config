@@ -3,7 +3,7 @@
   options.gitcfg.name = lib.mkOption { type = lib.types.str; };
   config = {
     programs.git = lib.mkIf config.programs.git.enable {
-      ignores = [ "*~" "*.swp" ];
+      ignores = [ "*~" "*.swp" ".direnv" ];
       userEmail = config.gitcfg.email;
       userName = config.gitcfg.name;
     };
