@@ -20,11 +20,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixNvim.url = "github:NeilDarach/nixNvim";
-    msgQ.url = "github:NeilDarach/msg_q";
+    msg_q.url = "github:NeilDarach/msg_q";
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, disko, sops-nix
-    , hardware, impermanence, msgQ, nixNvim, ... }@inputs:
+    , hardware, impermanence, msg_q, nixNvim, ... }@inputs:
     let
       neil = {
         userId = "neil";
@@ -32,20 +32,30 @@
         name = "Neil Darach";
       };
       inherit (self) outputs;
-      #systems = [ "aarch64-linux" "i686-linux" "x86_64-linux" "aarch64-darwin" ];
-      #forAllSystems = nixpkgs.lib.genAttrs systems;
+      systems =
+        [ "aarch64-linux" "i686-linux" "x86_64-linux" "aarch64-darwin" ];
+      forAllSystems = nixpkgs.lib.genAttrs systems;
     in {
       #overlays = import ./overlays { inherit inputs; };
 
       nixosConfigurations = {
         gregor = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs outputs; user = neil; };
+          specialArgs = {
+            inherit inputs outputs;
+            user = neil;
+          };
           modules = [
             ./hosts/gregor
             disko.nixosModules.disko
             sops-nix.nixosModules.sops
             impermanence.nixosModules.impermanence
             home-manager.nixosModules.home-manager
+            msg_q.nixosModules.msg_q
+
+            {
+              nixpkgs.overlays =
+                [ (f: p: { msg_q = msg_q.packages."x86_64-linux".default; }) ];
+            }
             {
               home-manager = {
                 useGlobalPkgs = true;

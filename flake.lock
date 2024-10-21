@@ -293,7 +293,7 @@
     "flake-parts_4": {
       "inputs": {
         "nixpkgs-lib": [
-          "msgQ",
+          "msg_q",
           "nixnvim",
           "lze",
           "neorocks",
@@ -318,7 +318,7 @@
     "flake-parts_5": {
       "inputs": {
         "nixpkgs-lib": [
-          "msgQ",
+          "msg_q",
           "nixnvim",
           "lze",
           "neorocks",
@@ -501,7 +501,7 @@
         "flake-compat": "flake-compat",
         "gitignore": "gitignore",
         "nixpkgs": [
-          "msgQ",
+          "msg_q",
           "nixnvim",
           "lze",
           "gen-luarc",
@@ -549,7 +549,7 @@
         "flake-compat": "flake-compat_5",
         "gitignore": "gitignore_3",
         "nixpkgs": [
-          "msgQ",
+          "msg_q",
           "nixnvim",
           "lze",
           "neorocks",
@@ -557,7 +557,7 @@
           "nixpkgs"
         ],
         "nixpkgs-stable": [
-          "msgQ",
+          "msg_q",
           "nixnvim",
           "lze",
           "neorocks",
@@ -662,7 +662,7 @@
     "gitignore": {
       "inputs": {
         "nixpkgs": [
-          "msgQ",
+          "msg_q",
           "nixnvim",
           "lze",
           "gen-luarc",
@@ -687,7 +687,7 @@
     "gitignore_2": {
       "inputs": {
         "nixpkgs": [
-          "msgQ",
+          "msg_q",
           "nixnvim",
           "lze",
           "neorocks",
@@ -712,7 +712,7 @@
     "gitignore_3": {
       "inputs": {
         "nixpkgs": [
-          "msgQ",
+          "msg_q",
           "nixnvim",
           "lze",
           "neorocks",
@@ -738,7 +738,7 @@
     "gitignore_4": {
       "inputs": {
         "nixpkgs": [
-          "msgQ",
+          "msg_q",
           "nixnvim",
           "lze",
           "pre-commit-hooks",
@@ -874,7 +874,7 @@
       "inputs": {
         "flake-parts": "flake-parts_5",
         "nixpkgs": [
-          "msgQ",
+          "msg_q",
           "nixnvim",
           "lze",
           "neorocks",
@@ -995,7 +995,7 @@
         "gen-luarc": "gen-luarc",
         "neorocks": "neorocks",
         "nixpkgs": [
-          "msgQ",
+          "msg_q",
           "nixnvim",
           "nixpkgs"
         ],
@@ -1040,18 +1040,18 @@
         "type": "github"
       }
     },
-    "msgQ": {
+    "msg_q": {
       "inputs": {
         "nixnvim": "nixnvim",
         "nixpkgs": "nixpkgs_6",
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1729442624,
-        "narHash": "sha256-WwgzgZVyYfECGIDTOKDIeiDibE7JmwytKvohBa5HwIE=",
+        "lastModified": 1729546002,
+        "narHash": "sha256-kdrWJw9gGTe3DC/pO99Nzllm2YvNJJQqF1+FxT5Jlqg=",
         "owner": "NeilDarach",
         "repo": "msg_q",
-        "rev": "e0e02369b9fb88d36fff7335ff49af32957cbe5b",
+        "rev": "46abcc437dbb79cd413a22bf86672084d7d81cdc",
         "type": "github"
       },
       "original": {
@@ -1244,11 +1244,11 @@
         "lze": "lze",
         "nixCats": "nixCats",
         "nixpkgs": [
-          "msgQ",
+          "msg_q",
           "nixpkgs"
         ],
         "rust-overlay": [
-          "msgQ",
+          "msg_q",
           "rust-overlay"
         ]
       },
@@ -1737,7 +1737,7 @@
         "hardware": "hardware",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
-        "msgQ": "msgQ",
+        "msg_q": "msg_q",
         "nixNvim": "nixNvim",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_13",
@@ -1748,7 +1748,7 @@
     "rust-overlay": {
       "inputs": {
         "nixpkgs": [
-          "msgQ",
+          "msg_q",
           "nixpkgs"
         ]
       },
