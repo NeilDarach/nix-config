@@ -1047,11 +1047,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1729546002,
-        "narHash": "sha256-kdrWJw9gGTe3DC/pO99Nzllm2YvNJJQqF1+FxT5Jlqg=",
+        "lastModified": 1729624242,
+        "narHash": "sha256-LenVsBynl0Wd27vvNJQmwTGcjeGw779ozpDlGuWhYfw=",
         "owner": "NeilDarach",
         "repo": "msg_q",
-        "rev": "46abcc437dbb79cd413a22bf86672084d7d81cdc",
+        "rev": "2dc8e33c29c2a60c5043820afc6ea0a2d87f5d44",
         "type": "github"
       },
       "original": {

@@ -21,6 +21,7 @@
     };
     nixNvim.url = "github:NeilDarach/nixNvim";
     msg_q.url = "github:NeilDarach/msg_q";
+    #msg_q.url = "git+file:/home/neil/msg_q";
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, disko, sops-nix
@@ -54,7 +55,7 @@
 
             {
               nixpkgs.overlays =
-                [ (f: p: { msg_q = msg_q.packages."x86_64-linux".default; }) ];
+                [ (f: p: { msg_q = msg_q.packages.${p.system}.default; }) ];
             }
             {
               home-manager = {
