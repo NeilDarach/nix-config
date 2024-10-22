@@ -44,6 +44,7 @@
     };
   };
 
+    security.sudo.wheelNeedsPassword = false;
     security.sudo.extraConfig = ''
         Defaults lecture = never
     '';

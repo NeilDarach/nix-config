@@ -40,6 +40,7 @@
     services.msg_q = {
         enable = true;
         port = 9000;
+        openFirewall = true;
     };
 
   services.plex = {
