@@ -51,7 +51,7 @@
             sops-nix.nixosModules.sops
             impermanence.nixosModules.impermanence
             home-manager.nixosModules.home-manager
-            msg_q.nixosModules.msg_q
+            msg_q.nixosModules."x86_64-linux".msg_q
 
             {
               nixpkgs.overlays =
