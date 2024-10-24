@@ -53,7 +53,7 @@
 
     services.transmission = {
         enable = true;
-        package = pkgs.transmission_4;
+        package = pkgs.transmission;
         user = "transmission";
         group = "transmission";
         openFirewall = true;
