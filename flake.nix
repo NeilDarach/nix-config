@@ -22,10 +22,11 @@
     nixNvim.url = "github:NeilDarach/nix-config/gregor?dir=nixNvim";
     msg_q.url = "github:NeilDarach/msg_q";
     #msg_q.url = "git+file:/home/neil/msg_q";
+    raspberry-pi-nix.url = "github:nix-community/raspberry-pi-nix";
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, disko, sops-nix
-    , hardware, impermanence, msg_q, nixNvim, ... }@inputs:
+    , hardware, impermanence, msg_q, nixNvim, raspberry-pi-nix, ... }@inputs:
     let
       inherit (self) outputs;
       systems =
@@ -50,6 +51,24 @@
       nixosModules = import ./modules/nixos;
       overlays = import ./overlays { inherit inputs outputs; };
       nixosConfigurations = {
+        yellow = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs outputs users; };
+          modules = [
+            ./hosts/yellow
+            disko.nixosModules.disko
+            sops-nix.nixosModules.sops
+            impermanence.nixosModules.impermanence
+            home-manager.nixosModules.home-manager
+            {
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                extraSpecialArgs = { inherit inputs users; };
+                users.neil.imports = [ ];
+              };
+            }
+          ];
+        };
         gregor = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs outputs users; };
           modules = [

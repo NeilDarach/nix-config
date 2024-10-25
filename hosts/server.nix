@@ -45,10 +45,10 @@
     };
   };
 
-    security.sudo.wheelNeedsPassword = false;
-    security.sudo.extraConfig = ''
-        Defaults lecture = never
-    '';
+  security.sudo.wheelNeedsPassword = false;
+  security.sudo.extraConfig = ''
+    Defaults lecture = never
+  '';
   users.defaultUserShell = pkgs.fish;
   users.users = {
     root = {
