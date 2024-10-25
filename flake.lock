@@ -1263,16 +1263,19 @@
         "nixpkgs": "nixpkgs_13"
       },
       "locked": {
-        "lastModified": 1729808617,
-        "narHash": "sha256-Bc+h+MSOrKtyy14OhrWMny+u4hA4ow0IPnsCT+FJjj4=",
+        "dir": "nixNvim",
+        "lastModified": 1729842326,
+        "narHash": "sha256-8kpCF5SWxwXmbDfV67smkawl+NdbfcFUpuVEjgoMhOE=",
         "owner": "NeilDarach",
-        "repo": "nixNvim",
-        "rev": "8fa105d4d95a2dd6ccc15f640439c6f8f99509ae",
+        "repo": "nix-config",
+        "rev": "0fefae39f41534308fe0b31eab96a4306c30a39b",
         "type": "github"
       },
       "original": {
+        "dir": "nixNvim",
         "owner": "NeilDarach",
-        "repo": "nixNvim",
+        "ref": "gregor",
+        "repo": "nix-config",
         "type": "github"
       }
     },
