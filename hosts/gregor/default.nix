@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, outputs, user, ... }: {
+{ config, pkgs, lib, inputs, outputs, users, ... }: {
   imports = [
     ./hardware-configuration.nix
     ./disko-config.nix

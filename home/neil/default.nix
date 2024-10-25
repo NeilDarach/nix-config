@@ -1,4 +1,6 @@
-{ user, ... }: {
+{ users, ... }:
+let user = users.neil;
+in {
   home-manager.users.${user.userId} =
     { inputs, outputs, lib, config, pkgs, ... }: {
       imports = [ ../common ];
