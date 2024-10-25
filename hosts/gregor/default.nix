@@ -16,7 +16,12 @@
     "sshd_hostkey_gregor_ed25519" = { };
     "user_password_hashed" = { neededForUsers = true; };
     "root_password_hashed" = { neededForUsers = true; };
-    "zigbee2mqtt_secrets" = { mode = "0400"; path = "/var/lib/zigbee2mqtt/secret.yaml"; owner = "zigbee2mqtt"; group = "zigbee2mqtt"; };
+    "zigbee2mqtt_secrets" = {
+      mode = "0400";
+      path = "/var/lib/zigbee2mqtt/secret.yaml";
+      owner = "zigbee2mqtt";
+      group = "zigbee2mqtt";
+    };
   };
 
   networking = {
@@ -38,6 +43,8 @@
     neededForBoot = false;
   };
 
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+    nix.settings.extra-platforms = config.boot.binfmt.emulatedSystems;
   environment = {
     systemPackages = [ ];
     shellAliases.nr =
