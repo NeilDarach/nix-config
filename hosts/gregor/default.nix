@@ -32,6 +32,12 @@
     neededForBoot = true;
   };
 
+  fileSystems."/Media" = {
+    device = "linstore/media";
+    fsType = "zfs";
+    neededForBoot = false;
+  };
+
   environment = {
     systemPackages = [ ];
     shellAliases.nr =
