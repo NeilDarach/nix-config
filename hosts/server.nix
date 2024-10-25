@@ -1,5 +1,5 @@
 # default server settings
-{ inputs, outputs, lib, config, pkgs, user,  ... }: {
+{ inputs, outputs, lib, config, pkgs, users,  ... }: {
   imports = [ ];
   nixpkgs = {
     overlays = [ ];
@@ -56,7 +56,7 @@
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIJ0nGtONOY4QnJs/xj+N4rKf4pCWfl25BOfc8hEczUg neil.darach@gmail.com"
       ];
     };
-    ${user.userId} = {
+    ${users.neil.userId} = {
       hashedPasswordFile = config.sops.secrets.user_password_hashed.path;
       isNormalUser = true;
       shell = pkgs.fish;
