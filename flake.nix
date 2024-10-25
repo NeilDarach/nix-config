@@ -19,7 +19,7 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixNvim.url = "github:NeilDarach/nixNvim";
+    nixNvim.url = "github:NeilDarach/nix-config/gregor?dir=nixNvim";
     msg_q.url = "github:NeilDarach/msg_q";
     #msg_q.url = "git+file:/home/neil/msg_q";
   };
