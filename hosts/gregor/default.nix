@@ -3,9 +3,10 @@
     ./hardware-configuration.nix
     ./disko-config.nix
     ./impermanence.nix
-    ../server.nix
+    (import ../server.nix { hostname = "gregor"; })
     ../../home/neil
   ];
+
   sops.age.keyFile = "/persist/var/lib/sops-nix/key.txt";
   sops.defaultSopsFormat = "yaml";
   sops.defaultSopsFile = ../../secrets/secrets.yaml;

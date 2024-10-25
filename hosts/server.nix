@@ -1,5 +1,6 @@
 # default server settings
-{ inputs, outputs, lib, config, pkgs, users,  ... }: {
+{ hostname }:
+{ inputs, outputs, lib, config, pkgs, users, ... }: {
   imports = [ ];
   nixpkgs = {
     overlays = [ ];
@@ -101,16 +102,16 @@
     };
     hostKeys = [
       {
-        path = "/run/secrets/sshd_hostkey_gregor_rsa";
+        path = "/run/secrets/sshd_hostkey_${hostname}_rsa";
         type = "rsa";
       }
       {
-        path = "/run/secrets/sshd_hostkey_gregor_ed25519";
+        path = "/run/secrets/sshd_hostkey_${hostname}_ed25519";
         type = "ed25519";
       }
     ];
   };
- 
+
   system = {
     stateVersion = "24.05";
     autoUpgrade.enable = true;
