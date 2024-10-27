@@ -6,6 +6,15 @@
     overlays = [ ];
     config = { allowUnfree = true; };
   };
+
+  nix.distributedBuilds = true;
+  nix.buildMachines = [{
+    hostName = "eu.nixbuild.net";
+    system = "aarch64-linux";
+    maxJobs = 4;
+    speedFactor = 2;
+    supportedFeatures = [ "benchmark" "big-parallel" ];
+  }];
   nix.registry = (lib.mapAttrs (_: flake: { inherit flake; }))
     ((lib.filterAttrs (_: lib.isType "flake")) inputs);
   nix.nixPath = [ "/etc/nix/path" ];
@@ -50,6 +59,7 @@
     Defaults lecture = never
   '';
   users.defaultUserShell = pkgs.fish;
+  users.groups = { plugdev = { }; };
   users.users = {
     root = {
       hashedPasswordFile = config.sops.secrets.root_password_hashed.path;
@@ -64,7 +74,8 @@
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIJ0nGtONOY4QnJs/xj+N4rKf4pCWfl25BOfc8hEczUg neil.darach@gmail.com"
       ];
-      extraGroups = [ "wheel" "docker" "transmission" "plex" ];
+      extraGroups =
+        [ "wheel" "docker" "transmission" "plex" "plugdev" "dialout" ];
       packages = with pkgs; [ neovim docker ];
     };
   };
@@ -92,6 +103,31 @@
     ];
   };
 
+  services.udev = {
+    enable = true;
+    extraRules = ''
+      # Detect a home-assistant yellow being plugged in recovery mode and allow members of plugdev to control it
+      SUBSYSTEM=="usb", ATTRS{idVendor}=="1d6b", ATTRS{idProduct}=="0002", GROUP="plugdev", MODE="0660"
+      # Detect the result of rpiboot creating new block devices, set the group and create a symlink
+      SUBSYSTEM=="block", ENV{ID_VENDOR}=="RPi-MSD-", GROUP="plugdev", MODE="0660", SYMLINK+="pi-msd%n"
+    '';
+  };
+  programs.ssh = {
+    extraConfig = ''
+      Host eu.nixbuild.net
+      PubKeyAcceptedKeyTypes ssh-ed25519
+      ServerAliveInterval 60
+      IPQos throughput
+      IdentityFile ~/.ssh/id_nixbuild
+    '';
+    knownHosts = {
+      nixbuild = {
+        hostNames = [ "eu.nixbuild.net" ];
+        publicKey =
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM";
+      };
+    };
+  };
   services.openssh = {
     enable = true;
     settings = {
