@@ -25,6 +25,18 @@
         group = "zigbee2mqtt";
         mode = "u=rwx,g=rx,o=rx";
       }
+      {
+        directory = "/var/lib/tftp";
+        user = "root";
+        group = "root";
+        mode = "u=rwx,g=rwx,o=rwx";
+      }
+{
+        directory = "/var/lib/nfs";
+        user = "root";
+        group = "root";
+        mode = "u=rwx,g=rwx,o=rwx";
+      }
     ];
 
     files = [ "/etc/machine-id" ];

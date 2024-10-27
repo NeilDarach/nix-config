@@ -1,14 +1,14 @@
 {
   disko.devices = {
     disk = {
-      main = {
+      boot = {
         type = "disk";
-        device = "/dev/disk/by-id/nvme-WD_Blue_SN570_500GB_2239CA452011";
+        device = "/dev/disk/by-id/mmc-BJTD4R_0xfa075850";
         content = {
           type = "gpt";
           partitions = {
             BOOT = {
-              size = "1G";
+              size = "500M";
               type = "0700";
               content = {
                 type = "filesystem";
@@ -17,6 +17,15 @@
                 mountOptions = [ "umask=0077" ];
               };
             };
+          };
+        };
+      };
+      main = {
+        type = "disk";
+        device = "/dev/disk/by-id/nvme-WD_Blue_SN570_500GB_2239CA452011";
+        content = {
+          type = "gpt";
+          partitions = {
             zfs = {
               size = "100%";
               content = {

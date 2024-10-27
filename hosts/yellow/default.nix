@@ -23,6 +23,7 @@
     hostId = "95849593";
     firewall.enable = true;
     networkmanager.enable = true;
+    networkmanager.plugins = lib.mkForce [ ];
   };
 
   console.enable = true;
