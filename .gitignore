@@ -7,3 +7,4 @@ boot.sig
 boot
 !boot/config.txt
 rootfs.cpio.zst
+initramfs.d
