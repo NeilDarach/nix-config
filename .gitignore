@@ -1,2 +1,4 @@
 .direnv
 .venv
+*/pieeprom.bin
+*/pieeprom.sig
