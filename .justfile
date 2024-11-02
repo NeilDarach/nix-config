@@ -16,3 +16,15 @@ bootimg:
   mcopy -s -i boot.img boot/* ::
   usbboot/tools/rpi-eeprom-digest -i boot.img -o boot.sig -k "$KEY_FILE"
   cp boot.img boot.sig /var/lib/nginx/www/pi/yellow
+
+# Copy the files from the mass_storage_gadget into ./boot
+mkboot:
+  dd if=usbboot/mass-storage-gadget/boot.img bs=512 skip=1 of=msg.img
+  mkdir -p boot.tmp
+  mcopy -s -i msg.img :: boot.tmp
+  mv boot.tmp/rootfs.cpio.zst .
+  rm boot.tmp/config.txt
+  cp -r boot.tmp/* boot
+  rm msg.img
+  rm -rf boot.tmp
+

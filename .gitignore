@@ -4,3 +4,6 @@
 */pieeprom.sig
 boot.img
 boot.sig
+boot
+!boot/config.txt
+rootfs.cpio.zst
