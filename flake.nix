@@ -17,6 +17,7 @@
             libusb
             xxd
             just
+            mtools
           ];
           shellHook = ''
             python -m venv .venv
