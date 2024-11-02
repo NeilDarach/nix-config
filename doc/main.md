@@ -59,13 +59,36 @@ the scripts need xxd, so add those to the flake
         cd usbboot; make
 
 
-* Create a [boot config](../httpboot.conf) to download a boot.img from a webserver.<br>
+* Create a [boot config](../pieeprom-http/boot.conf) to download a boot.img from a webserver.<br>
 ``BOOT_ORDER`` is the important value here, which is set to HTTP<br>
 If the network doesn't have a DCHP server, set the network address here.<br>
-There should be a webserver running at the ``HTTP_HOST``
+There should be a webserver running at the ``HTTP_HOST``<br>
+Link the important startup files from usbboot
+
+        ln -s ../usbboot/recovery/bootcode4.bin pieeprom-http
+        ln -s ../usbboot/recovery/config.txt pieeprom-http
 
 * Create a new signed eeprom based on the latest firmware, using the new boot.conf
 
         usbboot/tools/update-pieeprom.sh -k "$KEY_FILE" -c httpboot.conf \
-          -i usbboot/recovery/pieeprom.original.bin -o pieeprom-http.bin 
+          -i usbboot/recovery/pieeprom.original.bin -o pieeprom-http/pieeprom.bin 
+
+* That should create pieeprom.bin and pieeprom.sig which can now be flashed to the Pi<br>
+Connect the jumpers to enter service mode on power-on and connect the USB-C port to the computer.
+
+        usbboot/rpiboot -v -d pieeprom-http
+
+
+* Save typing in the future by creating a justfile to keep track of these long commands<br>
+Add ``just`` to the flake's buildInputs and create a new file ``.justfile``
+
+        _default:
+            @just --list
+
+        # Rebuild the httpboot eeprom and flash it to the pi
+        httpboot:
+            usbboot/tools/update-pieeprom.sh -k "$KEY_FILE" -c pieeprom-http/boot.conf \
+            -i usbboot/recovery/pieeprom.original.bin -o pieeprom-http/pieeprom.bin \
+            && usbboot/rpiboot -v -d pieeprom-http
+
 
