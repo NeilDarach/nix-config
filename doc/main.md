@@ -91,4 +91,17 @@ Add ``just`` to the flake's buildInputs and create a new file ``.justfile``
             -i usbboot/recovery/pieeprom.original.bin -o pieeprom-http/pieeprom.bin \
             && usbboot/rpiboot -v -d pieeprom-http
 
+* Create a FAT32 filesystem that will be used to boot the pi, sign it and make it 
+avilable on the webserver.<br>
+It will be empty for now, but the Pi should find it an try to boot from it.<br>
+This needs ``mtools`` added to the flake.<br>
+The maximum size of a pi boot.img is 96Mb, so limit it there.
+
+        mkdir -p boot
+        touch boot/config.txt
+        dd if=/dev/zero of=boot.img bs=1M count=95
+        mformat -i boot.img -F ::
+        mcopy -s -i boot.img boot/* ::
+        usbboot/tools/rpi-eeprom-digest -i boot.img -o boot.sig -k "$KEY_FILE"
+        cp boot.img boot.sig /var/lib/nginx/www/pi/yellow
 
