@@ -34,9 +34,10 @@
               }));
         }
 
-* An RSA private key and python crypto libraries are needed to sign boot images, so add those to the flake
+* An RSA private key and python crypto libraries are needed to sign boot images,  and
+the scripts need xxd, so add those to the flake
 
-        buildImputs = with pkgs; [ python3 python3Packages.pip ];
+        buildInputs = with pkgs; [ python3 python3Packages.pip xxd ];
         shellHook = ''
             python -m venv .venv
             source .venv/bin/activate
@@ -47,3 +48,24 @@
 * And add a requirements.txt with the version of pycryptodomex to install
 
         pycryptodomex==3.21.0
+
+
+* The firmware binaries need libusb to build, so add those to the flake, along with pkg-config so they can be found
+
+        buildInputs = with pkgs; [ python3 python3Packages.pip pkg-config libusb ];
+
+* Build the firmware binaries
+
+        cd usbboot; make
+
+
+* Create a [boot config](../httpboot.conf) to download a boot.img from a webserver.<br>
+``BOOT_ORDER`` is the important value here, which is set to HTTP<br>
+If the network doesn't have a DCHP server, set the network address here.<br>
+There should be a webserver running at the ``HTTP_HOST``
+
+* Create a new signed eeprom based on the latest firmware, using the new boot.conf
+
+        usbboot/tools/update-pieeprom.sh -k "$KEY_FILE" -c httpboot.conf \
+          -i usbboot/recovery/pieeprom.original.bin -o pieeprom-http.bin 
+
