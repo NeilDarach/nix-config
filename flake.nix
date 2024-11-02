@@ -19,6 +19,7 @@
             just
             mtools
             zstd
+            screen
           ];
           shellHook = ''
             python -m venv .venv
