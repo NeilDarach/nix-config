@@ -116,3 +116,10 @@ The maximum size of a pi boot.img is 96Mb, so limit it there.
         rm msg.img
         rm -rf boot.tmp
 
+* Build a modified initramfs based on rootfs.cpio.zst (needs ``zstd`` in the flake to uncompress)
+
+        mkdir -p initramfs.d
+        (cd initramfs.d ; zstdcat ../rootfs.cpio.zst | cpio -i -f dev/console)
+        sudo mknod -m 600 initramfs.d/dev/console c 5 1
+        cp -r initramfs.changes/* initramfs.d
+        (cd initramfs.d ; find . -print0 | cpio --null --create --format=newc | zstd > ../boot/rootfs.cpio.zstd) 
