@@ -10,7 +10,7 @@
       let pkgs = import nixpkgs { inherit system; };
       in {
         devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [ python3 python3Packages.pip ];
+          buildInputs = with pkgs; [ python3 python3Packages.pip pkg-config libusb xxd];
           shellHook = ''
             python -m venv .venv
             source .venv/bin/activate
