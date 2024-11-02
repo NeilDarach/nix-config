@@ -105,3 +105,14 @@ The maximum size of a pi boot.img is 96Mb, so limit it there.
         usbboot/tools/rpi-eeprom-digest -i boot.img -o boot.sig -k "$KEY_FILE"
         cp boot.img boot.sig /var/lib/nginx/www/pi/yellow
 
+* Extract necessary boot files from the mass_storage_gadget boot imagt
+    
+        dd if=usbboot/mass-storage-gadget/boot.img bs=512 skip=1 of=msg.img
+        mkdir -p boot.tmp
+        mcopy -s -i msg.img :: boot.tmp
+        mv boot.tmp/rootfs.cpio.zst .
+        rm boot.tmp/config.txt
+        cp -r boot.tmp/* boot
+        rm msg.img
+        rm -rf boot.tmp
+
