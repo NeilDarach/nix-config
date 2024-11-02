@@ -16,25 +16,30 @@ bootimg:
     mformat -i boot.img -F ::
     mcopy -s -i boot.img boot/* ::
     usbboot/tools/rpi-eeprom-digest -i boot.img -o boot.sig -k "$KEY_FILE"
-    cp boot.img boot.sig /var/lib/nginx/www/pi/yellow
+    mv boot.img boot.sig /var/lib/nginx/www/pi/yellow
 
 # Copy the files from the mass_storage_gadget into ./boot
 mkboot:
+    rm -rf boot.tmp
+    rm -f msg.img
     dd if=usbboot/mass-storage-gadget/boot.img bs=512 skip=1 of=msg.img
     mkdir -p boot.tmp
-    mcopy -s -i msg.img :: boot.tmp
-    mv boot.tmp/rootfs.cpio.zst .
-    rm boot.tmp/config.txt
+    mcopy -s -n -i msg.img :: boot.tmp
+    mv boot.tmp/config.txt boot.tmp/config-msg.txt
     cp -r boot.tmp/* boot
-    rm msg.img
-    rm -rf boot.tmp
 
 # Rebuild the initramfs
 initramfs:
-    mkdir -p initramfs.d
-    cd initramfs.d ; zstdcat ../rootfs.cpio.zst | cpio -i -f dev/console
-    sudo mknod -m 600 initramfs.d/dev/console c 5 1
-    cp -r initramfs.changes/* initramfs.d
-    cd initramfs.d ; find . -print0 | cpio --null --create --format=newc | zstd > ../boot/rootfs.cpio.zstd
-    rm -rf initramfs.d
+    sudo rm -rf initramfs.d
+    mkdir initramfs.d
+    cd initramfs.d ; zstdcat ../boot.tmp/rootfs.cpio.zst | sudo cpio -i -f dev/console
+    #sudo mknod -m 600 initramfs.d/dev/console c 5 1
+    sudo rm initramfs.d/etc/init.d/S21msdadget
+    sudo cp -r initramfs.changes/* initramfs.d
+    cd initramfs.d ; sudo find . -print0 | sudo cpio --null --create --format=newc | zstd > ../boot/rootfs.cpio.zst
 
+# Remove all the intermediate artifacts
+clean:
+    sudo rm -rf initramfs.d
+    sudo rm -rf boot.tmp
+    rm -f msg.img
