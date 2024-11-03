@@ -4,11 +4,33 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
     flake-utils.url = "github:numtide/flake-utils";
+    gen_init_cpio_src = {
+      url =
+        "https://raw.githubusercontent.com/torvalds/linux/refs/heads/master/usr/gen_init_cpio.c";
+      flake = false;
+    };
   };
-  outputs = { self, nixpkgs, flake-utils, ... }@inputs:
+  outputs = { self, nixpkgs,  gen_init_cpio_src, flake-utils, ... }@inputs:
     (flake-utils.lib.eachDefaultSystem (system:
-      let pkgs = import nixpkgs { inherit system; };
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [
+            (p: f: { gen_init_cpio = self.packages.${system}.gen_init_cpio; })
+          ];
+        };
       in {
+        packages.gen_init_cpio = pkgs.stdenv.mkDerivation {
+          name = "gen_init_cpio";
+          version = "1.0";
+          src = gen_init_cpio_src;
+          dontUnpack = true;
+          buildPhase = ''
+            mkdir -p $out/bin
+            $CC -x c "$src" -o $out/bin/gen_init_cpio
+          '';
+          installPhase = "";
+        };
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
             python3
@@ -20,6 +42,7 @@
             mtools
             zstd
             screen
+            gen_init_cpio
           ];
           shellHook = ''
             python -m venv .venv

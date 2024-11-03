@@ -18,6 +18,18 @@
         "type": "github"
       }
     },
+    "gen_init_cpio_src": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-LXWTubSZ7IwzQLe8evqa5+CzgXWFkYd8oO2K22Bc4ZI=",
+        "type": "file",
+        "url": "https://raw.githubusercontent.com/torvalds/linux/refs/heads/master/usr/gen_init_cpio.c"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://raw.githubusercontent.com/torvalds/linux/refs/heads/master/usr/gen_init_cpio.c"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1730327045,
@@ -37,6 +49,7 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
+        "gen_init_cpio_src": "gen_init_cpio_src",
         "nixpkgs": "nixpkgs"
       }
     },
