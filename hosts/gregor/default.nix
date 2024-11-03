@@ -5,6 +5,8 @@
     ./impermanence.nix
     (import ../server.nix { hostname = "gregor"; })
     ../../home/neil
+    ./zigbee2mqtt.nix
+    ./nginx.nix
   ];
 
   sops.age.keyFile = "/persist/var/lib/sops-nix/key.txt";
@@ -78,33 +80,8 @@
     group = "plex";
   };
 
-  networking.firewall.allowedTCPPorts = [ 111 8080 2049 4000 4001 4002 ];
-  networking.firewall.allowedUDPPorts = [ 111 69 2049 4000 4001 4002 ];
-  services.zigbee2mqtt = {
-    enable = true;
-    settings = {
-      permit_join = true;
-      frontend = {
-        port = 8080;
-        host = "0.0.0.0";
-      };
-      mqtt = {
-        base_topic = "zigbee2mqtt2";
-        server = "mqtt://mqtt.darach.org.uk";
-        user = "!secret.yaml mqtt_user";
-        password = "!secret.yaml mqtt_password";
-      };
-      serial = {
-        port = "tcp://uzg-01.darach.org.uk:6638";
-        baudrate = 115200;
-      };
-      advanced = {
-        pan_id = 64711;
-        network_key = "!secret.yaml network_key";
-      };
-    };
-    dataDir = "/var/lib/zigbee2mqtt";
-  };
+  networking.firewall.allowedTCPPorts = [ 111 8080 ];
+  networking.firewall.allowedUDPPorts = [ 111 69 ];
 
   services.transmission = {
     enable = true;

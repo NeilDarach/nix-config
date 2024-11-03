@@ -20,12 +20,6 @@
         mode = "u=rwx,g=rx,o=rx";
       }
       {
-        directory = "/var/lib/zigbee2mqtt";
-        user = "zigbee2mqtt";
-        group = "zigbee2mqtt";
-        mode = "u=rwx,g=rx,o=rx";
-      }
-      {
         directory = "/var/lib/tftp";
         user = "root";
         group = "root";
