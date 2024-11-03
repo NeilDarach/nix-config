@@ -15,7 +15,6 @@ httpboot:
 # Build a boot.img from ./boot and generate a signature
 bootimg:
     mkdir -p boot
-    just mkboot
     just initramfs
     dd if=/dev/zero of=boot.img bs=1M count=95
     mformat -i boot.img -F ::
@@ -33,11 +32,12 @@ mkboot:
 
 # Rebuild the initramfs
 initramfs:
+    just mkboot
     sudo rm -rf initramfs.d
     mkdir initramfs.d
     cd initramfs.d ; zstdcat ../boot/rootfs.cpio.zst | cpio -i -f "dev/*"
     cp -r ssh-img/root/* initramfs.d
-    gen_init_cpio <(cat ssh-img/cpio-nodes.txt; ./gen_initramfs_list.sh -u $(id -u) -g $(id -g) initramfs.d) | zstd > boot/rootfs.cpio.zst
+    gen_init_cpio <(./gen_initramfs_list.sh -u $(id -u) -g $(id -g) initramfs.d ; cat ssh-img/cpio-*.txt) | zstd > boot/rootfs.cpio.zst
 
 
 
