@@ -149,3 +149,13 @@ to explicity create the dev files that we can't do without root.
 doesn't set 64bit mode.
 
 * Add ``screen`` to the flake for debugging boot issues
+
+
+* Grab a copy of a statically compiled 32bit arm dropbear binary to add to the 
+rootfs image.  The copy here is OK for the client, but expects files to be rooted
+in /usr/local/crosware, so there are a couple of entries in the cpio file to create
+the directories and add links to the proper places (/etc/dropbear and /bin/scp).<br>
+A service has been added to start the ssh server after the network comes up, and a set
+of authorized_keys to allow logins.<br>
+The server will generate new host keys on every boot (dropbear -R) so we don't need
+to manage secrets in this repository.

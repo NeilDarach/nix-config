@@ -1,0 +1,18 @@
+# create the symlinks and directories for dropbear
+
+slink /bin/dropbear dropbearmulti 777 0 0
+slink /bin/ssh-keygen dropbearmulti 777 0 0
+slink /bin/ssh dropbearmulti 777 0 0
+slink /bin/scp dropbearmulti 777 0 0
+slink /bin/dropbearconvert dropbearmulti 777 0 0
+dir /etc/dropbear 755 0 0
+
+dir /usr/local/crosware 755 0 0
+slink /usr/local/crosware/etc /etc 777 0 0
+dir /usr/local/crosware 755 0 0
+dir /usr/local/crosware/software 755 0 0
+dir /usr/local/crosware/software/dropbear 755 0 0
+dir /usr/local/crosware/software/dropbear/current 755 0 0
+dir /usr/local/crosware/software/dropbear/current/bin 755 0 0
+slink /usr/local/crosware/software/dropbear/current/bin/dbclient /bin/dropbearmulti 755 0 0
+slink /bin/dropbearconvert dropbearmulti 777 0 0
