@@ -1,6 +1,11 @@
 _default:
     @just --list
 
+# Initialize a newly created clone by downloading the submodules and building rpiboot
+init:
+    git submodule update --init --recursive
+    cd usbboot; make
+
 # Rebuild the httpboot eeprom and flash it to the pi
 httpboot:
     usbboot/tools/update-pieeprom.sh -k "$KEY_FILE" -c pieeprom-http/boot.conf \
