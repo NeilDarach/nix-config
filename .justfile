@@ -25,26 +25,24 @@ bootimg:
 
 # Copy the files from the mass_storage_gadget into ./boot
 mkboot:
-    rm -rf boot.tmp
-    rm -f msg.img
+    rm -rf boot
     dd if=usbboot/mass-storage-gadget/boot.img bs=512 skip=1 of=msg.img
-    mkdir -p boot.tmp
-    mcopy -s -n -i msg.img :: boot.tmp
-    mv boot.tmp/config.txt boot.tmp/config-msg.txt
-    cp -r boot.tmp/* boot
+    mkdir -p boot
+    mcopy -s -n -i msg.img :: boot
+    cp -r ssh-img/boot/* boot
 
 # Rebuild the initramfs
 initramfs:
     sudo rm -rf initramfs.d
     mkdir initramfs.d
-    cd initramfs.d ; zstdcat ../boot.tmp/rootfs.cpio.zst | sudo cpio -i -f dev/console
-    #sudo mknod -m 600 initramfs.d/dev/console c 5 1
-    sudo rm initramfs.d/etc/init.d/S21msdadget
-    sudo cp -r initramfs.changes/* initramfs.d
-    cd initramfs.d ; sudo find . -print0 | sudo cpio --null --create --format=newc | zstd > ../boot/rootfs.cpio.zst
+    cd initramfs.d ; zstdcat ../boot/rootfs.cpio.zst | cpio -i -f "dev/*"
+    cp -r ssh-img/root/* initramfs.d
+    gen_init_cpio <(cat ssh-img/cpio-nodes.txt; ./gen_initramfs_list.sh -u $(id -u) -g $(id -g) initramfs.d) | zstd > boot/rootfs.cpio.zst
+
+
 
 # Remove all the intermediate artifacts
 clean:
-    sudo rm -rf initramfs.d
-    sudo rm -rf boot.tmp
+    rm -rf initramfs.d
+    rm -rf boot
     rm -f msg.img

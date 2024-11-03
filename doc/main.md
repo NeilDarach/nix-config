@@ -105,24 +105,39 @@ The maximum size of a pi boot.img is 96Mb, so limit it there.
         usbboot/tools/rpi-eeprom-digest -i boot.img -o boot.sig -k "$KEY_FILE"
         mv boot.img boot.sig /var/lib/nginx/www/pi/yellow
 
-* Extract necessary boot files from the mass_storage_gadget boot imagt
+* Unpack the Mass Storage Gadget image to get the boot files on 
+the VFAT partion and the compressed CPIO archive which contains the 
+init ramfs
     
-        rm -rf boot.tmp
+        rm -rf boot
         rm -f msg.img
         dd if=usbboot/mass-storage-gadget/boot.img bs=512 skip=1 of=msg.img
-        mkdir -p boot.tmp
-        mcopy -s -n -i msg.img :: boot.tmp
-        mv boot.tmp/config.txt boot.tmp/config-msg.txt
-        cp -r boot.tmp/* boot
+        mcopy -s -n -i msg.img :: boot
 
-* Build a modified initramfs based on rootfs.cpio.zst (needs ``zstd`` in the flake to uncompress)
+* Copy our edited config.txt and cmdline.txt into the boot directory
 
-        sudo rm -rf initramfs.d
+        cp ssh-img/boot/*
+
+* Build a modified initramfs based on rootfs.cpio.zst 
+(needs ``zstd`` in the flake to uncompress)<br>
+Expand the archive to the filesystem, make modifications, 
+use ``gen_initramfs_list.sh`` to build a spec which can be 
+fed to ``gen_init_cpio`` (added as a package to the flake)
+to create a new rootfs archive
+with files owned by root, without requiring root for the 
+process. Don't created the dev nodes, that does require root.<br>
+<br>
+Theres an additional cpio spec file in the modifications directory
+to explicity create the dev files that we can't do without root.
+
+
+        rm -rf initramfs.d
         mkdir -p initramfs.d
-        (cd initramfs.d ; zstdcat ../rootfs.cpio.zst | sudo cpio -i -f dev/console)
-        sudo rm initramfs.d/etc/init.d/S21mddadget
-        sudo cp -r initramfs.changes/* initramfs.d
-        (cd initramfs.d ; sudo find . -print0 | sudo cpio --null --create --format=newc | zstd > ../boot/rootfs.cpio.zst) 
+        (cd initramfs.d ; zstdcat ../rootfs.cpio.zst | cpio -i -f "dev/*")
+        cp -r ssh-img/root/* initramfs.d
+
+        gen_init_cpio <(cat ssh-img/cpio-nodes.txt; ./gen_initramfs_list.sh -u $(id -u) -g $(id -g) initramfs.d) | zstd > boot/rootfs.cpio.zst
+
 
 * Provide a cleanup step.  The various builds leave the intermediate artifacts behind for investigation
 
