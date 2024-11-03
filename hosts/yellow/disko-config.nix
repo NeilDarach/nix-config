@@ -1,26 +1,28 @@
 {
   disko.devices = {
     disk = {
-      boot = {
+      emmc = {
         type = "disk";
         device = "/dev/disk/by-id/mmc-BJTD4R_0xfa075850";
         content = {
           type = "gpt";
           partitions = {
-            BOOT = {
-              size = "500M";
-              type = "0700";
+            # partition name needs to match raspberry-pi-nix.sd-image.firmwarePartitionName
+                        # this will be disk-emmc-FIRMWARE
+            FIRMWARE = {
+              size = "1G";
+              type = "EF00";
               content = {
                 type = "filesystem";
                 format = "vfat";
-                mountpoint = "/boot";
                 mountOptions = [ "umask=0077" ];
+                mountpoint = "/boot";
               };
             };
           };
         };
       };
-      main = {
+      nvme = {
         type = "disk";
         device = "/dev/disk/by-id/nvme-WD_Blue_SN570_500GB_2239CA452011";
         content = {

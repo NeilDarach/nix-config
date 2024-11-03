@@ -12,13 +12,19 @@
     loader = {
       systemd-boot.enable = lib.mkForce false;
       grub.enable = lib.mkForce false;
-      grub.devices = ["/dev/disk/by-label/SD_BOOT"];
+      grub.devices = [ "/dev/disk/by-label/SD_BOOT" ];
       generic-extlinux-compatible.enable = lib.mkForce false;
     };
     supportedFilesystems = [ "vfat" "zfs" "ext4" ];
   };
 
-  raspberry-pi-nix.board = "bcm2711";
+  raspberry-pi-nix = {
+    board = "bcm2711";
+    uboot.enable = true;
+    #uboot.package = inputs.nixpkgs.u-boot-rpi4;
+    firmware-migration-service.enable = true;
+  };
+    sdImage.firmwarePartitionName = "disk-emmc-FIRMWARE";
   hardware = {
     raspberry-pi."4".apply-overlays-dtmerge.enable = true;
     deviceTree = {
