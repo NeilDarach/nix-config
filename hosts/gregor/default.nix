@@ -5,6 +5,10 @@
     ./impermanence.nix
     (import ../server.nix { hostname = "gregor"; })
     ../../home/neil
+    (import ./transmission.nix {
+      inherit pkgs;
+      inherit config;
+    })
   ];
 
   sops.age.keyFile = "/persist/var/lib/sops-nix/key.txt";
@@ -16,7 +20,12 @@
     "sshd_hostkey_gregor_ed25519" = { };
     "user_password_hashed" = { neededForUsers = true; };
     "root_password_hashed" = { neededForUsers = true; };
-    "zigbee2mqtt_secrets" = { mode = "0400"; path = "/var/lib/zigbee2mqtt/secret.yaml"; owner = "zigbee2mqtt"; group = "zigbee2mqtt"; };
+    "zigbee2mqtt_secrets" = {
+      mode = "0400";
+      path = "/var/lib/zigbee2mqtt/secret.yaml";
+      owner = "zigbee2mqtt";
+      group = "zigbee2mqtt";
+    };
   };
 
   networking = {
@@ -85,24 +94,4 @@
     dataDir = "/var/lib/zigbee2mqtt";
   };
 
-  services.transmission = {
-    enable = true;
-    package = pkgs.transmission;
-    user = "transmission";
-    group = "transmission";
-    openFirewall = true;
-    openPeerPorts = true;
-    openRPCPort = true;
-    downloadDirPermissions = "770";
-    home = "/var/lib/transmission";
-    settings = {
-      download-queue-enabled = true;
-      download-queue-size = 5;
-      encryption = 1;
-      rpc-authentication-required = false;
-      rpc-bind-address = "0.0.0.0";
-      rpc-host-whitelist-enabled = false;
-      rpc-whitelist-enabled = false;
-    };
-  };
 }
