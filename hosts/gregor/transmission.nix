@@ -15,6 +15,7 @@
     group = "transmission";
     mode = "u=rwx,g=rx,o=rx";
   }];
+
   systemd.services.transmission = {
     serviceConfig = {
       ExecStartPost = [
@@ -49,4 +50,3 @@
     };
   };
 }
-

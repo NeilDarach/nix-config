@@ -60,28 +60,7 @@
             impermanence.nixosModules.impermanence
             home-manager.nixosModules.home-manager
             {
-              nixpkgs.overlays = [
-                (f: p: {
-                  networkmanager-vpnc =
-                    p.networkmanager-vpnc.override { withGnome = false; };
-                  networkmanager-iodine =
-                    p.networkmanager-iodine.override { withGnome = false; };
-                  networkmanager-openvpn =
-                    p.networkmanager-openvpn.override { withGnome = false; };
-                  networkmanager-libnma =
-                    p.networkmanager-libnma.override { withGnome = false; };
-                  networkmanager-fortislvpn =
-                    p.networkmanager-fortislvpn.override { withGnome = false; };
-                  networkmanager-sstp =
-                    p.networkmanager-sstp.override { withGnome = false; };
-                  networkmanager-l2tp =
-                    p.networkmanager-l2tp.override { withGnome = false; };
-                  networkmanager-openconnect =
-                    p.networkmanager-openconnect.override {
-                      withGnome = false;
-                    };
-                })
-              ];
+              nixpkgs.overlays = [ ] ++ (builtins.attrValues outputs.overlays);
             }
             {
               home-manager = {

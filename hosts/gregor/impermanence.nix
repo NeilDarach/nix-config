@@ -8,6 +8,12 @@
       "/var/lib/bluetooth"
       "/var/lib/nixos"
       {
+        directory = "/var/lib/plex";
+        user = "plex";
+        group = "plex";
+        mode = "u=rwx,g=rx,o=rx";
+      }
+      {
         directory = "/var/lib/tftp";
         user = "root";
         group = "root";
