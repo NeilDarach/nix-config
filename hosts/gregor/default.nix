@@ -7,6 +7,7 @@
     ../../home/neil
     ./zigbee2mqtt.nix
     ./nginx.nix
+    (import ./transmission.nix { inherit pkgs; inherit config; })
   ];
 
   sops.age.keyFile = "/persist/var/lib/sops-nix/key.txt";
@@ -83,24 +84,4 @@
   networking.firewall.allowedTCPPorts = [ 111 8080 ];
   networking.firewall.allowedUDPPorts = [ 111 69 ];
 
-  services.transmission = {
-    enable = true;
-    package = pkgs.transmission;
-    user = "transmission";
-    group = "transmission";
-    openFirewall = true;
-    openPeerPorts = true;
-    openRPCPort = true;
-    downloadDirPermissions = "770";
-    home = "/var/lib/transmission";
-    settings = {
-      download-queue-enabled = true;
-      download-queue-size = 5;
-      encryption = 1;
-      rpc-authentication-required = false;
-      rpc-bind-address = "0.0.0.0";
-      rpc-host-whitelist-enabled = false;
-      rpc-whitelist-enabled = false;
-    };
-  };
 }

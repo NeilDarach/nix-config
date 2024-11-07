@@ -13,19 +13,14 @@
         group = "plex";
         mode = "u=rwx,g=rx,o=rx";
       }
-      {
-        directory = "/var/lib/transmission";
-        user = "transmission";
-        group = "transmission";
-        mode = "u=rwx,g=rx,o=rx";
-      }
+
       {
         directory = "/var/lib/tftp";
         user = "root";
         group = "root";
         mode = "u=rwx,g=rwx,o=rwx";
       }
-{
+      {
         directory = "/var/lib/nfs";
         user = "root";
         group = "root";
