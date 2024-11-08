@@ -10,7 +10,8 @@
     outputs.nixosModules.registration
     ./zigbee2mqtt.nix
     ./nginx.nix
-    (import ./transmission.nix { inherit pkgs; inherit config; })
+    (import ./transmission.nix { inherit pkgs config outputs; })
+    (import ./plex.nix { inherit pkgs config outputs; })
   ];
 
   sops.age.keyFile = "/persist/var/lib/sops-nix/key.txt";
@@ -79,6 +80,5 @@
 
   networking.firewall.allowedTCPPorts = [ 111 2049 4000 4001 4002 ];
   networking.firewall.allowedUDPPorts = [ 111 69 2049 4000 4001 4002 ];
-
 
 }
