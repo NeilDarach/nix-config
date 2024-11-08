@@ -48,7 +48,7 @@
 
     in {
       packages = forEachSystem (pkgs: import ./packages { inherit pkgs; });
-
+      nixosModules = import ./modules/nixos;
       overlays = import ./overlays { inherit inputs outputs; };
       nixosConfigurations = {
         yellow = nixpkgs.lib.nixosSystem {

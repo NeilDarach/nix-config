@@ -1,4 +1,4 @@
-{ pkgs, config }: {
+{ pkgs, config, outputs, ... }: {
   sops.secrets."plex_token" = { };
   sops.templates."plex_token" = {
     content = ''
@@ -15,6 +15,17 @@
     group = "transmission";
     mode = "u=rwx,g=rx,o=rx";
   }];
+  systemd.services.transmission = {
+    serviceConfig = {
+      ExecStartPost = [
+        ''
+          +${pkgs.registration}/bin/registration transmission 192.168.4.5 9091 "Transmission Torrent Client"''
+      ];
+      ExecStop = [ "+rm /var/run/registration-leases/transmission" ];
+    };
+    wants = [ "registration.timer" ];
+  };
+
   services.transmission = {
     enable = true;
     package = pkgs.transmission;
@@ -38,3 +49,4 @@
     };
   };
 }
+

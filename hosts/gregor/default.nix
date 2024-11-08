@@ -7,7 +7,8 @@
     ../../home/neil
     ./zigbee2mqtt.nix
     ./nginx.nix
-    (import ./transmission.nix { inherit pkgs; inherit config; })
+    (import ./transmission.nix { inherit pkgs config outputs; })
+    (import ./plex.nix { inherit pkgs config outputs; })
   ];
 
   sops.age.keyFile = "/persist/var/lib/sops-nix/key.txt";
@@ -71,14 +72,6 @@
     enable = true;
     port = 9000;
     openFirewall = true;
-  };
-
-  services.plex = {
-    enable = true;
-    dataDir = "/var/lib/plex";
-    openFirewall = true;
-    user = "plex";
-    group = "plex";
   };
 
   networking.firewall.allowedTCPPorts = [ 111 8080 ];
