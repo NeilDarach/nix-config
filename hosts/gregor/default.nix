@@ -12,6 +12,7 @@
     ./nginx.nix
     (import ./transmission.nix { inherit pkgs config outputs; })
     (import ./plex.nix { inherit pkgs config outputs; })
+        outputs.nixosModules.registration
   ];
 
   sops.age.keyFile = "/persist/var/lib/sops-nix/key.txt";
