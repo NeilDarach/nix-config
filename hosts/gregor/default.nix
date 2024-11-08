@@ -9,12 +9,14 @@
     ./nginx.nix
     (import ./transmission.nix { inherit pkgs config outputs; })
     (import ./plex.nix { inherit pkgs config outputs; })
+        outputs.nixosModules.registration
   ];
 
   sops.age.keyFile = "/persist/var/lib/sops-nix/key.txt";
   sops.defaultSopsFormat = "yaml";
   sops.defaultSopsFile = ../../secrets/secrets.yaml;
 
+  services.registration.enable = true;
   sops.secrets = {
     "sshd_hostkey_gregor_rsa" = { };
     "sshd_hostkey_gregor_ed25519" = { };
