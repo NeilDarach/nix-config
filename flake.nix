@@ -44,14 +44,14 @@
           name = "Neil Darach";
         };
       };
-    in {
-      #overlays = import ./overlays { inherit inputs; };
 
+    in {
+      packages = forEachSystem (pkgs: import ./packages { inherit pkgs; });
+      nixosModules = import ./modules/nixos;
+      overlays = import ./overlays { inherit inputs outputs; };
       nixosConfigurations = {
         gregor = nixpkgs.lib.nixosSystem {
-          specialArgs = {
-            inherit inputs outputs users;
-          };
+          specialArgs = { inherit inputs outputs users; };
           modules = [
             ./hosts/gregor
             disko.nixosModules.disko
@@ -61,8 +61,7 @@
             msg_q.nixosModules.msg_q
 
             {
-              nixpkgs.overlays =
-                [ (f: p: { msg_q = msg_q.packages.${p.system}.default; }) ];
+              nixpkgs.overlays = [ ] ++ (builtins.attrValues outputs.overlays);
             }
             {
               home-manager = {

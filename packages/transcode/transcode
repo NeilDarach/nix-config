@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+# TR_APP_VERSION=3.00
+# TR_TIME_LOCALTIME='Tue Nov  5 10:43:40 2024'
+# TR_TORRENT_DIR=/var/lib/transmission/Downloads
+# TR_TORRENT_HASH=e5b98bee1cbdfcdae3173f426912f0cd2c73757a
+# TR_TORRENT_ID=1
+# TR_TORRENT_LABELS=
+# TR_TORRENT_NAME='New Kid in Town_ A Jack Reacher Story by Andrew Child EPUB'
+
+set -x
+if [[ "transmission" != "$(id -un)" ]]; then
+    exec sudo -u transmission "$0" "$@"
+fi
+
+if [[ -z "${TR_TORRENT_DIR:-}" ]]; then
+    TR_TORRENT_DIR=$(cat /var/lib/transmission/.config/transmission-daemon/settings.json | jq -r '."download-dir"')
+fi
+if [[ -z "${TR_TORRENT_DIR:-}" ]] || [[ ! -d "${TR_TORRENT_DIR}" ]]; then
+    echo "TR_TORRENT_DIR is \"${TR_TORRENT_DIR}\", which is not valid, exiting"
+    exit 1
+fi
+
+VIDEO_EXTENSIONS=(mkv mp4)
+
+CONVERTING="$(dirname "${TR_TORRENT_DIR}")/converting"
+mkdir -p "${CONVERTING}"
+if [[ -n "${TR_TORRENT_NAME:-}" ]]; then
+    for ext in "${VIDEO_EXTENSIONS[@]}"; do
+        find "${TR_TORRENT_DIR}/${TR_TORRENT_NAME}" -type f -name "*.${ext}" -exec ln -fs {} "${CONVERTING}" \;
+    done
+else
+    echo "No torrent name specified"
+fi
+
+pgrep -c HandBrake >/dev/null && (
+    echo "Handbrake is already running, exiting"
+    exit
+)
+
+while true; do
+    FILE=$(find "${CONVERTING}" -type l | head -1)
+    if [[ -n "${FILE}" ]]; then
+        OUTPUT="${FILE%.*}.mkv"
+        echo "Converting ${INPUT##*/}"
+        nice -n 19 HandBrakeCLI -i "${FILE}" -o "${OUTPUT}.part" --preset "General/Very Fast 1080p30" && \
+        mv "${OUTPUT}.part" "${OUTPUT}" && \
+        rm "${FILE}"  && \
+        if [[ $(stat --format="%s" "${OUTPUT}") -lt 524288000 ]]; then
+            tvnamer --config /var/lib/transmission/tvnamer.json --batch "${OUTPUT}"
+            curl -K /var/lib/transmission/plex_token http://gregor.darach.org.uk:32400/library/sections/2/refresh
+        else
+            mv "${OUTPUT}" /Media/Movies
+            curl -K /var/lib/transmission/plex_token http://gregor.darach.org.uk:32400/library/sections/1/refresh
+        fi
+    else
+        echo "No more files to convert, quitting"
+        break
+    fi
+done
