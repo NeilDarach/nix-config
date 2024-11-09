@@ -25,6 +25,7 @@
 
   boot.supportedFilesystems = [ "zfs" ];
   boot.zfs.allowHibernation = false;
+  boot.zfs.extraPools = [ "linstore" ];
   services.zfs = {
     autoScrub.enable = true;
     autoScrub.pools = [ "zroot" ];
