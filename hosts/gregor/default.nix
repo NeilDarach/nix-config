@@ -5,16 +5,16 @@
     ./impermanence.nix
     (import ../server.nix { hostname = "gregor"; })
     ../../home/neil
-    (import ./transmission.nix {
-      inherit pkgs;
-      inherit config;
-    })
+    (import ./transmission.nix { inherit pkgs config outputs; })
+    (import ./plex.nix { inherit pkgs config outputs; })
+        outputs.nixosModules.registration
   ];
 
   sops.age.keyFile = "/persist/var/lib/sops-nix/key.txt";
   sops.defaultSopsFormat = "yaml";
   sops.defaultSopsFile = ../../secrets/secrets.yaml;
 
+  services.registration.enable = true;
   sops.secrets = {
     "sshd_hostkey_gregor_rsa" = { };
     "sshd_hostkey_gregor_ed25519" = { };
@@ -58,40 +58,4 @@
     port = 9000;
     openFirewall = true;
   };
-
-  services.plex = {
-    enable = true;
-    dataDir = "/var/lib/plex";
-    openFirewall = true;
-    user = "plex";
-    group = "plex";
-  };
-
-  networking.firewall.allowedTCPPorts = [ 8080 ];
-  services.zigbee2mqtt = {
-    enable = true;
-    settings = {
-      permit_join = true;
-      frontend = {
-        port = 8080;
-        host = "0.0.0.0";
-      };
-      mqtt = {
-        base_topic = "zigbee2mqtt2";
-        server = "mqtt://mqtt.darach.org.uk";
-        user = "!secret.yaml mqtt_user";
-        password = "!secret.yaml mqtt_password";
-      };
-      serial = {
-        port = "tcp://uzg-01.darach.org.uk:6638";
-        baudrate = 115200;
-      };
-      advanced = {
-        pan_id = 64711;
-        network_key = "!secret.yaml network_key";
-      };
-    };
-    dataDir = "/var/lib/zigbee2mqtt";
-  };
-
 }
