@@ -5,11 +5,10 @@
     ./impermanence.nix
     (import ../server.nix { hostname = "gregor"; })
     ../../home/neil
-    ./zigbee2mqtt.nix
     ./nginx.nix
     (import ./transmission.nix { inherit pkgs config outputs; })
     (import ./plex.nix { inherit pkgs config outputs; })
-        outputs.nixosModules.registration
+    outputs.nixosModules.registration
   ];
 
   sops.age.keyFile = "/persist/var/lib/sops-nix/key.txt";
@@ -22,12 +21,6 @@
     "sshd_hostkey_gregor_ed25519" = { };
     "user_password_hashed" = { neededForUsers = true; };
     "root_password_hashed" = { neededForUsers = true; };
-    "zigbee2mqtt_secrets" = {
-      mode = "0400";
-      path = "/var/lib/zigbee2mqtt/secret.yaml";
-      owner = "zigbee2mqtt";
-      group = "zigbee2mqtt";
-    };
   };
 
   networking = {
