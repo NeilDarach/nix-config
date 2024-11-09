@@ -1,6 +1,7 @@
 {
   system.activationScripts.createPersist = "mkdir -p /persist";
   environment.persistence."/persist" = {
+
     hideMounts = true;
     directories = [
       "/etc/nixos"

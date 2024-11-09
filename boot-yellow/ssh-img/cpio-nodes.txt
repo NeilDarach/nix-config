@@ -1,0 +1,14 @@
+
+#####################
+# initramfs.d/
+# Last modified: 1730625074.4153293230
+
+dir /dev 755 0 0
+slink /dev/stdout ../proc/self/fd/1 777 0 0
+dir /dev/pts 755 0 0
+nod /dev/console 622 0 0 c 5 1
+slink /dev/stdin ../proc/self/fd/0 777 0 0
+slink /dev/fd ../proc/self/fd 777 0 0
+dir /dev/shm 755 0 0
+slink /dev/log ../tmp/log 777 0 0
+slink /dev/stderr ../proc/self/fd/2 777 0 0

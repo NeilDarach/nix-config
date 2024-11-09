@@ -1,9 +1,9 @@
 .direnv
-.venv
+*/.venv
 */pieeprom.bin
 */pieeprom.sig
-boot.img
-boot.sig
-boot
-rootfs.cpio.zst
-initramfs.d
+*/boot.img
+*/boot.sig
+*/boot
+*/rootfs.cpio.zst
+*/initramfs.d

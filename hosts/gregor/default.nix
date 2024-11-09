@@ -5,9 +5,6 @@
     ./impermanence.nix
     (import ../server.nix { hostname = "gregor"; })
     ../../home/neil
-    (import ./transmission.nix { inherit pkgs config outputs; })
-    (import ./plex.nix { inherit pkgs config outputs; })
-    outputs.nixosModules.registration
     ./zigbee2mqtt.nix
     ./nginx.nix
     (import ./transmission.nix { inherit pkgs config outputs; })

@@ -1,1 +1,0 @@
-nix run github:numtide/nixos-anywhere -- --flake .#yellow root@nixos --kexec "$(nix build --print-out-paths github:nix-community/nixos-images#packages.aarch64-linux.kexec-installer-nixos-2211-noninteractive)/nixos-kexec-installer-noninteractive-aarch64-linux.tar.gz"

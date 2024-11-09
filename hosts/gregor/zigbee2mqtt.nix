@@ -1,5 +1,5 @@
 {
-  networking.firewall.allowedTCPPorts = [ 2049 4000 4001 4002 ];
+  networking.firewall.allowedTCPPorts = [ 8080 2049 4000 4001 4002 ];
   networking.firewall.allowedUDPPorts = [ 2049 4000 4001 4002 ];
   services.zigbee2mqtt = {
     enable = true;
