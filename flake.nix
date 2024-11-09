@@ -61,8 +61,18 @@
             msg_q.nixosModules.msg_q
 
             {
-              nixpkgs.overlays =
-                [ (f: p: { msg_q = msg_q.packages.${p.system}.default; }) ];
+              nixpkgs.overlays = [
+                (f: p: {
+                  networkmanager-l2tp =
+                    p.networkmanager-l2tp.override { withGnome = false; };
+                  networkmanager-openconnect =
+                    p.networkmanager-openconnect.override {
+                      withGnome = false;
+                    };
+                })
+
+                (f: p: { msg_q = msg_q.packages.${p.system}.default; })
+              ];
             }
             {
               home-manager = {
