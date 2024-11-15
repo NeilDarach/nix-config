@@ -1,0 +1,7 @@
+#!/bin/bash
+echo "I'm an init"
+echo "I'm an init" > /dev/console
+echo "I'm an init" > /dev/serial0
+echo "I'm an init" > /dev/ttyAMA0
+echo "I'm an init" > /dev/ttyAMA1
+echo "I'm an init" > /dev/ttyS0

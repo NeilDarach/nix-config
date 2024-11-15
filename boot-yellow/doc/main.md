@@ -159,3 +159,15 @@ A service has been added to start the ssh server after the network comes up, and
 of authorized_keys to allow logins.<br>
 The server will generate new host keys on every boot (dropbear -R) so we don't need
 to manage secrets in this repository.
+
+
+* Grab a copy of the base arm64/8 docker image in tar format
+ * alpine:latest@beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d<br>
+There's a [utility](https://raw.githubusercontent.com/moby/moby/master/contrib/download-frozen-image-v2.sh) 
+for grabbing the contents that seems to work.  Copy the layer.tar file into the tree.
+
+ res
+* Cross compiling a static musl dropbear binary
+
+```nix build nixpkgs-unstable#pkgsCross.aarch64-multiplatform.pkgsMusl.pkgsStatic.dropbear```
+
