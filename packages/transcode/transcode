@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+exec 1>>"/tmp/transcode.$$"
+exec 2>&1
 
 # TR_APP_VERSION=3.00
 # TR_TIME_LOCALTIME='Tue Nov  5 10:43:40 2024'
@@ -24,6 +26,7 @@ fi
 VIDEO_EXTENSIONS=(mkv mp4)
 
 CONVERTING="$(dirname "${TR_TORRENT_DIR}")/converting"
+CONVERTED="$(dirname "${TR_TORRENT_DIR}")/converted"
 mkdir -p "${CONVERTING}"
 if [[ -n "${TR_TORRENT_NAME:-}" ]]; then
     for ext in "${VIDEO_EXTENSIONS[@]}"; do
@@ -33,24 +36,26 @@ else
     echo "No torrent name specified"
 fi
 
-pgrep -c HandBrake >/dev/null && (
+if pgrep -c HandBrake >/dev/null ; then
     echo "Handbrake is already running, exiting"
     exit
-)
+fi
 
 while true; do
     FILE=$(find "${CONVERTING}" -type l | head -1)
     if [[ -n "${FILE}" ]]; then
         OUTPUT="${FILE%.*}.mkv"
+        DONE="${CONVERTED}/${FILE##*/}"
         echo "Converting ${INPUT##*/}"
-        nice -n 19 HandBrakeCLI -i "${FILE}" -o "${OUTPUT}.part" --preset "General/Very Fast 1080p30" && \
-        mv "${OUTPUT}.part" "${OUTPUT}" && \
+        #nice -n 19 
+        HandBrakeCLI -i "${FILE}" -o "${OUTPUT}.part" --preset "General/Very Fast 1080p30" && \
+        mv "${OUTPUT}.part" "${DONE}" && \
         rm "${FILE}"  && \
         if [[ $(stat --format="%s" "${OUTPUT}") -lt 524288000 ]]; then
-            tvnamer --config /var/lib/transmission/tvnamer.json --batch "${OUTPUT}"
+            tvnamer --config /var/lib/transmission/tvnamer.json --batch "${DONE}"
             curl -K /var/lib/transmission/plex_token http://gregor.darach.org.uk:32400/library/sections/2/refresh
         else
-            mv "${OUTPUT}" /Media/Movies
+            mv "${DONE}" /Media/Movies
             curl -K /var/lib/transmission/plex_token http://gregor.darach.org.uk:32400/library/sections/1/refresh
         fi
     else

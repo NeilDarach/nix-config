@@ -27,6 +27,8 @@
     wants = [ "registration.timer" ];
   };
 
+  systemd.services.transmission.serviceConfig.BindPaths = [ "/Media" ];
+
   services.transmission = {
     enable = true;
     package = pkgs.transmission;
