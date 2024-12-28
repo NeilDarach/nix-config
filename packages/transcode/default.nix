@@ -8,6 +8,7 @@ let
          patchShebangs $out'';
     });
   cliHandbrake = pkgs.handbrake.override { useGtk = false; };
+  tvnamer_cfg = ./tvnamer.json;
 
 in pkgs.symlinkJoin {
   name = "transcode";
@@ -19,7 +20,9 @@ in pkgs.symlinkJoin {
     transmission
     cliHandbrake
     procps
+    findutils
   ]);
   buildInputs = [ pkgs.makeWrapper ];
-  postBuild = "wrapProgram $out/bin/transcode --prefix PATH : $out/bin";
+  postBuild =
+    "wrapProgram $out/bin/transcode --set PATH $out/bin --set TVNAMERCFG ${tvnamer_cfg}";
 }

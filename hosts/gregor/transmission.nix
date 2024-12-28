@@ -16,6 +16,7 @@
     mode = "u=rwx,g=rx,o=rx";
   }];
 
+
   systemd.services.transmission = {
     serviceConfig = {
       ExecStartPost = [
@@ -27,7 +28,8 @@
     wants = [ "registration.timer" ];
   };
 
-  systemd.services.transmission.serviceConfig.BindPaths = [ "/Media" ];
+  systemd.services.transmission.serviceConfig.BindPaths =
+    [ "/Media/Movies" "/Media/TV" ];
 
   services.transmission = {
     enable = true;

@@ -51,8 +51,8 @@ while true; do
         HandBrakeCLI -i "${FILE}" -o "${OUTPUT}.part" --preset "General/Very Fast 1080p30" && \
         mv "${OUTPUT}.part" "${DONE}" && \
         rm "${FILE}"  && \
-        if [[ $(stat --format="%s" "${OUTPUT}") -lt 524288000 ]]; then
-            tvnamer --config /var/lib/transmission/tvnamer.json --batch "${DONE}"
+        if [[ $(stat --format="%s" "${DONE}") -lt 524288000 ]]; then
+            tvnamer --config ${TVNAMERCFG} --batch "${DONE}"
             curl -K /var/lib/transmission/plex_token http://gregor.darach.org.uk:32400/library/sections/2/refresh
         else
             mv "${DONE}" /Media/Movies
