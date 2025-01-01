@@ -16,7 +16,6 @@
     mode = "u=rwx,g=rx,o=rx";
   }];
 
-
   systemd.services.transmission = {
     serviceConfig = {
       ExecStartPost = [
@@ -45,12 +44,15 @@
       download-queue-enabled = true;
       download-queue-size = 5;
       encryption = 1;
+      ratio-limit = 3;
+      ratio-limit-enabled = true;
       rpc-authentication-required = false;
       rpc-bind-address = "0.0.0.0";
       rpc-host-whitelist-enabled = false;
       rpc-whitelist-enabled = false;
       script-torrent-done-enabled = true;
       script-torrent-done-filename = "${pkgs.local_transcode}/bin/transcode";
+      watch-dir-enable = true;
     };
   };
 }
