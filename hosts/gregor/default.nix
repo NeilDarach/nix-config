@@ -9,6 +9,7 @@
     ./nfs.nix
     ./tftpd.nix
     (import ./transmission.nix { inherit pkgs config outputs; })
+    (import ./appdaemon.nix { inherit pkgs config outputs; })
     (import ./plex.nix { inherit pkgs config outputs; })
     outputs.nixosModules.registration
   ];
