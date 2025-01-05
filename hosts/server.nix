@@ -8,13 +8,22 @@
   };
 
   nix.distributedBuilds = true;
-  nix.buildMachines = [{
-    hostName = "eu.nixbuild.net";
-    system = "aarch64-linux";
-    maxJobs = 4;
-    speedFactor = 2;
-    supportedFeatures = [ "benchmark" "big-parallel" ];
-  }];
+  nix.buildMachines = [
+    {
+      hostName = "eu.nixbuild.net";
+      system = "aarch64-linux";
+      maxJobs = 4;
+      speedFactor = 2;
+      supportedFeatures = [ "benchmark" "big-parallel" ];
+    }
+        #{
+        #hostName = "eu.nixbuild.net";
+        #system = "x86_64-linux";
+        #maxJobs = 4;
+        #speedFactor = 2;
+        #supportedFeatures = [ "benchmark" "big-parallel" ];
+        #}
+  ];
   nix.registry = (lib.mapAttrs (_: flake: { inherit flake; }))
     ((lib.filterAttrs (_: lib.isType "flake")) inputs);
   nix.nixPath = [ "/etc/nix/path" ];
@@ -80,6 +89,13 @@
     };
   };
 
+  sops.secrets."ssh_privatekey_nixbuild" = {
+    path = "/root/.ssh/id_nixbuild";
+    mode = "0400";
+    owner = "root";
+    group = "root";
+  };
+  systemd.tmpfiles.rules = [ "d /root/.ssh 0700 root root" ];
   programs.htop.enable = true;
   programs.fish.enable = true;
   environment = {
