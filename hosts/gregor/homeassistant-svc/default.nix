@@ -13,6 +13,8 @@ let
     (import "${pkgs.path}/pkgs/servers/home-assistant/custom-components") { };
   ble_monitor = haCallPackage ./ble_monitor.nix { inherit home-assistant; };
 in {
+  imports = [ ./lights.nix { } ];
+  _module.args.ha = import ../../../lib/ha.nix { lib = lib; };
 
   systemd.services.home-assistant = {
     serviceConfig = {
@@ -67,8 +69,8 @@ in {
         plexauth
         bluepy
         pybluez
-                pycryptodome
+        pycryptodome
       ];
-            customComponents = [ ble_monitor ];
+    customComponents = [ ble_monitor ];
   };
 }
