@@ -14,6 +14,8 @@
     (import ./espresense.nix { inherit pkgs config outputs; })
     (import ./appdaemon.nix { inherit pkgs config outputs; })
     (import ./plex.nix { inherit pkgs config outputs; })
+            ./homeassistant-svc
+
     outputs.nixosModules.registration
   ];
 
@@ -50,7 +52,7 @@
       "sudo rm -rf /tmp/system && sudo git clone --branch gregor https://github.com/NeilDarach/nix-config /tmp/system && sudo nixos-rebuild switch --flake /tmp/system/.#gregor";
   };
 
-    hardware.bluetooth.enable = true;
+  hardware.bluetooth.enable = true;
   services.dbus = {
     implementation = "broker";
     enable = true;
