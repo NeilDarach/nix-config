@@ -4,7 +4,7 @@
     networkmanager-l2tp = p.networkmanager-l2tp.override { withGnome = false; };
     networkmanager-openconnect =
       p.networkmanager-openconnect.override { withGnome = false; };
-        #networkmanager-vpnc = p.networkmanager-vpnc.override { withGnome = false; };
+    #networkmanager-vpnc = p.networkmanager-vpnc.override { withGnome = false; };
     networkmanager-iodine =
       p.networkmanager-iodine.override { withGnome = false; };
     networkmanager-openvpn =
@@ -17,4 +17,15 @@
   };
 
   msg_q = f: p: { msg_q = inputs.msg_q.packages.${p.system}.default; };
+  polars = f: p: {
+    python3 = p.python3.override {
+      packageOverrides = pf: pp: {
+        polars = pp.polars.overrideAttrs (finalAttrs: previousAttrs: {
+          env.RUSTFLAGS = "${previousAttrs.env.RUSTFLAGS} -Aunusued_imports";
+          env.RUSTC_BOOTSTRAP = 1;
+          env.CARGO_BUILD_JOBS = 1;
+        });
+      };
+    };
+  };
 }

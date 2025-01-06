@@ -14,7 +14,8 @@
     (import ./espresense.nix { inherit pkgs config outputs; })
     (import ./appdaemon.nix { inherit pkgs config outputs; })
     (import ./plex.nix { inherit pkgs config outputs; })
-            ./homeassistant-svc
+    (import ./esphome.nix { inherit pkgs config outputs; })
+        ./homeassistant-svc
 
     outputs.nixosModules.registration
   ];

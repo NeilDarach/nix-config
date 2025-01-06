@@ -33,7 +33,6 @@
   };
 
   boot.kernelModules = [ "kvm-intel" ];
-  boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
   boot.extraModulePackages = [ ];
 
   swapDevices = [ ];

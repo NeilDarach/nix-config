@@ -32,7 +32,7 @@
 
   services.transmission = {
     enable = true;
-    package = pkgs.transmission;
+    package = pkgs.transmission_3;
     user = "transmission";
     group = "transmission";
     openFirewall = true;

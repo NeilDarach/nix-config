@@ -12,17 +12,17 @@
     {
       hostName = "eu.nixbuild.net";
       system = "aarch64-linux";
-      maxJobs = 4;
+      maxJobs = 10;
       speedFactor = 2;
       supportedFeatures = [ "benchmark" "big-parallel" ];
     }
-        #{
-        #hostName = "eu.nixbuild.net";
-        #system = "x86_64-linux";
-        #maxJobs = 4;
-        #speedFactor = 2;
-        #supportedFeatures = [ "benchmark" "big-parallel" ];
-        #}
+    {
+      hostName = "eu.nixbuild.net";
+      system = "x86_64-linux";
+      maxJobs = 10;
+      speedFactor = 2;
+      supportedFeatures = [ "benchmark" "big-parallel" ];
+    }
   ];
   nix.registry = (lib.mapAttrs (_: flake: { inherit flake; }))
     ((lib.filterAttrs (_: lib.isType "flake")) inputs);

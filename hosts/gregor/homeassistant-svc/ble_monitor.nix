@@ -3,7 +3,7 @@
 buildHomeAssistantComponent rec {
   owner = "custom-components";
   domain = "ble_monitor";
-  version = "12.11.3";
+  version = "12.20.0";
 
 
   src = fetchFromGitHub {

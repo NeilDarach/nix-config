@@ -34,7 +34,7 @@
 
       secret = "${config.sops.templates."z2m-secret.yaml".path}";
       serial = {
-        port = "tcp://uzg-01:6638";
+        port = "tcp://192.168.4.233:6638";
         baudrate = 115200;
       };
       advanced = {
