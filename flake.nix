@@ -23,6 +23,10 @@
     msg_q.url = "github:NeilDarach/msg_q";
     #msg_q.url = "git+file:/home/neil/msg_q";
     raspberry-pi-nix.url = "github:nix-community/raspberry-pi-nix";
+    secrets = {
+      url = "git+ssh://git@github.com/NeilDarach/secrets.git?shallow=1";
+      flake = false;
+    };
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, disko, sops-nix

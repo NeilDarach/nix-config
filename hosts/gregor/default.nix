@@ -1,4 +1,6 @@
-{ config, pkgs, lib, inputs, outputs, users, ... }: {
+{ config, pkgs, lib, inputs, outputs, users, ... }:
+let secretspath = builtins.toString inputs.secrets;
+in {
   imports = [
     ./hardware-configuration.nix
     ./disko-config.nix
@@ -15,14 +17,14 @@
     (import ./appdaemon.nix { inherit pkgs config outputs; })
     (import ./plex.nix { inherit pkgs config outputs; })
     (import ./esphome.nix { inherit pkgs config outputs; })
-        ./homeassistant-svc
+    ./homeassistant-svc
 
     outputs.nixosModules.registration
   ];
 
   sops.age.keyFile = "/persist/var/lib/sops-nix/key.txt";
   sops.defaultSopsFormat = "yaml";
-  sops.defaultSopsFile = ../../secrets/secrets.yaml;
+  sops.defaultSopsFile = "${secretspath}/secrets.yaml";
 
   services.registration.enable = true;
   sops.secrets = {

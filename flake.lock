@@ -1849,6 +1849,7 @@
         "nixpkgs": "nixpkgs_14",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "raspberry-pi-nix": "raspberry-pi-nix",
+        "secrets": "secrets",
         "sops-nix": "sops-nix"
       }
     },
@@ -1995,6 +1996,23 @@
         "owner": "oxalica",
         "repo": "rust-overlay",
         "type": "github"
+      }
+    },
+    "secrets": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1736322132,
+        "narHash": "sha256-XZkC4zDWnr81CzuOpH1RRbxws2E4DCKD6Ro00yYW0AQ=",
+        "ref": "refs/heads/main",
+        "rev": "a9e06f75037c5daa27c45fc3e85b4eaabd8a2df5",
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/NeilDarach/secrets.git"
+      },
+      "original": {
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/NeilDarach/secrets.git"
       }
     },
     "sops-nix": {

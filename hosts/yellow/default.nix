@@ -1,4 +1,6 @@
-{ config, pkgs, lib, inputs, outputs, users, ... }: {
+{ config, pkgs, lib, inputs, outputs, users, ... }:
+let secretspath = builtins.toString inputs.secrets;
+in {
   imports = [
     ./hardware-configuration.nix
     ./disko-config.nix
@@ -9,7 +11,7 @@
 
   sops.age.keyFile = "/persist/var/lib/sops-nix/key.txt";
   sops.defaultSopsFormat = "yaml";
-  sops.defaultSopsFile = ../../secrets/secrets.yaml;
+  sops.defaultSopsFile = "${secretspath}/secrets.yaml";
 
   sops.secrets = {
     "sshd_hostkey_yellow_rsa" = { };
