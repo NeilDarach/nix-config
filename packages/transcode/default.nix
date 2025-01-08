@@ -17,7 +17,7 @@ in pkgs.symlinkJoin {
     coreutils
     curl
     tvnamer
-    transmission
+    transmission_3
     cliHandbrake
     procps
     findutils
