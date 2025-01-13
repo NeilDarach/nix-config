@@ -1,5 +1,9 @@
 { outputs, inputs, ... }: {
-  local_packages = f: p: import ../packages { pkgs = f; };
+  local_packages = f: p:
+    import ../packages {
+      pkgs = f;
+      inherit outputs;
+    };
   disable_gnome = f: p: {
     networkmanager-l2tp = p.networkmanager-l2tp.override { withGnome = false; };
     networkmanager-openconnect =

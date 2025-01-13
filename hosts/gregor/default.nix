@@ -15,11 +15,10 @@ in {
     (import ./homeassistant { inherit pkgs config outputs; })
     (import ./espresense.nix { inherit pkgs config outputs; })
     (import ./appdaemon.nix { inherit pkgs config outputs; })
+    (import ./gitea.nix { inherit pkgs config outputs; })
     (import ./plex.nix { inherit pkgs config outputs; })
     (import ./esphome.nix { inherit pkgs config outputs; })
     ./homeassistant-svc
-
-    outputs.nixosModules.registration
   ];
 
   sops.age.keyFile = "/persist/var/lib/sops-nix/key.txt";

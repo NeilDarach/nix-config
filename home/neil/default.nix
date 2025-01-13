@@ -26,7 +26,6 @@ in {
         ruby
         gcc
         inputs.nixNvim.packages.${pkgs.system}.nvim
-        local_transcode
       ];
       home.username = "${user.userId}";
       home.homeDirectory = "/home/${user.userId}";

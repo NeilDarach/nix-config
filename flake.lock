@@ -1297,19 +1297,16 @@
         "nixpkgs": "nixpkgs_13"
       },
       "locked": {
-        "dir": "nixNvim",
-        "lastModified": 1729842326,
-        "narHash": "sha256-8kpCF5SWxwXmbDfV67smkawl+NdbfcFUpuVEjgoMhOE=",
+        "lastModified": 1734183681,
+        "narHash": "sha256-tasAR9nM5xm2M512NReb+SO6E/gfbOD8Gj4qQgnklaY=",
         "owner": "NeilDarach",
-        "repo": "nix-config",
-        "rev": "0fefae39f41534308fe0b31eab96a4306c30a39b",
+        "repo": "nixNvim",
+        "rev": "977e165f1b954ac29842104d0cc21e0eed938d2e",
         "type": "github"
       },
       "original": {
-        "dir": "nixNvim",
         "owner": "NeilDarach",
-        "ref": "gregor",
-        "repo": "nix-config",
+        "repo": "nixNvim",
         "type": "github"
       }
     },
@@ -1850,7 +1847,8 @@
         "nixpkgs-unstable": "nixpkgs-unstable",
         "raspberry-pi-nix": "raspberry-pi-nix",
         "secrets": "secrets",
-        "sops-nix": "sops-nix"
+        "sops-nix": "sops-nix",
+        "systems": "systems_4"
       }
     },
     "rpi-bluez-firmware-src": {
@@ -2001,10 +1999,10 @@
     "secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1736322132,
-        "narHash": "sha256-XZkC4zDWnr81CzuOpH1RRbxws2E4DCKD6Ro00yYW0AQ=",
+        "lastModified": 1736703866,
+        "narHash": "sha256-RKtxoRqpnB/J2SskaMyPZpwsIhsJKPrKxkO6xunY7t0=",
         "ref": "refs/heads/main",
-        "rev": "a9e06f75037c5daa27c45fc3e85b4eaabd8a2df5",
+        "rev": "012b4c7215ada708bb2a75d523ae0a31c60f80d4",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/NeilDarach/secrets.git"
@@ -2078,6 +2076,21 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "systems_4": {
+      "locked": {
+        "lastModified": 1689347949,
+        "narHash": "sha256-12tWmuL2zgBgZkdoB6qXZsgJEH9LR3oUgpaQq2RbI80=",
+        "owner": "nix-systems",
+        "repo": "default-linux",
+        "rev": "31732fcf5e8fea42e59c2488ad31a0e651500f68",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default-linux",
         "type": "github"
       }
     },

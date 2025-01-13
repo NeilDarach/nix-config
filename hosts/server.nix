@@ -89,11 +89,19 @@
     };
   };
 
-  sops.secrets."ssh_privatekey_nixbuild" = {
-    path = "/root/.ssh/id_nixbuild";
-    mode = "0400";
-    owner = "root";
-    group = "root";
+  sops.secrets = {
+    "ssh_privatekey_nixbuild" = {
+      path = "/root/.ssh/id_nixbuild";
+      mode = "0400";
+      owner = "root";
+      group = "root";
+    };
+    "ssh_privatekey_backup" = {
+      path = "/root/.ssh/id_backup";
+      mode = "0400";
+      owner = "root";
+      group = "root";
+    };
   };
   systemd.tmpfiles.rules = [ "d /root/.ssh 0700 root root" ];
   programs.htop.enable = true;
@@ -134,16 +142,27 @@
   programs.ssh = {
     extraConfig = ''
       Host eu.nixbuild.net
-      PubKeyAcceptedKeyTypes ssh-ed25519
-      ServerAliveInterval 60
-      IPQos throughput
-      IdentityFile ~/.ssh/id_nixbuild
+        PubKeyAcceptedKeyTypes ssh-ed25519
+        ServerAliveInterval 60
+        IPQos throughput
+        IdentityFile ~/.ssh/id_nixbuild
+
+      Host backup
+        HostName vps.goip.org.uk
+        User duplicati
+        IdentityFile ~/.ssh/id_backup 
+        AddressFamily inet
     '';
     knownHosts = {
       nixbuild = {
         hostNames = [ "eu.nixbuild.net" ];
         publicKey =
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM";
+      };
+      backup = {
+        hostNames = [ "vps.goip.org.uk" ];
+        publicKey =
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMrqQK4MqFsQNmtUQO0giT/ixn01RM9fgLdm4lgUEJkQ";
       };
     };
   };
