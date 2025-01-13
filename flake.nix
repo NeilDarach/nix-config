@@ -51,7 +51,6 @@
           name = "Neil Darach";
         };
       };
-
     in {
       packages = forEachSystem (pkgs: import ./packages { inherit pkgs; });
       nixosModules = import ./modules/nixos;
