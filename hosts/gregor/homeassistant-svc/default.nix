@@ -68,6 +68,7 @@ in {
       "homeassistant_alerts"
       "tasmota"
       "mqtt"
+      "roku"
     ];
     extraPackages = ps:
       with ps; [
