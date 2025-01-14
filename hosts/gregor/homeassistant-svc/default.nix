@@ -28,7 +28,10 @@ in {
         +${pkgs.registration}/bin/registration homeassistant 192.168.4.5 8123 "Home Assistant"
       ''];
     };
-    wants = [ "registration.timer" "strongStateDir@hans:hass:hass:homeassistant.service" ];
+    wants = [
+      "registration.timer"
+      "strongStateDir@hans:hass:hass:homeassistant.service"
+    ];
   };
 
   users.users.neil.extraGroups = [ "hass" ];
@@ -53,6 +56,7 @@ in {
         country = "GB";
       };
       "automation ui" = "!include automations.yaml";
+      "mobile_app" = { };
     };
     extraComponents = [
       "homeassistant"
