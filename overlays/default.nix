@@ -31,5 +31,20 @@
         });
       };
     };
+
   };
+  plexpass = f: p:
+    let version = "1.41.3.9314-a0bfb8370";
+    in {
+      plex = p.plex.override {
+        plexRaw = p.plexRaw.overrideAttrs (o: {
+          src = f.fetchurl {
+            inherit version;
+            url =
+              "https://downloads.plex.tv/plex-media-server-new/${version}/debian/plexmediaserver_${version}_amd64.deb";
+            sha256 = "sha256-ku16UwIAAdtMO1ju07DwuWzfDLg/BjqauWhVDl68/DI=";
+          };
+        });
+      };
+    };
 }
