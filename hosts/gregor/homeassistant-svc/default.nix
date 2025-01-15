@@ -17,10 +17,25 @@ in {
   imports = [ ./lights.nix { } ];
   _module.args.ha = import ../../../lib/ha.nix { lib = lib; };
 
+  sops.secrets.twilio_sid = { restartUnits = [ "home-assistant.service" ]; };
+  sops.secrets.twilio_token = { restartUnits = [ "home-assistant.service" ]; };
+
+  sops.templates."home-assistant-secret.yaml" = {
+    content = ''
+      twilio_sid=${config.sops.placeholder.twilio_sid}
+      twilio_token=${config.sops.placeholder.twilio_token}
+    '';
+    owner = "hass";
+  };
+
   systemd.services.home-assistant = {
     serviceConfig = {
       User = "hass";
       Group = "hass";
+      UMask = pkgs.lib.mkForce "0007";
+      StateDirectoryMode = "0770";
+      EnvironmentFile =
+        "${config.sops.templates."home-assistant-secret.yaml".path}";
       ExecStartPre = [''
         +${pkgs.bash}/bin/bash -c "touch /strongStateDir/hans/automations.yaml; chown hass:hass /strongStateDir/hans/automations.yaml"
       ''];
@@ -56,7 +71,25 @@ in {
         country = "GB";
       };
       "automation ui" = "!include automations.yaml";
-      "mobile_app" = { };
+      mobile_app = { };
+      twilio = {
+        account_sid = "!env_var twilio_sid";
+        auth_token = "!env_var twilio_token";
+      };
+      notify = [{
+        name = "SmsNotifier";
+        platform = "twilio_sms";
+        from_number = "+447723465616";
+      }];
+      recorder = {
+        auto_purge = "true";
+        purge_keep_days = "30";
+        auto_repack = "true";
+        exclude = {
+          entity_globs = [ "sensor.esp*uptime" "binary_sensor.espresence*" "sensor.espresence*"];
+          domains = [ "automation" ];
+        };
+      };
     };
     extraComponents = [
       "homeassistant"
@@ -69,6 +102,8 @@ in {
       "tasmota"
       "mqtt"
       "roku"
+      "twilio"
+      "twilio_sms"
     ];
     extraPackages = ps:
       with ps; [
@@ -87,6 +122,7 @@ in {
         bluepy
         pybluez
         pycryptodome
+        twilio
       ];
     customComponents = [ ble_monitor ];
   };
