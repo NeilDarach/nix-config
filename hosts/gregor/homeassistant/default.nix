@@ -1,97 +1,138 @@
-{ pkgs, config, outputs, ... }:
+{ config, pkgs, lib, ... }:
 let
-  base = pkgs.dockerTools.pullImage {
-    imageName = "lscr.io/linuxserver/homeassistant";
-    sha256 = "sha256-HLgu4lCWYUwPUZrYiwpBIDyFJ+/t1BEop5aFJxsd2iE=";
-    imageDigest =
-      "sha256:315ddb540d5ee80ecedd68de5ad51af854e440387637b5cb1d915657758a4902";
-  };
-  patches = ./patches;
-  ha-img = pkgs.dockerTools.buildImage {
-    name = "nd-homeassistant";
-    tag = "latest";
-    fromImage = base;
-    copyToRoot = [ patches ];
-    config = {
-      ExposedPorts = { "8123/tcp" = { }; };
-      Entrypoint = [ "/init" ];
-      Volumes = { "/config" = { }; };
-      WorkingDir = "/";
-    };
-  };
+  home-assistant =
+    pkgs.home-assistant.override { python312 = pkgs.python312Full; };
+  #build custom components with the overriden Home Assistant,
+  #avoid conflicting pythons
+  haCallPackage = lib.callPackageWith (pkgs // home-assistant.python.pkgs // {
+    buildHomeAssistantComponent =
+      pkgs.buildHomeAssistantComponent.override { inherit home-assistant; };
+    callPackage = haCallPackage;
+  });
+  custom-components = haCallPackage
+    (import "${pkgs.path}/pkgs/servers/home-assistant/custom-components") { };
+  ble_monitor = haCallPackage ./ble_monitor.nix { inherit home-assistant; };
+  utils = import ../../../lib/svcUtils.nix;
 in {
-  environment.persistence."/persist".directories = [{
-    directory = "/var/lib/homeassistant";
-    user = "homeassistant";
-    group = "homeassistant";
-    mode = "u=rwx,g=rx,o=rx";
-  }];
+  imports = [ ./lights.nix { } ];
+  _module.args.ha = import ../../../lib/ha.nix { lib = lib; };
+
+  sops.secrets.twilio_sid = { restartUnits = [ "home-assistant.service" ]; };
+  sops.secrets.twilio_token = { restartUnits = [ "home-assistant.service" ]; };
+
+  sops.templates."home-assistant-secret.yaml" = {
+    content = ''
+      twilio_sid=${config.sops.placeholder.twilio_sid}
+      twilio_token=${config.sops.placeholder.twilio_token}
+    '';
+    owner = "hass";
+  };
+
+  systemd.services.home-assistant = {
+    serviceConfig = {
+      User = "hass";
+      Group = "hass";
+      UMask = pkgs.lib.mkForce "0007";
+      StateDirectoryMode = "0770";
+      EnvironmentFile =
+        "${config.sops.templates."home-assistant-secret.yaml".path}";
+      ExecStartPre = [''
+        +${pkgs.bash}/bin/bash -c "touch /strongStateDir/hans/automations.yaml; chown hass:hass /strongStateDir/hans/automations.yaml"
+      ''];
+      ExecStartPost = [''
+        +${pkgs.registration}/bin/registration homeassistant 192.168.4.5 8123 "Home Assistant"
+      ''];
+    };
+    wants = [
+      "registration.timer"
+      "strongStateDir@hans:hass:hass:homeassistant.service"
+    ];
+  };
 
   users.users = {
-    homeassistant = {
-      group = "homeassistant";
-      description = "Home Assistant user";
-      home = "/var/lib/homeassistant";
-      isNormalUser = true;
-      uid = 8123;
-    };
+    neil.extraGroups = [ "hass" ];
+    hass.homeMode = "0770";
   };
+  systemd.timers.strongStateDir-backup-homeassistant =
+    (utils.zfsBackup "hans" "homeassistant");
+  services.strongStateDir.enable = true;
 
-  users.groups.homeassistant = { gid = 8123; };
-
-  sops.secrets.twilio_sid = {
-    restartUnits = [ "podman-homeassistant.service" ];
-  };
-  sops.secrets.twilio_token = {
-    restartUnits = [ "podman-homeassistant.service" ];
-  };
-
-  sops.templates."ha-secret.yaml" = {
-    content = ''
-      twilio_sid: ${config.sops.placeholder.twilio_sid}
-      twilio_token: ${config.sops.placeholder.twilio_token}
-    '';
-    path = "/var/lib/homeassistant/secrets.yaml";
-    owner = "homeassistant";
-  };
-
-  networking.firewall.allowedTCPPorts = [ 8123 ];
-  virtualisation.containers.enable = true;
-  virtualisation.podman.enable = true;
-  virtualisation.oci-containers = {
-    backend = "podman";
-    containers.homeassistant = {
-      volumes =
-        [ "/var/lib/homeassistant:/config" "/var/run/dbus:/var/run/dbus:ro" ];
-      environment.TZ = "Europe/London";
-      environment.PUID = "8123";
-      environment.PGID = "8123";
-      #image = "lscr.io/linuxserver/homeassistant";
-      image = "nd-homeassistant";
-      imageFile = ha-img;
-      autoStart = true;
-      ports = [ "8123:8123" ];
-      extraOptions = [
-        "--network=host"
-        "--cap-add=NET_ADMIN"
-        "--cap-add=NET_RAW"
-        "--cap-add=NET_BIND_SERVICE"
-        "--privileged"
-      ];
-    };
-  };
-
-  systemd.services.podman-homeassistant = {
+  services.home-assistant = {
+    configDir = "/strongStateDir/hans";
+    package = home-assistant;
     enable = true;
-    serviceConfig = {
-      ExecStartPost = [
-        ''
-          +${pkgs.registration}/bin/registration homeassistant-nix 192.168.4.5 8123 "HomeAssistant running on gregor"''
-      ];
-      ExecStop = [ "+rm /var/run/registration-leases/homeassistant-nix" ];
+    openFirewall = true;
+    configWritable = true;
+    config = {
+      homeassistant = {
+        name = "HANS";
+        latitude = 55.8190798606104;
+        longitude = -4.2938411235809335;
+        elevation = 100;
+        unit_system = "metric";
+        time_zone = "Europe/London";
+        country = "GB";
+      };
+      "automation ui" = "!include automations.yaml";
+      mobile_app = { };
+      twilio = {
+        account_sid = "!env_var twilio_sid";
+        auth_token = "!env_var twilio_token";
+      };
+      notify = [{
+        name = "SmsNotifier";
+        platform = "twilio_sms";
+        from_number = "+447723465616";
+      }];
+      recorder = {
+        auto_purge = "true";
+        purge_keep_days = "30";
+        auto_repack = "true";
+        exclude = {
+          entity_globs = [
+            "sensor.esp*uptime"
+            "binary_sensor.espresence*"
+            "sensor.espresence*"
+          ];
+          domains = [ "automation" ];
+        };
+      };
     };
-    wants = [ "registration.timer" ];
+    extraComponents = [
+      "homeassistant"
+      "backup"
+      "default_config"
+      "met"
+      "esphome"
+      "radio_browser"
+      "homeassistant_alerts"
+      "tasmota"
+      "mqtt"
+      "roku"
+      "twilio"
+      "twilio_sms"
+      "pi_hole"
+    ];
+    extraPackages = ps:
+      with ps; [
+        aioblescan
+        janus
+        gtts
+        brother
+        spotipy
+        pychromecast
+        pyatv
+        pyipp
+        reolink-aio
+        plexapi
+        plexwebsocket
+        plexauth
+        bluepy
+        pybluez
+        pycryptodome
+        twilio
+        hole
+      ];
+    customComponents = [ ble_monitor ];
   };
-
 }
-

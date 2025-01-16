@@ -14,7 +14,10 @@ in {
   };
   networking.firewall.allowedTCPPorts = [ 8080 ];
 
-  users.users.neil.extraGroups = [ "zigbee2mqtt" ];
+  users.users = {
+    neil.extraGroups = [ "zigbee2mqtt" ];
+    zigbee2mqtt.homeMode = "0770";
+  };
 
   systemd.timers.strongStateDir-backup-zigbee2mqtt =
     (utils.zfsBackup "zigbee2mqtt" "zigbee2mqtt");

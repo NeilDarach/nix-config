@@ -1,5 +1,4 @@
 # default server settings
-{ hostname }:
 { inputs, outputs, lib, config, pkgs, users, ... }: {
   imports = [ ];
   nixpkgs = {
@@ -176,11 +175,11 @@
     };
     hostKeys = [
       {
-        path = "/run/secrets/sshd_hostkey_${hostname}_rsa";
+        path = "/etc/ssh/sshd_hostkey_rsa";
         type = "rsa";
       }
       {
-        path = "/run/secrets/sshd_hostkey_${hostname}_ed25519";
+        path = "/etc/ssh/sshd_hostkey_ed25519";
         type = "ed25519";
       }
     ];

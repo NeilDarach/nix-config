@@ -1,28 +1,28 @@
 { outputs, inputs, ... }: {
-  local_packages = f: p:
+  local_packages = final: previous:
     import ../packages {
-      pkgs = f;
+      pkgs = final;
       inherit outputs;
     };
-  disable_gnome = f: p: {
-    networkmanager-l2tp = p.networkmanager-l2tp.override { withGnome = false; };
+  disable_gnome = final: previous: {
+    networkmanager-l2tp = previous.networkmanager-l2tp.override { withGnome = false; };
     networkmanager-openconnect =
-      p.networkmanager-openconnect.override { withGnome = false; };
-    #networkmanager-vpnc = p.networkmanager-vpnc.override { withGnome = false; };
+     previous.networkmanager-openconnect.override { withGnome = false; };
+    #networkmanager-vpnc =previous.networkmanager-vpnc.override { withGnome = false; };
     networkmanager-iodine =
-      p.networkmanager-iodine.override { withGnome = false; };
+     previous.networkmanager-iodine.override { withGnome = false; };
     networkmanager-openvpn =
-      p.networkmanager-openvpn.override { withGnome = false; };
+     previous.networkmanager-openvpn.override { withGnome = false; };
     networkmanager-libnma =
-      p.networkmanager-libnma.override { withGnome = false; };
+     previous.networkmanager-libnma.override { withGnome = false; };
     networkmanager-fortislvpn =
-      p.networkmanager-fortislvpn.override { withGnome = false; };
-    networkmanager-sstp = p.networkmanager-sstp.override { withGnome = false; };
+     previous.networkmanager-fortislvpn.override { withGnome = false; };
+    networkmanager-sstp =previous.networkmanager-sstp.override { withGnome = false; };
   };
 
-  msg_q = f: p: { msg_q = inputs.msg_q.packages.${p.system}.default; };
-  polars = f: p: {
-    python3 = p.python3.override {
+  msg_q = final: previous: { msg_q = inputs.msg_q.packages.${previous.system}.default; };
+  polars = final: previous: {
+    python3 = previous.python3.override {
       packageOverrides = pf: pp: {
         polars = pp.polars.overrideAttrs (finalAttrs: previousAttrs: {
           env.RUSTFLAGS = "${previousAttrs.env.RUSTFLAGS} -Aunusued_imports";
@@ -33,12 +33,12 @@
     };
 
   };
-  plexpass = f: p:
+  plexpass = final: previous:
     let version = "1.41.3.9314-a0bfb8370";
     in {
-      plex = p.plex.override {
-        plexRaw = p.plexRaw.overrideAttrs (o: {
-          src = f.fetchurl {
+      plex = previous.plex.override {
+        plexRaw = previous.plexRaw.overrideAttrs (o: {
+          src =final.fetchurl {
             inherit version;
             url =
               "https://downloads.plex.tv/plex-media-server-new/${version}/debian/plexmediaserver_${version}_amd64.deb";

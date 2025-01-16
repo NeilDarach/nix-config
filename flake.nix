@@ -56,7 +56,7 @@
       nixosModules = import ./modules/nixos;
       overlays = import ./overlays { inherit inputs outputs; };
       devShells = forEachSystem
-        (pkgs: import ./shell.nix { inherit pkgs inputs outputs; });
+        (pkgs: import ./shells { inherit pkgs inputs outputs; });
       nixosConfigurations = {
         yellow = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs outputs users; };

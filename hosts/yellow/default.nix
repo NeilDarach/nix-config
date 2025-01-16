@@ -9,7 +9,7 @@ in {
     ../../home/neil
   ];
 
-  sops.age.keyFile = "/persist/var/lib/sops-nix/key.txt";
+  sops.age.keyFile = "/keys/key.txt";
   sops.defaultSopsFormat = "yaml";
   sops.defaultSopsFile = "${secretspath}/secrets.yaml";
 

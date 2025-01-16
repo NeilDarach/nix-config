@@ -86,6 +86,11 @@
             mountpoint = "/persist";
             options.mountpoint = "legacy";
           };
+          "strong/keys" = {
+            type = "zfs_fs";
+            mountpoint = "/keys";
+            options.mountpoint = "legacy";
+          };
           "strong/home" = {
             type = "zfs_fs";
             mountpoint = "/home";
@@ -104,6 +109,7 @@
   fileSystems = {
     "/".neededForBoot = true;
     "/nix".neededForBoot = true;
+    "/keys".neededForBoot = true;
     "/persist".neededForBoot = true;
     "/boot".neededForBoot = true;
   };

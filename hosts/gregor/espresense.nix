@@ -11,19 +11,11 @@ in {
   sops.secrets.mqtt-user = { restartUnits = [ "espresense.service" ]; };
   sops.secrets.mqtt-password = { restartUnits = [ "espresense.service" ]; };
 
-  sops.templates."espresense-secret.yaml" = {
-    content = ''
-      user: ${config.sops.placeholder.mqtt-user}
-      password: ${config.sops.placeholder.mqtt-password}
-    '';
-    path = "/var/lib/homeassistant/espresense/secret.yaml";
-    owner = "homeassistant";
-  };
   networking.firewall.allowedTCPPorts = [ 8267 8268 ];
 
   virtualisation.oci-containers = {
     containers.espresense = {
-      volumes = [ "/var/lib/homeassistant/espresense:/config/espresense" ];
+      volumes = [ "/strongStateDir/hans/espresense:/config/espresense" ];
       environment.TZ = "Europe/London";
       image = "espresense/espresense-companion";
       imageFile = base;

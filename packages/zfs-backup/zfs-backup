@@ -21,9 +21,16 @@ SRC_DATASET="zroot/strong/strongStateDir/${ARGS[0]}"
 DST_DATASET="datapool/backups/${ARGS[1]}"
 
 date=$(date +"%Y-%m-%d-%H-%M-%S:")
+current_month=$(date +"%m")
+snapshot_month=$( (zfs list -t snapshot -s creation "${SRC_DATASET}" 2>/dev/null || true) | tail -1 | sed -e "s/.*@[0-9]\{4\}-\([0-9]\{2\}\).*/\1/")
+if [[ "${snapshot_month}" = "${current_month}" ]]; then
+    suffix="_weekly"
+else
+    suffix="_monthly"
+fi
 # Create a snapshot of the source dataset
-zfs snapshot "${SRC_DATASET}@${date}"
-echo "Created the snapshot ${SRC_DATASET}@${date}"
+zfs snapshot "${SRC_DATASET}@${date}${suffix}"
+echo "Created the snapshot ${SRC_DATASET}@${date}${suffix}"
 
 # If there is a filesystem on the destination, then we need to know which snapshots it has
 # otherwise create an empty one
@@ -31,7 +38,7 @@ present=$(ssh backup "bash -c $(printf '%q' "grep -q ${DST_DATASET} <(sudo /usr/
 if [[ "${present}" == "NO" ]]; then
     ssh backup "bash -c $(printf '%q' "sudo /usr/sbin/zfs create -p ${DST_DATASET%/*}")"
     echo "Created destination filesystem ${DST_DATASET}"
-    earliest=$(zfs list -t snap ${SRC_DATASET} | head -2 | tail -1)
+    earliest=$(zfs list -t snap ${SRC_DATASET} -S creation | tail -1)
     earliest=${earliest##*@}
     earliest=${earliest%% *}
 
@@ -51,7 +58,7 @@ latest=$(ssh backup "bash -c $(printf '%q' "sudo /usr/sbin/zfs list -t snap ${DS
 latest=${latest##*@}
 latest=${latest%% *}
 echo "Backing up ${latest} to ${date}"
-if [[ "${latest}" != "${date}" ]]; then
-    zfs send -I "${SRC_DATASET}@${latest}" "${SRC_DATASET}@${date}" | gzip -9 |
+if [[ "${latest}" != "${date}${suffix}" ]]; then
+    zfs send -I "${SRC_DATASET}@${latest}" "${SRC_DATASET}@${date}${suffix}" | gzip -9 |
         ssh backup "bash -c $(printf '%q' "gunzip | sudo /usr/sbin/zfs recv -u ${DST_DATASET}")"
 fi
