@@ -75,6 +75,7 @@ in {
       };
       "automation ui" = "!include automations.yaml";
       mobile_app = { };
+      history = { };
       twilio = {
         account_sid = "!env_var twilio_sid";
         auth_token = "!env_var twilio_token";
@@ -112,7 +113,9 @@ in {
       "twilio"
       "twilio_sms"
       "pi_hole"
+      "history"
     ];
+
     extraPackages = ps:
       with ps; [
         aioblescan
