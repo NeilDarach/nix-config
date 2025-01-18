@@ -1,7 +1,12 @@
 { pkgs, config, outputs, ... }:
-let utils = import ../../lib/svcUtils.nix;
+let
+  details = {
+    serviceName = "zigbee2mqtt";
+    port = 8080;
+    serviceDescription = "Zigbee to MQTT bridge";
+  };
 in {
-
+  imports = [ (import ../../lib/service.nix { inherit pkgs details; }) ];
   sops.secrets.mqtt-user = { restartUnits = [ "zigbee2mqtt.service" ]; };
   sops.secrets.mqtt-password = { restartUnits = [ "zigbee2mqtt.service" ]; };
 
@@ -14,14 +19,6 @@ in {
   };
   networking.firewall.allowedTCPPorts = [ 8080 ];
 
-  users.users = {
-    neil.extraGroups = [ "zigbee2mqtt" ];
-    zigbee2mqtt.homeMode = "0770";
-  };
-
-  systemd.timers.strongStateDir-backup-zigbee2mqtt =
-    (utils.zfsBackup "zigbee2mqtt" "zigbee2mqtt");
-  services.strongStateDir.enable = true;
   services.zigbee2mqtt = {
     enable = true;
     dataDir = "/strongStateDir/zigbee2mqtt";
@@ -68,23 +65,9 @@ in {
     };
   };
   systemd.services.zigbee2mqtt = {
-    enable = true;
     serviceConfig = {
-      UMask = pkgs.lib.mkForce "0007";
-      StateDirectoryMode = "0770";
-      WorkingDirectoryMode = "0770";
-      LogsDirectory = "zigbee2mqtt";
       EnvironmentFile = "${config.sops.templates."z2m-secret.yaml".path}";
-      ExecStartPost = [
-        ''
-          +${pkgs.registration}/bin/registration zigbee2mqtt 192.168.4.5 8080 "zigbee2mqtt"''
-      ];
-      ExecStop = [ "+rm /var/run/registration-leases/zigbee2mqtt" ];
     };
-    wants = [
-      "registration.timer"
-      "strongStateDir@zigbee2mqtt:zigbee2mqtt:zigbee2mqtt:zigbee2mqtt.service"
-    ];
   };
 
 }
