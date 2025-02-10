@@ -20,6 +20,7 @@ in {
   users.groups.appdaemon = { };
   networking.firewall.allowedTCPPorts = [ 5050 ];
   systemd.services.appdaemon = {
+    enable = true;
     serviceConfig = {
       ExecStart = "${pkgs.appdaemon}/bin/appdaemon -c /strongStateDir/${details.serviceName}";
 
