@@ -20,9 +20,11 @@ in {
   users.groups.appdaemon = { };
   networking.firewall.allowedTCPPorts = [ 5050 ];
   systemd.services.appdaemon = {
-    enable = true;
+    wantedBy = [ "multi-user.target" ];
+    after = [ "home-assistant.service" ];
     serviceConfig = {
-      ExecStart = "${pkgs.appdaemon}/bin/appdaemon -c /strongStateDir/${details.serviceName}";
+      ExecStart =
+        "${pkgs.appdaemon}/bin/appdaemon -c /strongStateDir/${details.serviceName}";
 
     };
   };
