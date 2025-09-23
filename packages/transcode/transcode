@@ -33,8 +33,23 @@ if [[ -n "${TR_TORRENT_NAME:-}" ]]; then
         find "${TR_TORRENT_DIR}/${TR_TORRENT_NAME}" -type f -name "*.${ext}" -exec ln -fs {} "${CONVERTING}" \;
     done
 else
-    echo "No torrent name specified"
+    if [[ $# -gt 0 ]] ; then
+        for torrent in "$@" ; do 
+            for ext in "${VIDEO_EXTENSIONS[@]}"; do
+             find "${TR_TORRENT_DIR}/${torrent}" -type f -name "*.${ext}" -exec ln -fs {} "${CONVERTING}" \;
+            done
+        done
+    else
+        echo "No torrent name specified"
+    fi
 fi
+
+# Remove any links that don't point to valid files
+for FILE in "${CONVERTING}"/* ; do 
+    if [[  -L "${FILE}" && ! -e "${FILE}" ]] ; then
+        rm "${FILE}"
+    fi
+done
 
 if pgrep -c HandBrake >/dev/null ; then
     echo "Handbrake is already running, exiting"
@@ -42,24 +57,40 @@ if pgrep -c HandBrake >/dev/null ; then
 fi
 
 while true; do
-    FILE=$(find "${CONVERTING}" -type l | head -1)
-    if [[ -n "${FILE}" ]]; then
-        OUTPUT="${FILE%.*}.mkv"
-        DONE="${CONVERTED}/${FILE##*/}"
-        echo "Converting ${INPUT##*/}"
-        #nice -n 19 
-        HandBrakeCLI -i "${FILE}" -o "${OUTPUT}.part" --preset "General/Very Fast 1080p30" && \
-        mv "${OUTPUT}.part" "${DONE}" && \
-        rm "${FILE}"  && \
-        if [[ $(stat --format="%s" "${DONE}") -lt 524288000 ]]; then
-            tvnamer --config ${TVNAMERCFG} --batch "${DONE}"
-            curl -K /var/lib/transmission/plex_token http://gregor.darach.org.uk:32400/library/sections/2/refresh
-        else
-            mv "${DONE}" /Media/Movies
-            curl -K /var/lib/transmission/plex_token http://gregor.darach.org.uk:32400/library/sections/1/refresh
-        fi
-    else
+    FILE=$(find "${CONVERTING}" -maxdepth 1 -type l -not -name ".*" | head -1)
+    if [[ -z "${FILE}" ]] ; then
         echo "No more files to convert, quitting"
         break
+    fi
+    STEM="${FILE##"${CONVERTING}"/}"
+    if [[ ! -e "${FILE}" ]] ; then
+        echo "${STEM} has no target, removing it"
+        rm "${FILE}"
+        continue
+    fi
+    # Ignore marker files with leading dots.  
+    if [[ "${STEM}" == .* ]] ; then
+        continue
+    fi
+    MARKER="${CONVERTING}/.${STEM}"
+    if [[ -L "${MARKER}" ]] ; then
+        echo "{$FILE} has already been processed"
+        rm "${FILE}"
+        continue
+    fi
+    OUTPUT="${FILE%.*}.mkv"
+    DONE="${CONVERTED}/${FILE##*/}"
+    echo "Converting ${INPUT##*/}"
+    #nice -n 19 
+    HandBrakeCLI -i "${FILE}" -o "${OUTPUT}.part" --preset "General/Very Fast 1080p30" && \
+    mv "${OUTPUT}.part" "${DONE}" && \
+    mv "${FILE}" "${MARKER}"  && \
+    # File larger than 1Gb are Movies
+    if [[ $(stat --format="%s" "${DONE}") -lt $((1024 * 1024 * 1024)) ]]; then
+        tvnamer --config ${TVNAMERCFG} --batch "${DONE}"
+        curl -K /var/lib/transmission/plex_token http://gregor.darach.org.uk:32400/library/sections/2/refresh
+    else
+        mv "${DONE}" /Media/Movies
+        curl -K /var/lib/transmission/plex_token http://gregor.darach.org.uk:32400/library/sections/1/refresh
     fi
 done

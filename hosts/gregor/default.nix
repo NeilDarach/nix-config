@@ -18,6 +18,7 @@ in {
     ./plex.nix
     ./esphome.nix
     ./homeassistant
+    ./jellyfin.nix
   ];
 
   sops.age.keyFile = "/keys/key.txt";
@@ -27,7 +28,7 @@ in {
   services.registration.enable = true;
   sops.secrets = {
     "sshd_hostkey_gregor_rsa" = { path = "/etc/ssh/sshd_hostkey_rsa"; };
-    "sshd_hostkey_gregor_ed25519" = { path = "/etc/ssh/sshd_hostkey_ed25519";  };
+    "sshd_hostkey_gregor_ed25519" = { path = "/etc/ssh/sshd_hostkey_ed25519"; };
     "user_password_hashed" = { neededForUsers = true; };
     "root_password_hashed" = { neededForUsers = true; };
   };
