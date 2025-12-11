@@ -17,6 +17,7 @@ in {
         EDITOR = "vim";
       };
       home.packages = with pkgs; [
+        lsof
         bat
         ripgrep
         direnv

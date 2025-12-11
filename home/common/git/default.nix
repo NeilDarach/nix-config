@@ -4,8 +4,8 @@
   config = {
     programs.git = lib.mkIf config.programs.git.enable {
       ignores = [ "*~" "*.swp" ".direnv" ];
-      userEmail = config.gitcfg.email;
-      userName = config.gitcfg.name;
+      settings.user.email = config.gitcfg.email;
+      settings.user.name = config.gitcfg.name;
     };
   };
 }

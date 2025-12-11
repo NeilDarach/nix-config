@@ -23,7 +23,7 @@ in {
     enable = true;
     dataDir = "/strongStateDir/zigbee2mqtt";
     settings = {
-      homeassistant = true;
+      homeassistant.enabled = config.services.home-assistant.enable;
       permit_join = true;
       mqtt = {
         base_topic = "zigbee2mqtt";

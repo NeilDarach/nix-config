@@ -34,7 +34,7 @@
 
   };
   plexpass = final: previous:
-    let version = "1.41.3.9314-a0bfb8370";
+    let version = "1.42.2.10156-f737b826c";
     in {
       plex = previous.plex.override {
         plexRaw = previous.plexRaw.overrideAttrs (o: {
@@ -42,7 +42,7 @@
             inherit version;
             url =
               "https://downloads.plex.tv/plex-media-server-new/${version}/debian/plexmediaserver_${version}_amd64.deb";
-            sha256 = "sha256-ku16UwIAAdtMO1ju07DwuWzfDLg/BjqauWhVDl68/DI=";
+            sha256 = "sha256-1ieh7qc1UBTorqQTKUQgKzM96EtaKZZ8HYq9ILf+X3M=";
           };
         });
       };

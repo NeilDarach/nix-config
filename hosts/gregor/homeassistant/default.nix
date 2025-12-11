@@ -1,16 +1,10 @@
 { config, pkgs, lib, ... }:
 let
-  home-assistant =
-    pkgs.home-assistant.override { python312 = pkgs.python312Full; };
   #build custom components with the overriden Home Assistant,
   #avoid conflicting pythons
-  haCallPackage = lib.callPackageWith (pkgs // home-assistant.python.pkgs // {
-    buildHomeAssistantComponent =
-      pkgs.buildHomeAssistantComponent.override { inherit home-assistant; };
-    callPackage = haCallPackage;
-  });
-  custom-components = haCallPackage
-    (import "${pkgs.path}/pkgs/servers/home-assistant/custom-components") { };
+  home-assistant = pkgs.home-assistant;
+  haCallPackage = lib.callPackageWith
+    (pkgs // home-assistant.python.pkgs // { callPackage = haCallPackage; });
   ble_monitor = haCallPackage ./ble_monitor.nix { inherit home-assistant; };
   utils = import ../../../lib/svcUtils.nix;
 in {
