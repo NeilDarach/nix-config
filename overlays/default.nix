@@ -5,22 +5,27 @@
       inherit outputs;
     };
   disable_gnome = final: previous: {
-    networkmanager-l2tp = previous.networkmanager-l2tp.override { withGnome = false; };
+    networkmanager-l2tp =
+      previous.networkmanager-l2tp.override { withGnome = false; };
     networkmanager-openconnect =
-     previous.networkmanager-openconnect.override { withGnome = false; };
+      previous.networkmanager-openconnect.override { withGnome = false; };
     #networkmanager-vpnc =previous.networkmanager-vpnc.override { withGnome = false; };
     networkmanager-iodine =
-     previous.networkmanager-iodine.override { withGnome = false; };
+      previous.networkmanager-iodine.override { withGnome = false; };
     networkmanager-openvpn =
-     previous.networkmanager-openvpn.override { withGnome = false; };
+      previous.networkmanager-openvpn.override { withGnome = false; };
     networkmanager-libnma =
-     previous.networkmanager-libnma.override { withGnome = false; };
+      previous.networkmanager-libnma.override { withGnome = false; };
     networkmanager-fortislvpn =
-     previous.networkmanager-fortislvpn.override { withGnome = false; };
-    networkmanager-sstp =previous.networkmanager-sstp.override { withGnome = false; };
+      previous.networkmanager-fortislvpn.override { withGnome = false; };
+    networkmanager-sstp =
+      previous.networkmanager-sstp.override { withGnome = false; };
   };
 
-  msg_q = final: previous: { msg_q = inputs.msg_q.packages.${previous.system}.default; };
+  msg_q = final: previous: {
+    msg_q =
+      inputs.msg_q.packages.${previous.stdenv.hostPlatform.system}.default;
+  };
   polars = final: previous: {
     python3 = previous.python3.override {
       packageOverrides = pf: pp: {
@@ -38,7 +43,7 @@
     in {
       plex = previous.plex.override {
         plexRaw = previous.plexRaw.overrideAttrs (o: {
-          src =final.fetchurl {
+          src = final.fetchurl {
             inherit version;
             url =
               "https://downloads.plex.tv/plex-media-server-new/${version}/debian/plexmediaserver_${version}_amd64.deb";

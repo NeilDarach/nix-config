@@ -26,7 +26,7 @@ in {
         python3
         ruby
         gcc
-        inputs.nixNvim.packages.${pkgs.system}.nvim
+        inputs.nixNvim.packages.${pkgs.stdenv.hostPlatform.system}.nvim
       ];
       home.username = "${user.userId}";
       home.homeDirectory = "/home/${user.userId}";
