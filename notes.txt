@@ -3,3 +3,6 @@ Validate that the partitions are mounted with
 	mount | grep /mnt
 Make sure the host age key in in /mnt/persist/var/lib/sops-nix/key.txt
 sudo nixos-install --flake .#gregor
+
+All the secrets are kept in a separate input.
+Checkout github:NeilDarach/secrets and edit them with sops before pushing and updating the flake

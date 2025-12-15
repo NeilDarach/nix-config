@@ -75,7 +75,7 @@ in {
     serviceConfig = {
       User = "appdaemon";
       ExecStartPre =
-        "${pkgs.coreutils}/bin/ln -s ${configFile} /strongStateDir/appdaemon/appdaemon.yaml";
+        "${pkgs.coreutils}/bin/ln -fs ${configFile} /strongStateDir/appdaemon/appdaemon.yaml";
       ExecStart =
         "${pkgs.appdaemon}/bin/appdaemon -c /strongStateDir/appdaemon";
 

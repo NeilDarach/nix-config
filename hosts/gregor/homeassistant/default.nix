@@ -13,11 +13,15 @@ in {
 
   sops.secrets.twilio_sid = { restartUnits = [ "home-assistant.service" ]; };
   sops.secrets.twilio_token = { restartUnits = [ "home-assistant.service" ]; };
+  sops.secrets.influx-ha-token = {
+    restartUnits = [ "home-assistant.service" ];
+  };
 
   sops.templates."home-assistant-secret.yaml" = {
     content = ''
       twilio_sid=${config.sops.placeholder.twilio_sid}
       twilio_token=${config.sops.placeholder.twilio_token}
+      influx_token=${config.sops.placeholder.influx-ha-token}
     '';
     owner = "hass";
   };
@@ -74,6 +78,23 @@ in {
         account_sid = "!env_var twilio_sid";
         auth_token = "!env_var twilio_token";
       };
+      influxdb = {
+        api_version = 2;
+        ssl = false;
+        host = "localhost";
+        port = 8086;
+        token = "!env_var influx_token";
+        organization = "cdbc11c95227235f";
+        bucket = "homeassistant";
+        tags.source = "HA";
+        tags_attributes = [ "friendly_name" ];
+        exclude = {
+          entities = [ "zone.home" ];
+          domains = [ "persitent_notification" "person" ];
+        };
+        include = { domains = [ "sensor" "binary_sensor" "sun" ]; };
+      };
+
       notify = [{
         name = "SmsNotifier";
         platform = "twilio_sms";
@@ -129,6 +150,10 @@ in {
         pycryptodome
         twilio
         hole
+        zha
+        zlib-ng
+        universal-silabs-flasher
+        ha-silabs-firmware-client
       ];
     customComponents = [ ble_monitor ];
   };
