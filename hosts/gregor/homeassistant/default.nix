@@ -22,12 +22,13 @@ in {
     owner = "hass";
   };
 
-  systemd.services.home-assistant = {
+  systemd.services.home_assistant = {
     serviceConfig = {
       User = "hass";
       Group = "hass";
       UMask = pkgs.lib.mkForce "0007";
       StateDirectoryMode = "0770";
+      PassEnvironment = [ "twilio_sid" "twilio_token" ];
       EnvironmentFile =
         "${config.sops.templates."home-assistant-secret.yaml".path}";
       ExecStartPre = [''
@@ -129,6 +130,10 @@ in {
         pycryptodome
         twilio
         hole
+        zha
+        zlib-ng
+        universal-silabs-flasher
+        ha-silabs-firmware-client
       ];
     customComponents = [ ble_monitor ];
   };
