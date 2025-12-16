@@ -32,7 +32,7 @@ if [[ ! -d "/strongStateDir/${NAME}" ]]; then
 fi
 
 if ! zfs list "${SRC_DATASET}" >/dev/null 2>&1; then
-    echo "Dataset ${SRC_DATASET} not present on this host"
+    echo "Dataset ${SRC_DATASET} not present on this host, creating it"
     if ! zfs list "zroot/strong/strongStateDir" >/dev/null 2>&1; then
         zfs create -p -o mountpoint=none zroot/strong/strongStateDir
     fi
@@ -53,14 +53,20 @@ if ! zfs list "${SRC_DATASET}" >/dev/null 2>&1; then
     CREATED=TRUE
 fi
 
-if ! zfs mount | grep -q "zroot/strong/strongStateDir/${NAME}"; then
-    echo "Mounting the dataset"
-    mount -t zfs "${SRC_DATASET}" "/strongStateDir/${NAME}"
-fi
-
 if [[ "$CREATED" = "TRUE" ]]; then
+    unmount=0
+    if ! zfs mount | grep -q "zroot/strong/strongStateDir/${NAME}"; then
+        echo "Mounting the dataset"
+        mount -t zfs "${SRC_DATASET}" "/strongStateDir/${NAME}"
+        mount | grep strongStateDir
+        unmount=1
+    fi
+
     echo "Chowning the contents of the dataset after creation"
     chown "${USR}":"${GROUP}" "/strongStateDir/${NAME}"
     chmod 775 "/strongStateDir/${NAME}"
+    if [[ "${unmount}" == "1" ]]; then
+        umount "strongStateDir/${NAME}"
+    fi
 fi
-echo "Done: ${SRC_DATASET} is mounted at /strongStateDir/${NAME}"
+echo "Done: ${SRC_DATASET} is available for /strongStateDir/${NAME}"

@@ -20,6 +20,7 @@ in {
     ./homeassistant
     ./jellyfin.nix
     ./influxdb.nix
+    ./grafana.nix
   ];
 
   sops.age.keyFile = "/keys/key.txt";
