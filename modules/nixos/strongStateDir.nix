@@ -67,10 +67,8 @@ in {
     systemd.services = (lib.attrsets.mapAttrs' (k: v: {
       name = v.serviceName;
       value = {
-        unitConfig = {
-          requires = [ "strongStateDir-${v.serviceName}.mount" ];
-          after = [ "strongStateDir-${v.serviceName}.mount" ];
-        };
+        requires = [ "strongStateDir-${v.serviceName}.mount" ];
+        after = [ "strongStateDir-${v.serviceName}.mount" ];
       };
     }) enabled) // {
       "strongStateDir@" = {

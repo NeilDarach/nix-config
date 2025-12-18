@@ -5,15 +5,9 @@
     group = "jellyfin";
     mode = "u=rwx,g=rx,o=rx";
   }];
-  systemd.services.plex = {
-    serviceConfig = {
-      ExecStartPost = [
-        ''
-          +${pkgs.registration}/bin/registration jellyfin 192.168.4.5 8096 "Jellyfin Media Server"''
-      ];
-      ExecStop = [ "+rm /var/run/registration-leases/jellyfin" ];
-    };
-    wants = [ "registration.timer" ];
+  registration.jellyfin = {
+    port = 8096;
+    description = "Jellyfin Media Server";
   };
 
   services.jellyfin = {

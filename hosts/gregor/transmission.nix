@@ -16,15 +16,9 @@
     mode = "u=rwx,g=rx,o=rx";
   }];
 
-  systemd.services.transmission = {
-    serviceConfig = {
-      ExecStartPost = [
-        ''
-          +${pkgs.registration}/bin/registration transmission 192.168.4.5 9091 "Transmission Torrent Client"''
-      ];
-      ExecStop = [ "+rm /var/run/registration-leases/transmission" ];
-    };
-    wants = [ "registration.timer" ];
+  registration.transmission = {
+    port = 9091;
+    description = "Transmission Torrent Client";
   };
 
   systemd.services.transmission.serviceConfig.BindPaths =

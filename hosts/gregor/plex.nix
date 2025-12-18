@@ -5,15 +5,9 @@
     group = "plex";
     mode = "u=rwx,g=rx,o=rx";
   }];
-  systemd.services.plex = {
-    serviceConfig = {
-      ExecStartPost = [
-        ''
-          +${pkgs.registration}/bin/registration plex 192.168.4.5 32400 "Plex Media Server"''
-      ];
-      ExecStop = [ "+rm /var/run/registration-leases/plex" ];
-    };
-    wants = [ "registration.timer" ];
+  registration.plex = {
+    description = "Plex Media Server";
+    port = 32400;
   };
 
   services.plex = {

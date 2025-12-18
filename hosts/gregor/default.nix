@@ -27,7 +27,6 @@ in {
   sops.defaultSopsFormat = "yaml";
   sops.defaultSopsFile = "${secretspath}/secrets.yaml";
 
-  services.registration.enable = true;
   sops.secrets = {
     "sshd_hostkey_gregor_rsa" = { path = "/etc/ssh/sshd_hostkey_rsa"; };
     "sshd_hostkey_gregor_ed25519" = { path = "/etc/ssh/sshd_hostkey_ed25519"; };

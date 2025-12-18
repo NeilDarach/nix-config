@@ -25,16 +25,12 @@ in {
     };
   };
 
-  systemd.services.podman-espresense = {
-    enable = true;
-    serviceConfig = {
-      ExecStartPost = [
-        ''
-          +${pkgs.registration}/bin/registration espresense 192.168.4.5 8267 "Espresense"''
-      ];
-      ExecStop = [ "+rm /var/run/registration-leases/espresense" ];
-    };
-    wants = [ "registration.timer" ];
+  registration.espresense = {
+    serviceName = "podman-espresense";
+    port = 8267;
+    description = "Espresense";
   };
+
+  systemd.services.podman-espresense.enable = true;
 }
 

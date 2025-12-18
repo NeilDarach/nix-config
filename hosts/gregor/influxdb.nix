@@ -43,16 +43,11 @@
   sops.secrets.influx-admin-token = { owner = "influxdb2"; };
 
   strongStateDir.service.influxdb2.enable = true;
-  systemd.services.influxdb2 = {
-
-    serviceConfig = {
-      ExecStartPost = [''
-        +${pkgs.registration}/bin/registration influxdb 192.168.4.5 8086 "Influxdb Time Series Database"
-      ''];
-      ExecStop =
-        [ "+${pkgs.coreutils}/bin/rm /var/run/registration-leases/influxdb2" ];
-      wants = [ "var-lib-influxdb2.mount" "registration.timer" ];
-    };
+  registration.influxdb2 = {
+    description = "Influx time series database";
+    port = 8086;
   };
+
+  systemd.services.influxdb2.requires = [ "var-lib-influxdb2.mount" ];
 }
 
