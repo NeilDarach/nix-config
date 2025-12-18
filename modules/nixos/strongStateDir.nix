@@ -47,7 +47,7 @@ in {
   in lib.mkIf anyEnabled {
     systemd.timers = lib.attrsets.mapAttrs' (k: v: {
       name = "strongStateDir-backup-${v.serviceName}";
-      value = utils.zfsBackup "${v.serviceName}" "${v.serviceName}";
+      value = utils.zfsBackup "${v.dataDir}" "${v.serviceName}";
     }) enabled;
 
     systemd.mounts = builtins.map (v: {

@@ -6,7 +6,6 @@ let
   haCallPackage = lib.callPackageWith
     (pkgs // home-assistant.python.pkgs // { callPackage = haCallPackage; });
   ble_monitor = haCallPackage ./ble_monitor.nix { inherit home-assistant; };
-  utils = import ../../../lib/svcUtils.nix;
 in {
   imports = [ ./lights.nix { } ];
   _module.args.ha = import ../../../lib/ha.nix { lib = lib; };
@@ -48,19 +47,18 @@ in {
         +${pkgs.registration}/bin/registration homeassistant 192.168.4.5 8123 "Home Assistant"
       ''];
     };
-    wants = [
-      "registration.timer"
-      "strongStateDir@hans:hass:hass:homeassistant.service"
-    ];
+    requires = [ "registration.timer" ];
   };
 
   users.users = {
     neil.extraGroups = [ "hass" ];
     hass.homeMode = "0770";
   };
-  systemd.timers.strongStateDir-backup-homeassistant =
-    (utils.zfsBackup "hans" "homeassistant");
-  services.strongStateDir.enable = true;
+
+  strongStateDir.service.home-assistant = {
+    enable = true;
+    dataDir = "hans";
+  };
 
   services.home-assistant = {
     configDir = "/strongStateDir/hans";

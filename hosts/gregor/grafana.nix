@@ -1,6 +1,4 @@
-{ pkgs, config, outputs, ... }:
-let utils = import ../../lib/svcUtils.nix;
-in {
+{ pkgs, config, outputs, ... }: {
   sops.secrets."grafana/admin_pw" = { owner = "grafana"; };
   sops.secrets."grafana/secret_key" = { owner = "grafana"; };
   strongStateDir.service.grafana = { enable = true; };
@@ -27,7 +25,6 @@ in {
 
   #systemd.timers.strongStateDir-backup-grafana =
   #(utils.zfsBackup "grafana" "grafana");
-  #services.strongStateDir.enable = true;
   systemd.services.grafana = {
 
     serviceConfig = {
@@ -37,6 +34,8 @@ in {
       ExecStop =
         [ "+${pkgs.coreutils}/bin/rm /var/run/registration-leases/grafana" ];
     };
+    requires = [ "registration.timer" ];
+    after = [ "registration.timer" ];
   };
   #systemd.mounts = [{
   #requires = [ "strongStateDir@grafana:grafana:grafana:grafana.service" ];
