@@ -10,16 +10,16 @@ in {
     ./nginx.nix
     ./nfs.nix
     ./tftpd.nix
-    ./transmission.nix
-    ./zigbee2mqtt.nix
-    ./espresense.nix
-    ./appdaemon.nix
-    ./gitea.nix
-    ./plex.nix
-    ./esphome.nix
-    ./homeassistant
-    ./jellyfin.nix
-    ./influxdb.nix
+    #./transmission.nix
+    #./zigbee2mqtt.nix
+    #./espresense.nix
+    #./appdaemon.nix
+    #./gitea.nix
+    #./plex.nix
+    #./esphome.nix
+    #./homeassistant
+    #./jellyfin.nix
+    #./influxdb.nix
     ./grafana.nix
   ];
 
