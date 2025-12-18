@@ -11,10 +11,14 @@ in {
   imports = [ ./lights.nix { } ];
   _module.args.ha = import ../../../lib/ha.nix { lib = lib; };
 
-  sops.secrets.twilio_sid = { restartUnits = [ "home-assistant.service" ]; };
-  sops.secrets.twilio_token = { restartUnits = [ "home-assistant.service" ]; };
-  sops.secrets.influx-ha-token = {
-    restartUnits = [ "home-assistant.service" ];
+  sops.secrets = {
+
+    twilio_sid = { restartUnits = [ "home-assistant.service" ]; };
+    twilio_token = { restartUnits = [ "home-assistant.service" ]; };
+    influx-ha-token = { restartUnits = [ "home-assistant.service" ]; };
+    "home/latitude" = { restartUnits = [ "home-assistant.service" ]; };
+    "home/longitude" = { restartUnits = [ "home-assistant.service" ]; };
+    "home/elevation" = { restartUnits = [ "home-assistant.service" ]; };
   };
 
   sops.templates."home-assistant-secret.yaml" = {
@@ -22,6 +26,9 @@ in {
       twilio_sid=${config.sops.placeholder.twilio_sid}
       twilio_token=${config.sops.placeholder.twilio_token}
       influx_token=${config.sops.placeholder.influx-ha-token}
+      latitude=${config.sops.placeholder."home/latitude"}
+      longitude=${config.sops.placeholder."home/longitude"}
+      elevation=${config.sops.placeholder."home/elevation"}
     '';
     owner = "hass";
   };
@@ -63,10 +70,10 @@ in {
     configWritable = true;
     config = {
       homeassistant = {
-        name = "HANS";
-        latitude = 55.8190798606104;
-        longitude = -4.2938411235809335;
-        elevation = 100;
+        name = "Beaufort Ave";
+        latitude = "!env_var latitude";
+        longitude = "!env_var longitude";
+        elevation = "!env_var elevation";
         unit_system = "metric";
         time_zone = "Europe/London";
         country = "GB";
@@ -84,7 +91,7 @@ in {
         host = "localhost";
         port = 8086;
         token = "!env_var influx_token";
-        organization = "cdbc11c95227235f";
+        organization = "Darach";
         bucket = "homeassistant";
         tags.source = "HA";
         tags_attributes = [ "friendly_name" ];
@@ -129,6 +136,7 @@ in {
       "twilio_sms"
       "pi_hole"
       "history"
+      "open_meteo"
     ];
 
     extraPackages = ps:

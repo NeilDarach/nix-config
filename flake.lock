@@ -1946,10 +1946,10 @@
     "secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1765809661,
-        "narHash": "sha256-ZrchCPlpO253HquvnJhmNhux2gRbNXbPnzJLNS+9YaA=",
+        "lastModified": 1765922176,
+        "narHash": "sha256-mg6tCAIHftJCYgxokeWOZmmAzrN5BbAtPReFeIAsGHo=",
         "ref": "refs/heads/main",
-        "rev": "d23fcff20bf77e46ff2372915df063e30454bd03",
+        "rev": "06a50e5fcf479a0f545dbfb71924836fb18900d5",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/NeilDarach/secrets.git"
