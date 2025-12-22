@@ -33,19 +33,25 @@
   systemd.mounts = [{
     description = "Re-route the StateDirectory into /strongStateDir";
     where = "/var/lib/influxdb2";
-    what = "/strongStateDir/influxdb2";
+    what = "/strongStateDir/influxdb";
     type = "none";
-    options = "bind";
+    options = "bind,noauto,nofail";
+    requires = [ "strongStateDir-influxdb.mount" ];
   }];
   sops.secrets.influx-ha-pw = { owner = "influxdb2"; };
   sops.secrets.influx-admin-pw = { owner = "influxdb2"; };
   sops.secrets.influx-ha-token = { owner = "influxdb2"; };
   sops.secrets.influx-admin-token = { owner = "influxdb2"; };
 
-  strongStateDir.service.influxdb2.enable = true;
+  strongStateDir.service.influxdb2 = {
+    enable = true;
+    datasetName = "influxdb";
+    dataDir = "influxdb";
+  };
   registration.service.influxdb2 = {
     description = "Influx time series database";
     port = 8086;
+    alias = "influxdb";
   };
 
   systemd.services.influxdb2.requires = [ "var-lib-influxdb2.mount" ];

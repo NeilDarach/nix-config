@@ -51,15 +51,15 @@ in {
   in lib.mkIf anyEnabled {
     systemd.timers = lib.attrsets.mapAttrs' (k: v: {
       name = "strongStateDir-backup-${v.serviceName}";
-      value = utils.zfsBackup "${v.dataDir}" "${v.serviceName}";
+      value = utils.zfsBackup "${v.dataDir}" "${v.dataDir}";
     }) enabled;
 
     systemd.mounts = builtins.map (v: {
       requires = [
-        "strongStateDir@${v.serviceName}:${v.localUser}:${v.localGroup}:${v.serviceName}.service"
+        "strongStateDir@${v.datasetName}:${v.localUser}:${v.localGroup}:${v.datasetName}.service"
       ];
       after = [
-        "strongStateDir@${v.serviceName}:${v.localUser}:${v.localGroup}:${v.serviceName}.service"
+        "strongStateDir@${v.datasetName}:${v.localUser}:${v.localGroup}:${v.datasetName}.service"
       ];
       description = "Mount the zfs filesystem for ${v.serviceName}";
       what = "zroot/strong/strongStateDir/${v.datasetName}";

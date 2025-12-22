@@ -58,6 +58,10 @@ in {
   };
 
   strongStateDir.service.appdaemon.enable = true;
+  registration.service.appdaemon = {
+    port = 5050;
+    description = "python trigger for HA";
+  };
   users.users = {
     appdaemon = {
       group = "appdaemon";
