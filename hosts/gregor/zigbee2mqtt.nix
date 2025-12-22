@@ -11,33 +11,36 @@ in {
 
   sops.templates."z2m-secret.yaml" = {
     content = ''
-      ZIGBEE2MQTT_CONFIG_MQTT_USER=${config.sops.placeholder.mqtt-user}
-      ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD=${config.sops.placeholder.mqtt-password}
+      mqtt_user: ${config.sops.placeholder.mqtt-user}
+      mqtt_password: ${config.sops.placeholder.mqtt-password}
     '';
     owner = "zigbee2mqtt";
   };
   networking.firewall.allowedTCPPorts = [ 8080 ];
 
   strongStateDir.service.zigbee2mqtt.enable = true;
+  registration.service.zigbee2mqtt = {
+    port = 8080;
+    description = "Bridge between zigbee devices and MQTT";
+  };
 
   services.zigbee2mqtt = {
     enable = true;
     dataDir = "/strongStateDir/zigbee2mqtt";
     settings = {
       homeassistant.enabled = config.services.home-assistant.enable;
-      permit_join = true;
       mqtt = {
         base_topic = "zigbee2mqtt";
         server = "mqtt://mqtt.darach.org.uk";
+        user = "!${config.sops.templates."z2m-secret.yaml".path} mqtt_user";
+        password =
+          "!${config.sops.templates."z2m-secret.yaml".path} mqtt_password";
       };
 
       serial = { port = "/dev/ttyUSB0"; };
+      homeassistant_discovery_topic = "homeassistant";
+      homeassistant_status_topic = "homeassistant/status";
       advanced = {
-        homeassistant_legacy_entity_attributes = false;
-        homeassistant_status_topic = "homeassistant/status";
-        homeassistant_discovery_topic = "homeassistant";
-        legacy_api = false;
-        ikea_ota_use_test_url = false;
         log_directory = "/var/log/zigbee2mqtt/%TIMESTAMP%";
         log_syslog = {
           app_name = "Zigbee2MQTT";
@@ -52,13 +55,14 @@ in {
 
         };
         log_level = "info";
-        legacy_availability_payload = true;
         last_seen = "ISO_8601_local";
         transmit_power = 10;
+        version = 4;
 
       };
-      device_options.legacy = false;
+      device_options = { };
       frontend = {
+        enabled = true;
         port = 8080;
         host = "0.0.0.0";
       };
@@ -66,9 +70,8 @@ in {
     };
   };
   systemd.services.zigbee2mqtt = {
-    serviceConfig = {
-      EnvironmentFile = "${config.sops.templates."z2m-secret.yaml".path}";
-    };
+    serviceConfig.BindPaths = [ "/var/log/zigbee2mqtt" ];
+
   };
 
 }
