@@ -1,8 +1,7 @@
-{ pkgs, config, outputs, ... }:
-let utils = import ../../lib/svcUtils.nix;
-in {
+{ pkgs, config, outputs, ... }: {
   sops.secrets."grafana/admin_pw" = { owner = "grafana"; };
   sops.secrets."grafana/secret_key" = { owner = "grafana"; };
+  strongStateDir.service.grafana.enable = true;
   services.grafana = {
     enable = true;
     dataDir = "/strongStateDir/grafana";
@@ -24,32 +23,10 @@ in {
     };
   };
 
-  systemd.timers.strongStateDir-backup-grafana =
-    (utils.zfsBackup "grafana" "grafana");
-  services.strongStateDir.enable = true;
-  systemd.services.grafana = {
-
-    serviceConfig = {
-      ExecStartPost = [''
-        +${pkgs.registration}/bin/registration grafana 192.168.4.5 3001 "Grafana graphing system"
-      ''];
-      ExecStop =
-        [ "+${pkgs.coreutils}/bin/rm /var/run/registration-leases/grafana" ];
-    };
-    unitConfig = {
-      requires = [ "registration.timer" "strongStateDir-grafana.mount" ];
-      after = [ "strongStateDir-grafana.mount" ];
-    };
+  registration.service.grafana = {
+    port = 3001;
+    description = "Grafana graphing engine";
   };
-  systemd.mounts = [{
-    requires = [ "strongStateDir@grafana:grafana:grafana:grafana.service" ];
-    after = [ "strongStateDir@grafana:grafana:grafana:grafana.service" ];
-    description = "Mount the zfs filesystem for grafana";
-    what = "zroot/strong/strongStateDir/grafana";
-    where = "/strongStateDir/grafana";
-    type = "zfs";
-    options = "noauto,nofail";
-  }];
 
 }
 

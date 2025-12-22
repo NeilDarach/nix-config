@@ -27,12 +27,16 @@ in {
   sops.defaultSopsFormat = "yaml";
   sops.defaultSopsFile = "${secretspath}/secrets.yaml";
 
-  services.registration.enable = true;
   sops.secrets = {
     "sshd_hostkey_gregor_rsa" = { path = "/etc/ssh/sshd_hostkey_rsa"; };
     "sshd_hostkey_gregor_ed25519" = { path = "/etc/ssh/sshd_hostkey_ed25519"; };
     "user_password_hashed" = { neededForUsers = true; };
     "root_password_hashed" = { neededForUsers = true; };
+  };
+
+  registration = {
+    etcdHost = "arde.darach.org.uk:2379";
+    serviceHost = "gregor.darach.org.uk";
   };
 
   networking = {

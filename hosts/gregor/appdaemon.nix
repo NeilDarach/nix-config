@@ -48,7 +48,6 @@ let
   '';
 
 in {
-  imports = [ (import ../../lib/service.nix { inherit pkgs details; }) ];
   sops.secrets.appdaemon_secrets = { restartUnits = [ "appdaemon.service" ]; };
 
   sops.templates."appdaemon-secrets.yaml" = {
@@ -58,6 +57,7 @@ in {
     owner = "appdaemon";
   };
 
+  strongStateDir.service.appdaemon.enable = true;
   users.users = {
     appdaemon = {
       group = "appdaemon";

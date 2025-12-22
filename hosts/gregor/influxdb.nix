@@ -1,6 +1,4 @@
-{ pkgs, config, outputs, ... }:
-let utils = import ../../lib/svcUtils.nix;
-in {
+{ pkgs, config, outputs, ... }: {
   services.influxdb2 = {
     enable = true;
     provision = {
@@ -44,23 +42,12 @@ in {
   sops.secrets.influx-ha-token = { owner = "influxdb2"; };
   sops.secrets.influx-admin-token = { owner = "influxdb2"; };
 
-  systemd.timers.strongStateDir-backup-influxdb2 =
-    (utils.zfsBackup "influxdb2" "influxdb2");
-  services.strongStateDir.enable = true;
-  systemd.services.influxdb2 = {
-
-    serviceConfig = {
-      ExecStartPost = [''
-        +${pkgs.registration}/bin/registration influxdb 192.168.4.5 8086 "Influxdb Time Series Database"
-      ''];
-      ExecStop =
-        [ "+${pkgs.coreutils}/bin/rm /var/run/registration-leases/influxdb2" ];
-      wants = [
-        "strongStateDir@influxdb2:influxdb2:infuxdb2:influxdb2.service"
-        "var-lib-influxdb2.mount"
-        "registration.timer"
-      ];
-    };
+  strongStateDir.service.influxdb2.enable = true;
+  registration.service.influxdb2 = {
+    description = "Influx time series database";
+    port = 8086;
   };
+
+  systemd.services.influxdb2.requires = [ "var-lib-influxdb2.mount" ];
 }
 

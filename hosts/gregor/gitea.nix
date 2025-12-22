@@ -6,17 +6,11 @@
     mode = "u=rwx,g=rx,o=rx";
   }];
 
-  systemd.services.gitea = {
-    serviceConfig = {
-      ExecStartPost = [
-        ''
-          +${pkgs.registration}/bin/registration gitea 192.168.4.5 3000 "Local git server"''
-      ];
-      ExecStop = [ "+rm /var/run/registration-leases/gitea" ];
-    };
-    wants = [ "registration.timer" ];
+  registration.service.gitea = {
+    port = 3000;
+    description = "Local git server";
   };
-    networking.firewall.allowedTCPPorts = [ 3000 ];
+  networking.firewall.allowedTCPPorts = [ 3000 ];
 
   services.gitea = {
     enable = true;

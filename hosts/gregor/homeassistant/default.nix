@@ -6,7 +6,6 @@ let
   haCallPackage = lib.callPackageWith
     (pkgs // home-assistant.python.pkgs // { callPackage = haCallPackage; });
   ble_monitor = haCallPackage ./ble_monitor.nix { inherit home-assistant; };
-  utils = import ../../../lib/svcUtils.nix;
 in {
   imports = [ ./lights.nix { } ];
   _module.args.ha = import ../../../lib/ha.nix { lib = lib; };
@@ -44,23 +43,21 @@ in {
       ExecStartPre = [''
         +${pkgs.bash}/bin/bash -c "touch /strongStateDir/hans/automations.yaml; chown hass:hass /strongStateDir/hans/automations.yaml"
       ''];
-      ExecStartPost = [''
-        +${pkgs.registration}/bin/registration homeassistant 192.168.4.5 8123 "Home Assistant"
-      ''];
     };
-    wants = [
-      "registration.timer"
-      "strongStateDir@hans:hass:hass:homeassistant.service"
-    ];
   };
 
-  users.users = {
-    neil.extraGroups = [ "hass" ];
-    hass.homeMode = "0770";
+  registration.service.home-assistant = {
+    port = 8123;
+    description = "Home Assistant";
   };
-  systemd.timers.strongStateDir-backup-homeassistant =
-    (utils.zfsBackup "hans" "homeassistant");
-  services.strongStateDir.enable = true;
+
+  users.users = { hass.homeMode = "0770"; };
+
+  strongStateDir.service.home-assistant = {
+    enable = true;
+    dataDir = "hans";
+    datasetName = "hans";
+  };
 
   services.home-assistant = {
     configDir = "/strongStateDir/hans";

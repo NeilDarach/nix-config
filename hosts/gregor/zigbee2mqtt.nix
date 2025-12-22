@@ -6,7 +6,6 @@ let
     serviceDescription = "Zigbee to MQTT bridge";
   };
 in {
-  imports = [ (import ../../lib/service.nix { inherit pkgs details; }) ];
   sops.secrets.mqtt-user = { restartUnits = [ "zigbee2mqtt.service" ]; };
   sops.secrets.mqtt-password = { restartUnits = [ "zigbee2mqtt.service" ]; };
 
@@ -18,6 +17,8 @@ in {
     owner = "zigbee2mqtt";
   };
   networking.firewall.allowedTCPPorts = [ 8080 ];
+
+  strongStateDir.service.zigbee2mqtt.enable = true;
 
   services.zigbee2mqtt = {
     enable = true;
