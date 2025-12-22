@@ -5,7 +5,7 @@
     group = "plex";
     mode = "u=rwx,g=rx,o=rx";
   }];
-  registration.plex = {
+  registration.service.plex = {
     description = "Plex Media Server";
     port = 32400;
   };

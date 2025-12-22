@@ -43,7 +43,7 @@
   sops.secrets.influx-admin-token = { owner = "influxdb2"; };
 
   strongStateDir.service.influxdb2.enable = true;
-  registration.influxdb2 = {
+  registration.service.influxdb2 = {
     description = "Influx time series database";
     port = 8086;
   };

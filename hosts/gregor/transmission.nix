@@ -16,7 +16,7 @@
     mode = "u=rwx,g=rx,o=rx";
   }];
 
-  registration.transmission = {
+  registration.service.transmission = {
     port = 9091;
     description = "Transmission Torrent Client";
   };

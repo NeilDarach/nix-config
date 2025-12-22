@@ -25,7 +25,7 @@ in {
     };
   };
 
-  registration.espresense = {
+  registration.service.espresense = {
     serviceName = "podman-espresense";
     port = 8267;
     description = "Espresense";

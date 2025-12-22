@@ -37,7 +37,7 @@
     address = "0.0.0.0";
   };
 
-  registration.esphome = {
+  registration.service.esphome = {
     port = 6052;
     description = "esphome";
   };

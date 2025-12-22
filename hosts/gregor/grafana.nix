@@ -23,7 +23,7 @@
     };
   };
 
-  registration.grafana = {
+  registration.service.grafana = {
     port = 3001;
     description = "Grafana graphing engine";
   };

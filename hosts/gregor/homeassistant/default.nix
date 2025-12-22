@@ -43,17 +43,15 @@ in {
       ExecStartPre = [''
         +${pkgs.bash}/bin/bash -c "touch /strongStateDir/hans/automations.yaml; chown hass:hass /strongStateDir/hans/automations.yaml"
       ''];
-      ExecStartPost = [''
-        +${pkgs.registration}/bin/registration homeassistant 192.168.4.5 8123 "Home Assistant"
-      ''];
     };
-    requires = [ "registration.timer" ];
   };
 
-  users.users = {
-    neil.extraGroups = [ "hass" ];
-    hass.homeMode = "0770";
+  registration.service.home-assistant = {
+    port = 8123;
+    description = "Home Assistant";
   };
+
+  users.users = { hass.homeMode = "0770"; };
 
   strongStateDir.service.home-assistant = {
     enable = true;

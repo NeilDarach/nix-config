@@ -34,6 +34,11 @@ in {
     "root_password_hashed" = { neededForUsers = true; };
   };
 
+  registration = {
+    etcdHost = "arde.darach.org.uk:2379";
+    serviceHost = "gregor.darach.org.uk";
+  };
+
   networking = {
     hostName = "gregor";
     hostId = "42231481";

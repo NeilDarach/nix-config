@@ -6,7 +6,7 @@
     mode = "u=rwx,g=rx,o=rx";
   }];
 
-  registration.gitea = {
+  registration.service.gitea = {
     port = 3000;
     description = "Local git server";
   };

@@ -5,7 +5,7 @@
     group = "jellyfin";
     mode = "u=rwx,g=rx,o=rx";
   }];
-  registration.jellyfin = {
+  registration.service.jellyfin = {
     port = 8096;
     description = "Jellyfin Media Server";
   };

@@ -8,9 +8,13 @@ let
         type = lib.types.str;
         default = name;
       };
-      host = lib.mkOption {
+      serviceHost = lib.mkOption {
         type = lib.types.str;
-        default = "localhost";
+        default = cfg.serviceHost;
+      };
+      etcdHost = lib.mkOption {
+        type = lib.types.str;
+        default = cfg.etcdHost;
       };
       port = lib.mkOption { type = lib.types.int; };
       alias = lib.mkOption {
@@ -21,17 +25,28 @@ let
     };
   });
 in {
-  options.registration = lib.mkOption {
-    type = lib.types.attrsOf registrationType;
-    default = { };
+  options.registration = {
+    serviceHost = lib.mkOption {
+      type = lib.types.str;
+      default = "localhost";
+    };
+    etcdHost = lib.mkOption {
+      type = lib.types.str;
+      default = "localhost:2379";
+    };
+    service = lib.mkOption {
+      type = lib.types.attrsOf registrationType;
+      default = { };
+    };
   };
   config = {
     systemd.services = (lib.attrsets.mapAttrs' (k: v: {
       name = v.serviceName;
       value = {
+        environment = { ETCDCTL_ENDPOINTS = v.etcdHost; };
         serviceConfig = {
           ExecStartPost = [''
-            +${pkgs.registration}/bin/registration ${v.alias} ${v.host} ${
+            +${pkgs.registration}/bin/registration ${v.alias} ${v.serviceHost} ${
               toString v.port
             }" "${v.description}"
           ''];
@@ -42,7 +57,7 @@ in {
         requires = [ "registration.timer" ];
         after = [ "registration.timer" ];
       };
-    }) cfg) // lib.optionals (0 != length (attrNames cfg)) {
+    }) cfg.service) // lib.optionals (0 != length (attrNames cfg.service)) {
       registration = {
         description = "Renew ETCD leases for running services";
         script = ''
@@ -55,13 +70,14 @@ in {
       };
     };
 
-    systemd.timers.registration = lib.optionals (0 != length (attrNames cfg)) {
-      wantedBy = [ "timers.target" ];
-      timerConfig = {
-        OnBootSec = "1m";
-        OnUnitActiveSec = "1m";
-        Unit = "registration.service";
+    systemd.timers.registration =
+      lib.optionals (0 != length (attrNames cfg.service)) {
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+          OnBootSec = "1m";
+          OnUnitActiveSec = "1m";
+          Unit = "registration.service";
+        };
       };
-    };
   };
 }
