@@ -56,6 +56,7 @@ in {
   strongStateDir.service.home-assistant = {
     enable = true;
     dataDir = "hans";
+    datasetName = "hans";
   };
 
   services.home-assistant = {

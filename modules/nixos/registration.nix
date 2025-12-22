@@ -46,7 +46,7 @@ in {
         environment = { ETCDCTL_ENDPOINTS = v.etcdHost; };
         serviceConfig = {
           ExecStartPost = [''
-            +${pkgs.registration}/bin/registration ${v.alias} ${v.serviceHost} ${
+            +${pkgs.registration}/bin/registration ${v.alias} ${v.serviceHost} "${
               toString v.port
             }" "${v.description}"
           ''];

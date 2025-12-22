@@ -16,7 +16,11 @@ let
         };
         dataDir = lib.mkOption {
           type = lib.types.str;
-          default = "/strongStateDir/${name}";
+          default = name;
+        };
+        datasetName = lib.mkOption {
+          type = lib.types.str;
+          default = name;
         };
         localUser = lib.mkOption {
           type = lib.types.str;
@@ -58,8 +62,8 @@ in {
         "strongStateDir@${v.serviceName}:${v.localUser}:${v.localGroup}:${v.serviceName}.service"
       ];
       description = "Mount the zfs filesystem for ${v.serviceName}";
-      what = "zroot/strong/strongStateDir/${v.serviceName}";
-      where = "/strongStateDir/${v.serviceName}";
+      what = "zroot/strong/strongStateDir/${v.datasetName}";
+      where = "/strongStateDir/${v.dataDir}";
       type = "zfs";
       options = "noauto,nofail";
     }) (lib.attrValues enabled);
@@ -67,8 +71,8 @@ in {
     systemd.services = (lib.attrsets.mapAttrs' (k: v: {
       name = v.serviceName;
       value = {
-        requires = [ "strongStateDir-${v.serviceName}.mount" ];
-        after = [ "strongStateDir-${v.serviceName}.mount" ];
+        requires = [ "strongStateDir-${v.datasetName}.mount" ];
+        after = [ "strongStateDir-${v.datasetName}.mount" ];
       };
     }) enabled) // {
       "strongStateDir@" = {
