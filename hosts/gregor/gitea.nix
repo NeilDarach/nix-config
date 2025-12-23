@@ -1,11 +1,5 @@
 { pkgs, config, outputs, ... }: {
-  environment.persistence."/persist".directories = [{
-    directory = "/var/lib/gitea";
-    user = "gitea";
-    group = "gitea";
-    mode = "u=rwx,g=rx,o=rx";
-  }];
-
+  strongStateDir.service.gitea.enable = true;
   registration.service.gitea = {
     port = 3000;
     description = "Local git server";
@@ -16,7 +10,7 @@
     enable = true;
     user = "gitea";
     group = "gitea";
-    stateDir = "/var/lib/gitea";
+    stateDir = "/strongStateDir/gitea";
   };
 }
 
