@@ -117,6 +117,17 @@ in {
           domains = [ "automation" ];
         };
       };
+      template = [{
+        sensor = [{
+          name = "Outside Temperature";
+          unit_of_measurement = "°C";
+          state = "{{ state_attr('weather.hans','temperature') }}";
+          device_class = "temperature";
+          state_class = "measurement";
+          unique_id = "weather_outside_temp";
+          icon = "mdi:thermometer";
+        }];
+      }];
     };
     extraComponents = [
       "homeassistant"
