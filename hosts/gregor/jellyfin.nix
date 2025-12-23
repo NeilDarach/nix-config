@@ -1,10 +1,5 @@
 { pkgs, config, outputs, ... }: {
-  environment.persistence."/persist".directories = [{
-    directory = "/var/lib/jellyfin";
-    user = "jellyfin";
-    group = "jellyfin";
-    mode = "u=rwx,g=rx,o=rx";
-  }];
+  strongStateDir.service.jellyfin.enable = true;
   registration.service.jellyfin = {
     port = 8096;
     description = "Jellyfin Media Server";
@@ -12,7 +7,7 @@
 
   services.jellyfin = {
     enable = true;
-    dataDir = "/var/lib/jellyfin";
+    dataDir = "/strongStateDir/jellyfin";
     openFirewall = true;
     user = "jellyfin";
     group = "jellyfin";
