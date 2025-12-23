@@ -16,7 +16,7 @@ let
       plugins:
         HASS:
           cert_verify: true
-          ha_url: http://homeassistant.darach.org.uk
+          ha_url: http://home-assistant.darach.org.uk
           token: !secret homeassistant_key
           type: hass
         MQTT:
