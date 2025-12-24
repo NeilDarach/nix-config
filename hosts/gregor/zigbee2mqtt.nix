@@ -70,8 +70,7 @@ in {
     };
   };
   systemd.services.zigbee2mqtt = {
-    serviceConfig.BindPaths = [ "/var/log/zigbee2mqtt" ];
-
+    serviceConfig.LogsDirectory = "zigbee2mqtt";
   };
 
 }

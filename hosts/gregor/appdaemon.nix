@@ -82,7 +82,7 @@ in {
         "${pkgs.coreutils}/bin/ln -fs ${configFile} /strongStateDir/appdaemon/appdaemon.yaml";
       ExecStart =
         "${pkgs.appdaemon}/bin/appdaemon -c /strongStateDir/appdaemon";
-
+      LogsDirectory = "appdaemon";
     };
   };
 }
