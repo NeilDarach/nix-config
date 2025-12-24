@@ -145,6 +145,7 @@ in {
       "pi_hole"
       "history"
       "open_meteo"
+      "nut"
     ];
 
     extraPackages = ps:

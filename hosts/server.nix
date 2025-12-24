@@ -67,7 +67,10 @@
     Defaults lecture = never
   '';
   users.defaultUserShell = pkgs.fish;
-  users.groups = { plugdev = { }; };
+  users.groups = {
+    plugdev = { };
+    nut = { };
+  };
   users.users = {
     root = {
       hashedPasswordFile = config.sops.secrets.root_password_hashed.path;
@@ -123,6 +126,9 @@
       unzip
       wget
       fish
+      usbutils
+      nut
+      lsof
     ];
   };
 
@@ -136,6 +142,8 @@
       SUBSYSTEM=="block", ENV{ID_VENDOR_ID}=="0a5c", ENV{ID_USB_MODEL_ID}=="0104", ENV{ID_USB_VENDOR}=="mmcblk0", GROUP="plugdev", MODE="0660", SYMLINK+="pi-emmc%n"
       SUBSYSTEM=="block", ENV{ID_VENDOR_ID}=="0a5c", ENV{ID_USB_MODEL_ID}=="0104", ENV{ID_USB_VENDOR}=="nvme0n1", GROUP="plugdev", MODE="0660", SYMLINK+="pi-nvme%n"
       SUBSYSTEM=="tty",   ENV{ID_VENDOR_ID}=="0403", ENV{ID_USB_MODEL_ID}=="6001", GROUP="plugdev", MODE="0660"
+      # Detect an Eaton UPS plugged in to a USB port and name it /dev/ups
+      SUBSYSTEM=="usb", ATTRS{idVendor}=="0463", ATTRS{idProduct}=="ffff", GROUP="nut", MODE="0660", SYMLINK+="ups"
     '';
   };
   programs.ssh = {
