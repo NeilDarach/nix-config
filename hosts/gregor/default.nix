@@ -21,8 +21,10 @@ in {
     ./jellyfin.nix
     ./influxdb.nix
     ./grafana.nix
+    ./ups.nix
   ];
 
+  boot.initrd.systemd.emergencyAccess = true;
   sops.age.keyFile = "/keys/key.txt";
   sops.defaultSopsFormat = "yaml";
   sops.defaultSopsFile = "${secretspath}/secrets.yaml";
@@ -34,6 +36,7 @@ in {
     "root_password_hashed" = { neededForUsers = true; };
   };
 
+  sops.secrets."nut/nut_password" = { owner = "nutmon"; };
   registration = {
     etcdHost = "arde.darach.org.uk:2379";
     serviceHost = "gregor.darach.org.uk";
