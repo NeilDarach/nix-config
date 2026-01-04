@@ -146,11 +146,14 @@ in {
       "history"
       "open_meteo"
       "nut"
+      "bthome"
+      "esphome"
     ];
 
     extraPackages = ps:
       with ps; [
         aioblescan
+        aioesphomeapi
         janus
         gtts
         brother
