@@ -9,6 +9,10 @@
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
     import-tree.url = "github:vic/import-tree";
+    secrets = {
+      url = "git+ssh://git@github.com/NeilDarach/secrets.git?shallow=1";
+      flake = false;
+    };
   };
   outputs = inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; }

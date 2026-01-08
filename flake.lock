@@ -55,7 +55,25 @@
       "inputs": {
         "flake-parts": "flake-parts",
         "import-tree": "import-tree",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "secrets": "secrets"
+      }
+    },
+    "secrets": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1767691384,
+        "narHash": "sha256-NCM2N0oBnwvTOyMgyRU4alCZtEspW1EoJBkD98FsqT8=",
+        "ref": "refs/heads/main",
+        "rev": "c0f5239af79602a1cac426c2acfafd75d708b89f",
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/NeilDarach/secrets.git"
+      },
+      "original": {
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/NeilDarach/secrets.git"
       }
     }
   },
