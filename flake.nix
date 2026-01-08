@@ -1,13 +1,25 @@
 {
-  description = "A modified Nixos SD/EMMC image generator";
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
-    flake-utils.url = "github:numtide/flake-utils";
-    nanopi-img.url = "github:bdew/nixos-nanopi";
-  };
+  description = "Build an sd image to boot an r5s with zfs support";
 
-  outputs = { self, nixpkgs, flake-utils, nanopi-img, }: {
-    packages = nanopi-img.packages;
-    nixosModules = nanopi-img.nixosModules;
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nanopi = {
+      url = "github:bdew/nixos-nanopi";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
+  outputs = { self, nixpkgs, nanopi, ... }@inputs:
+    let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [ ];
+      };
+      modelDef = import "${nanopi}/models/r5s.nix";
+      mynixpkgs = nixpkgs;
+      image = import "${nanopi}/utils/image.nix" {
+        inherit pkgs modelDef;
+        nixpkgs = mynixpkgs;
+      };
+    in { packages."${system}".default = image; };
 }
