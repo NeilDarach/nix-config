@@ -1,25 +1,17 @@
 {
-  description = "Build an sd image to boot an r5s with zfs support";
+  description =
+    "Nanopi R5S nix config for bootable SD image and a running config";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
-    nanopi = {
-      url = "github:bdew/nixos-nanopi";
-      inputs.nixpkgs.follows = "nixpkgs";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
     };
+    import-tree.url = "github:vic/import-tree";
   };
-  outputs = { self, nixpkgs, nanopi, ... }@inputs:
-    let
-      system = "x86_64-linux";
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = [ ];
-      };
-      modelDef = import "${nanopi}/models/r5s.nix";
-      mynixpkgs = nixpkgs;
-      image = import "${nanopi}/utils/image.nix" {
-        inherit pkgs modelDef;
-        nixpkgs = mynixpkgs;
-      };
-    in { packages."${system}".default = image; };
+  outputs = inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; }
+    (inputs.import-tree ./modules);
 }
+
