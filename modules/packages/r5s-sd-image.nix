@@ -34,8 +34,13 @@
               storePaths = image.config.system.build.toplevel;
               populateImageCommands = ''
                 mkdir -p ./files/boot
-                mkdir -p ./files/etc/nixos;
+                mkdir -p ./files/etc/nixos
                 ${image.config.boot.loader.generic-extlinux-compatible.populateCmd} -c ${image.config.system.build.toplevel} -d ./files/boot
+                mkdir -p ./files/u-boot
+                cp ${bootloader}/idbloader.img ./files/u-boot 
+                cp ${bootloader}/u-boot.itb ./files/u-boot
+                echo "dd conv=notrunc if=/u-boot/idbloader.img seek=8 of=/dev/??" > ./files/u-boot/readme.txt
+                echo "dd conv=notrunc if=/u-boot/u-boot.itb seek=2048 of=/dev/??" >> ./files/u-boot/readme.txt
               '';
               volumeLabel = "NIXOS";
             });

@@ -1,22 +1,14 @@
 { config, inputs, ... }:
 let inherit (config.flake.modules) nixos;
 in {
-  configurations.nixos.r5s-sd.module = args@{ pkgs, lib, ... }: {
-    imports = [ nixos.hardware-r5s nixos.r5s-sd-firstboot nixos.overlays-nvim ];
+  configurations.nixos.r5s.module = args@{ pkgs, lib, ... }: {
+    imports = [ nixos.hardware-r5s nixos.r5s-disko nixos.overlays ];
     nixpkgs.hostPlatform = "aarch64-linux";
-    fileSystems = {
-      "/" = {
-        device = "/dev/disk/by-label/NIXOS";
-        fsType = "ext4";
-      };
-      "/var/log" = { fsType = "tmpfs"; };
-    };
-    boot.tmp.useTmpfs = true;
     boot.supportedFilesystems = [ "zfs" ];
     networking = {
-      hostName = "nixos";
+      hostName = "r5s";
       useDHCP = true;
-      hostId = "d9165afe";
+      hostId = "d9165aff";
     };
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
     time.timeZone = "Europe/London";
