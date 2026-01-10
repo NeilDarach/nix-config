@@ -1,5 +1,6 @@
 {
-  description = "Nanopi R5S nix config for bootable SD image and a running config";
+  description =
+    "Nanopi R5S nix config for bootable SD image and a running config";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
@@ -19,12 +20,14 @@
     };
     sops-nix = {
       url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+        inputs.nixpkgs.follows = "nixpkgs";
     };
     secrets = {
       url = "git+ssh://git@github.com/NeilDarach/secrets.git?shallow=1";
       flake = false;
     };
   };
-  outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./modules);
+  outputs = inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; }
+    (inputs.import-tree ./modules);
 }
