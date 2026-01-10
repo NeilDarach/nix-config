@@ -6,30 +6,29 @@
 * https://github.com/bdew/nixos-nanopi
 
 ## Prepare the image
-* Get a copy of the bootable image from bdew
+* Build a bootable SD image for the r5s and write it to a handy SD card
 ```
-git clone git@github.com:bdew/nixos-nanopi.git
-cd nixos-nanopi
-nix build .#nanopi-r5s-image
-zstd -d result/nanopi-r5s-nixos.img.zst -o ../nanopi-r5s-nixos.img
+nix build --builders "" .#nanopi-r5s-image
+xz -d result/nanopi-r5s-nixos.img.xz ./nanopi-r5s-nixos.img
 ```
-which  will create nanopi-r5s-nixos.img
-Write this image to an SD card
-Boot from the SD card
-Write the image to the eMMC
+Boot the r5s
+Clone the main nix repository
 ```
-cat nanopi-r5s-nixos.img | ssh nix@<host> "sudo cat > /dev/mmcblk1 && sync"
+git clone https://github.com/NeilDarach/nix-r5s.git
 ```
-
-Relabel the eMMC partition as a boot partition, generate some random UUIDs and resize
-the partition to 100%
+Run the partitining script if necessary
 ```
-sudo e2label /dev/mmcblk1p1 NIXOS_BOOT
-sudo tune2fs -U random /dev/mmcblk1p1
-sudo tune2fs -U random /dev/mmcblk0p1
-sudo parted /dev/mmcblk1 ---pretend-input-tty resizepart 1 100%
-sudo resize2fs /dev/mmcblk1p1
+cd modules/disko
+./disko-r5s.sh
 ```
-
-Create a filesystem on the NVME drive
-
+Copy the system key
+and ssh keys to ~nix/.ssh and /root/.ssh to access the secrets repo on github
+```
+/keys/key.txt
+```
+Install the main configuration
+```
+cd ~/r5s
+sudo nixos-install --flake .#r5s
+```
+Reboot

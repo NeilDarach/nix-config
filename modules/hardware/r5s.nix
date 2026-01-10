@@ -1,7 +1,10 @@
 { config, lib, inputs, ... }: {
   flake.modules = {
     nixos.hardware-r5s = nixosArgs@{ pkgs, config, ... }: {
-      imports = with inputs.self.modules.nixos; [ hardware-r5s-netdriver ];
+      imports = with inputs.self.modules.nixos; [
+        hardware-r5s-netdriver
+        hardware-r5s-irq
+      ];
       options.nanopi-r5s = {
         nics = lib.mkOption {
           type = lib.types.listOf (lib.types.attrsOf lib.types.str);
