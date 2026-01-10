@@ -1,6 +1,5 @@
 {
-  description =
-    "Nanopi R5S nix config for bootable SD image and a running config";
+  description = "Nanopi R5S nix config for bootable SD image and a running config";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
@@ -13,6 +12,7 @@
       url = "github:NeilDarach/nixNvim/updated";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    impermanence.url = "github:nix-community/impermanence";
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -26,8 +26,5 @@
       flake = false;
     };
   };
-  outputs = inputs:
-    inputs.flake-parts.lib.mkFlake { inherit inputs; }
-    (inputs.import-tree ./modules);
+  outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./modules);
 }
-
