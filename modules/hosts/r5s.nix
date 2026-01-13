@@ -29,8 +29,8 @@ in {
 
     sops = {
       secrets = {
-        "sshd_hostkey_r5s_rsa" = { path = "/etc/ssh/ssh_host_rsa_key"; };
-        "sshd_hostkey_r5s_ed25519" = {
+        "sshd_hostkey_${config.networking.hostName}_rsa" = { path = "/etc/ssh/ssh_host_rsa_key"; };
+        "sshd_hostkey_${config.networking.hostName}_ed25519" = {
           path = "/etc/ssh/ssh_host_ed25519_key";
         };
         "root_password_hashed" = { neededForUsers = true; };
