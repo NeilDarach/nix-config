@@ -8,9 +8,17 @@ in
     {
       imports = [
         nixos.overlays-nvim
-        nixos.overlays-zfs-backup
-        nixos.overlays-strongStateDir
-        nixos.overlays-transcode
+      ];
+
+      nixpkgs.overlays = [
+        (final: prev: {
+          inherit (inputs.self.packages.${final.system})
+            zfs-backup
+            strongStateDir
+            registration
+            transcode
+            ;
+        })
       ];
     };
 }
