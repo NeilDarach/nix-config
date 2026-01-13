@@ -11,24 +11,11 @@
 nix build --builders "" .#nanopi-r5s-image
 xz -d result/nanopi-r5s-nixos.img.xz ./nanopi-r5s-nixos.img
 ```
-Boot the r5s
-Clone the main nix repository
+Boot the r5s to hostname:nixos
+Run the install script
 ```
-git clone https://github.com/NeilDarach/nix-r5s.git
+just deploy_r5s
 ```
-Run the partitining script if necessary
-```
-cd modules/disko
-./disko-r5s.sh
-```
-Copy the system key
-and ssh keys to ~nix/.ssh and /root/.ssh to access the secrets repo on github
-```
-/keys/key.txt
-```
-Install the main configuration
-```
-cd ~/r5s
-sudo nixos-install --flake .#r5s
-```
-Reboot
+which will use nixos-anywhere to partition the disks, install the boot loader on the eMMC, copy the age key for sops decryption and install nixos on the partitioned disks.
+Remove the sd card and reboot.
+
