@@ -9,7 +9,12 @@
     nixos.common =
       nixosArgs@{ pkgs, config, ... }:
       {
-        imports = with inputs.self.modules.nixos; [ common-zfs distributedBuilds ssh git];
+        imports = with inputs.self.modules.nixos; [
+          common-zfs
+          distributedBuilds
+          ssh
+          git
+        ];
         nixpkgs.config.allowUnfree = true;
         environment.systemPackages = with pkgs; [
           bat
@@ -19,15 +24,21 @@
           ethtool
           file
           git
+          gnutar
+          iputils
           jq
           lsof
           mc
+          mtr
+          netcat
           nixNvim
           nvd
+          openssl
           psmisc
           python3
           ripgrep
           sysstat
+          tree
           unzip
           usbutils
           wget
@@ -40,6 +51,7 @@
         programs = {
           fish.enable = true;
           git.enable = true;
+          htop.enable = true;
         };
         documentation.man.generateCaches = false;
       };

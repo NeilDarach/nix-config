@@ -26,6 +26,7 @@ in
         inputs.sops-nix.nixosModules.sops
         nixos.common
         nixos.user-neil
+        nixos.user-root
         inputs.home-manager.nixosModules.home-manager
         self.diskoConfigurations.r5s
       ];
@@ -54,16 +55,6 @@ in
           "sshd_hostkey_${config.networking.hostName}_ed25519" = {
             path = "/etc/ssh/ssh_host_ed25519_key";
           };
-          "root_nixbuild" = lib.mkIf config.local.useDistributedBuilds {
-            key = "ssh_privatekey_nixbuild";
-            path = "/root/.ssh/id_nixbuild";
-            owner = "root";
-            group = "root";
-            mode = "0600";
-          };
-          "root_password_hashed" = {
-            neededForUsers = true;
-          };
         };
       };
 
@@ -72,14 +63,6 @@ in
         "root"
         "@wheel"
       ];
-      users.users = {
-        root = {
-          hashedPasswordFile = config.sops.secrets.root_password_hashed.path;
-          openssh.authorizedKeys.keys = [
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIJ0nGtONOY4QnJs/xj+N4rKf4pCWfl25BOfc8hEczUg neil.darach@gmail.com"
-          ];
-        };
-      };
       services.openssh.enable = true;
       i18n = {
         defaultLocale = "en_GB.UTF-8";
