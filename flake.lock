@@ -43,6 +43,27 @@
     "home-manager": {
       "inputs": {
         "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1767910483,
+        "narHash": "sha256-MOU5YdVu4DVwuT5ztXgQpPuRRBjSjUGIdUzOQr9iQOY=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "82fb7dedaad83e5e279127a38ef410bcfac6d77c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "ref": "release-25.11",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "home-manager_2": {
+      "inputs": {
+        "nixpkgs": [
           "impermanence",
           "nixpkgs"
         ]
@@ -63,7 +84,7 @@
     },
     "impermanence": {
       "inputs": {
-        "home-manager": "home-manager",
+        "home-manager": "home-manager_2",
         "nixpkgs": "nixpkgs"
       },
       "locked": {
@@ -186,6 +207,7 @@
       "inputs": {
         "disko": "disko",
         "flake-parts": "flake-parts",
+        "home-manager": "home-manager",
         "impermanence": "impermanence",
         "import-tree": "import-tree",
         "nixNvim": "nixNvim",
@@ -197,10 +219,10 @@
     "secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1768063886,
-        "narHash": "sha256-rg2C+pD1Zg7vbae0SUu1iL++K5j6Go5R0Kr5MdWFTGU=",
+        "lastModified": 1768070710,
+        "narHash": "sha256-mqOtefyb85j9wigzgmPgXeb+ALhYrxGQvciwghx/7eU=",
         "ref": "refs/heads/main",
-        "rev": "96f3694a710c6782089281bc0e6f70af002fd64f",
+        "rev": "be4bbc7c858b6303fd7587c989296e0a4effbb73",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/NeilDarach/secrets.git"

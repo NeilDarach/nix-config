@@ -20,11 +20,16 @@
     };
     sops-nix = {
       url = "github:Mic92/sops-nix";
-        inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     secrets = {
       url = "git+ssh://git@github.com/NeilDarach/secrets.git?shallow=1";
       flake = false;
+    };
+
+    home-manager = {
+      url = "github:nix-community/home-manager/release-25.11";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
   outputs = inputs:
