@@ -1,6 +1,9 @@
 _default:
     @just --list
 
+test:
+    sudo nixos-rebuild test --flake . 
+
 rebuild HOST:
     nixos-rebuild switch --flake .#{{HOST}} --target-host {{HOST}} --build-host localhost --use-remote-sudo
 

@@ -1,7 +1,7 @@
 { config, lib, inputs, ... }: {
   flake.modules = {
     homeManager.user-neil = nixosArgs@{ pkgs, config, ... }: {
-      imports = with inputs.self.modules.homeManager; [ neil-fish ];
+      imports = with inputs.self.modules.homeManager; [ neil-direnv neil-fish ];
       home = {
         stateVersion = "25.11";
         shellAliases = { ll = "ls -altr"; };
@@ -9,8 +9,10 @@
       programs = {
         bash.enable = true;
         fish.enable = true;
+        direnv.enable = true;
         git = {
           enable = true;
+          ignores = [ "*~" "*.swp" ".direnv" ];
           settings = {
             user = {
               name = "Neil Darach";
