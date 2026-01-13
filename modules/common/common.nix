@@ -9,6 +9,28 @@
     nixos.common =
       nixosArgs@{ pkgs, config, ... }:
       {
+        environment.systemPackages = with pkgs; [
+          bat
+          curl
+          dig
+          dnsutils
+          ethtool
+          file
+          git
+          jq
+          lsof
+          mc
+          nixNvim
+          nvd
+          psmisc
+          python3
+          ripgrep
+          sysstat
+          unzip
+          usbutils
+          wget
+          zfs
+        ];
         home-manager = {
           extraSpecialArgs = { inherit inputs; };
           useGlobalPkgs = true;

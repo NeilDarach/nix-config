@@ -37,28 +37,6 @@ in {
       };
     };
 
-    environment.systemPackages = with pkgs; [
-      git
-      python3
-      mc
-      psmisc
-      curl
-      wget
-      dig
-      file
-      nvd
-      ethtool
-      sysstat
-      zfs
-      nixNvim
-      dnsutils
-      jq
-      unzip
-      usbutils
-      lsof
-      ripgrep
-    ];
-
     security.sudo.wheelNeedsPassword = false;
     nix.settings.trusted-users = [ "root" "@wheel" ];
     users.users = {
