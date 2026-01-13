@@ -25,7 +25,7 @@
             less = "bat";
             ll = "ls -altr";
           };
-        packages = with pkgs; [ fd ];
+          packages = with pkgs; [ fd ];
         };
         programs = {
           bash.enable = true;
@@ -56,8 +56,17 @@
           (inputs.self.functions.mkUser { username = "neil"; })
         ];
         config = {
-          sops.secrets."user_password_hashed" = {
-            neededForUsers = true;
+          sops.secrets = {
+            "user_password_hashed" = {
+              neededForUsers = true;
+            };
+            "neil_nixbuild" = lib.mkIf config.local.useDistributedBuilds {
+              key = "ssh_privatekey_nixbuild";
+              path = "/home/neil/.ssh/id_nixbuild";
+              owner = "neil";
+              group = "neil";
+              mode = "0600";
+            };
           };
           users.users.neil = {
             description = "Neil Darach";

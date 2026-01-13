@@ -9,7 +9,7 @@
     nixos.common =
       nixosArgs@{ pkgs, config, ... }:
       {
-        imports = with inputs.self.modules.nixos; [ common-zfs ];
+        imports = with inputs.self.modules.nixos; [ common-zfs distributedBuilds ssh git];
         nixpkgs.config.allowUnfree = true;
         environment.systemPackages = with pkgs; [
           bat
