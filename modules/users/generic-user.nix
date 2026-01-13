@@ -23,10 +23,15 @@
       group = "${username}";
     };
 
+    home-manager.users."${username}".imports = [
+      inputs.self.modules.homeManager.common
+      inputs.self.modules.homeManager."user-${username}"
+    ];
     programs = {
       direnv.enable = lib.mkDefault true;
       fish.enable = lib.mkDefault true;
       git.enable = lib.mkDefault true;
+
     };
   };
 }

@@ -1,6 +1,7 @@
 { config, lib, inputs, ... }: {
   flake.modules = {
     homeManager.user-neil = nixosArgs@{ pkgs, config, ... }: {
+      imports = with inputs.self.modules.homeManager; [ neil-fish ];
       home = {
         stateVersion = "25.11";
         shellAliases = { ll = "ls -altr"; };
@@ -24,12 +25,6 @@
       imports = with inputs.self.modules.nixos; [
         inputs.sops-nix.nixosModules.sops
         (inputs.self.functions.mkUser { username = "neil"; })
-        {
-          home-manager = {
-            extraSpecialArgs = { inherit inputs; };
-            users.neil.imports = [ inputs.self.modules.homeManager.user-neil ];
-          };
-        }
       ];
       config = {
         sops.secrets."user_password_hashed" = { neededForUsers = true; };
