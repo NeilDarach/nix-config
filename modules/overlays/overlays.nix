@@ -9,6 +9,7 @@ in
       imports = [
         nixos.overlays-nvim
         nixos.overlays-plex
+        nixos.overlays-disableGnome
       ];
 
       nixpkgs.overlays = [
@@ -17,8 +18,8 @@ in
             zfs-backup
             strongStateDir
             registration
-            transcode
-            ;
+            transcode;
+
             msg_q = inputs.msg_q.packages.${final.stdenv.hostPlatform.system}.default;
         })
       ];
