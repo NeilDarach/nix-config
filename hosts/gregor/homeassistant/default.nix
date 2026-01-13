@@ -148,6 +148,9 @@ in {
       "nut"
       "bthome"
       "esphome"
+      "local_calendar"
+      "caldav"
+      "xiaomi_ble"
     ];
 
     extraPackages = ps:
@@ -175,6 +178,7 @@ in {
         universal-silabs-flasher
         ha-silabs-firmware-client
       ];
-    customComponents = [ ble_monitor ];
+    customComponents = [ # ble_monitor
+    ];
   };
 }
