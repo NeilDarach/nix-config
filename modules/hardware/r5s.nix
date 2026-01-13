@@ -70,6 +70,7 @@
           };
           timeout = 1;
         };
+        nixpkgs.hostPlatform = "aarch64-linux";
         boot.kernelParams =
           [ "console=tty0" "earlycon=uart8250,mmio32,0xfe660000" ];
         boot.initrd.kernelModules = [

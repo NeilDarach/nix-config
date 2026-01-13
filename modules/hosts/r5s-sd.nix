@@ -2,8 +2,8 @@
 let inherit (config.flake.modules) nixos;
 in {
   configurations.nixos.r5s-sd.module = args@{ pkgs, lib, ... }: {
-    imports = [ nixos.hardware-r5s nixos.r5s-sd-firstboot nixos.overlays-nvim ];
-    nixpkgs.hostPlatform = "aarch64-linux";
+    imports = [ nixos.common-zfs nixos.hardware-r5s nixos.r5s-sd-firstboot nixos.overlays-nvim ];
+    local.useZfs = true;
     fileSystems = {
       "/" = {
         device = "/dev/disk/by-label/NIXOS";
@@ -12,7 +12,6 @@ in {
       "/var/log" = { fsType = "tmpfs"; };
     };
     boot.tmp.useTmpfs = true;
-    boot.supportedFilesystems = [ "zfs" ];
     networking = {
       hostName = "nixos";
       useDHCP = true;
@@ -33,7 +32,6 @@ in {
       nvd
       ethtool
       sysstat
-      zfs
       nixNvim
       dnsutils
       jq

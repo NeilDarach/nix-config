@@ -9,7 +9,7 @@
     nixos.common =
       nixosArgs@{ pkgs, config, ... }:
       {
-        imports = with inputs.self.modules.nixos; [ ];
+        imports = with inputs.self.modules.nixos; [ common-zfs ];
         nixpkgs.config.allowUnfree = true;
         environment.systemPackages = with pkgs; [
           bat
@@ -31,7 +31,6 @@
           unzip
           usbutils
           wget
-          zfs
         ];
         home-manager = {
           extraSpecialArgs = { inherit inputs; };

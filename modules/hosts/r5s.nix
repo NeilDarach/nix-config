@@ -15,10 +15,8 @@ in {
       inputs.home-manager.nixosModules.home-manager
       self.diskoConfigurations.r5s
     ];
-    nixpkgs.hostPlatform = "aarch64-linux";
-    boot.supportedFilesystems = [ "vfat" "zfs" ];
-    boot.initrd.kernelModules = [ "zfs" ];
-    boot.kernelModules = [ "zfs" ];
+    boot.supportedFilesystems = [ "vfat" ];
+    local.useZfs = true;
     networking = {
       hostName = "r5s";
       useDHCP = true;
