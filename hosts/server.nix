@@ -129,6 +129,7 @@
       usbutils
       nut
       lsof
+      ripgrep
     ];
   };
 
