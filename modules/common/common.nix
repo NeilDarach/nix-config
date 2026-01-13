@@ -10,6 +10,7 @@
       nixosArgs@{ pkgs, config, ... }:
       {
         imports = with inputs.self.modules.nixos; [ ];
+        nixpkgs.config.allowUnfree = true;
         environment.systemPackages = with pkgs; [
           bat
           curl
@@ -41,6 +42,7 @@
           fish.enable = true;
           git.enable = true;
         };
+        documentation.man.generateCaches = false;
       };
     homeManager.common =
       nixosArgs@{ pkgs, config, ... }:

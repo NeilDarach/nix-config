@@ -8,16 +8,18 @@ in
     {
       imports = [
         nixos.overlays-nvim
+        nixos.overlays-plex
       ];
 
       nixpkgs.overlays = [
-        (final: prev: {
+        (final: previous: {
           inherit (inputs.self.packages.${final.system})
             zfs-backup
             strongStateDir
             registration
             transcode
             ;
+            msg_q = inputs.msg_q.packages.${final.stdenv.hostPlatform.system}.default;
         })
       ];
     };
