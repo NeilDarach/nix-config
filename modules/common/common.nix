@@ -9,6 +9,7 @@
     nixos.common =
       nixosArgs@{ pkgs, config, ... }:
       {
+        imports = with inputs.self.modules.nixos; [ ];
         environment.systemPackages = with pkgs; [
           bat
           curl
