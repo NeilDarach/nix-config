@@ -15,11 +15,17 @@
         ];
         home = {
           stateVersion = "25.11";
+          sessionVariables = {
+            PAGER = "less";
+            CLICOLOR = 1;
+            EDITOR = "vim";
+          };
           shellAliases = {
             cat = "bat";
             less = "bat";
             ll = "ls -altr";
           };
+        packages = with pkgs; [ fd ];
         };
         programs = {
           bash.enable = true;
