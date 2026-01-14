@@ -29,6 +29,7 @@ in
         nixos.user-root
         inputs.home-manager.nixosModules.home-manager
         self.diskoConfigurations.r5s
+        nixos.svc-jellyfin
       ];
       boot.supportedFilesystems = [ "vfat" ];
       local = {

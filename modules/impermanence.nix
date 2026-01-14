@@ -11,14 +11,13 @@
       {
         imports = with inputs.self.modules.nixos; [ inputs.impermanence.nixosModules.impermanence ];
         config = {
-          system.activationScripts.createPersist = "mkdir -p /persist";
           environment.persistence."/persist" = {
-
             hideMounts = true;
             directories = [
               "/etc/nixos"
               "/etc/NetworkManager"
               "/var/lib/nixos"
+              "/var/lib/bluetooth"
             ];
             files = [ "/etc/machine-id" ];
           };

@@ -14,8 +14,11 @@
           distributedBuilds
           ssh
           git
+          strongStateDir
+          registration
         ];
         nixpkgs.config.allowUnfree = true;
+        registration.etcdHost = "arde.darach.org.uk:2379";
         environment.systemPackages = with pkgs; [
           bat
           curl
