@@ -63,7 +63,7 @@ if [[ "$CREATED" = "TRUE" ]]; then
     fi
 
     echo "Chowning the contents of the dataset after creation"
-    chown "${USR}":"${GROUP}" "/strongStateDir/${NAME}"
+    chown -R "${USR}":"${GROUP}" "/strongStateDir/${NAME}"
     chmod 775 "/strongStateDir/${NAME}"
     if [[ "${unmount}" == "1" ]]; then
         umount "strongStateDir/${NAME}"
