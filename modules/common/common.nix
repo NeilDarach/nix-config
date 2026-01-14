@@ -16,6 +16,7 @@
           git
           strongStateDir
           registration
+          inputs.sops-nix.nixosModules.sops
         ];
         nixpkgs.config.allowUnfree = true;
         registration.etcdHost = "arde.darach.org.uk:2379";
@@ -46,6 +47,37 @@
           usbutils
           wget
         ];
+        sops = {
+          secrets = {
+            "sshd_hostkey_${config.networking.hostName}_rsa" = {
+              path = "/etc/ssh/ssh_host_rsa_key";
+            };
+            "sshd_hostkey_${config.networking.hostName}_ed25519" = {
+              path = "/etc/ssh/ssh_host_ed25519_key";
+            };
+          };
+        };
+        nix.settings.experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
+        time.timeZone = "Europe/London";
+
+        security.sudo.wheelNeedsPassword = false;
+        nix.settings.trusted-users = [
+          "root"
+          "@wheel"
+        ];
+        services.openssh.enable = true;
+        i18n = {
+          defaultLocale = "en_GB.UTF-8";
+        };
+        environment.etc = {
+          "systemd/journald.conf.d/99-storage.conf".text = ''
+            [Journal]
+            Storage=volatile
+          '';
+        };
         home-manager = {
           extraSpecialArgs = { inherit inputs; };
           useGlobalPkgs = true;

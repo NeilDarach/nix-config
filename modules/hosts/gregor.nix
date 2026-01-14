@@ -8,7 +8,7 @@ let
   inherit (config.flake.modules) nixos home-manager;
 in
 {
-  configurations.nixos.r5s.module =
+  configurations.nixos.gregor.module =
     args@{
       pkgs,
       lib,
@@ -17,7 +17,7 @@ in
     }:
     {
       imports = [
-        nixos.hardware-r5s
+        nixos.hardware-intel
         nixos.impermanence
         nixos.home-manager
         inputs.disko.nixosModules.disko
@@ -28,7 +28,7 @@ in
         nixos.user-neil
         nixos.user-root
         inputs.home-manager.nixosModules.home-manager
-        self.diskoConfigurations.r5s
+        self.diskoConfigurations.gregor
         nixos.svc-jellyfin
       ];
       boot.supportedFilesystems = [ "vfat" ];
@@ -36,11 +36,12 @@ in
         useZfs = true;
         useDistributedBuilds = true;
       };
+      boot.zfs.extraPools = [ "linstore" ];
 
       networking = {
-        hostName = "r5s";
+        hostName = "gregor";
         useDHCP = true;
-        hostId = "d9165aff";
+        hostId = "42231481";
       };
       system.stateVersion = lib.mkDefault "25.11";
 
