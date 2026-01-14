@@ -30,20 +30,49 @@ in
         inputs.home-manager.nixosModules.home-manager
         self.diskoConfigurations.gregor
         nixos.svc-jellyfin
+        nixos.ups
+        inputs.msg_q.nixosModules.msg_q
       ];
       boot.supportedFilesystems = [ "vfat" ];
       local = {
         useZfs = true;
         useDistributedBuilds = true;
       };
-      boot.zfs.extraPools = [ "linstore" ];
+      boot.zfs.extraPools = [
+        "linstore"
+        "silent"
+      ];
+      fileSystems."/home" = {
+        device = "silent/home";
+        fsType = "zfs";
+        neededForBoot = true;
+      };
 
       networking = {
         hostName = "gregor";
-        useDHCP = true;
+        useDHCP = lib.mkForce true;
         hostId = "42231481";
       };
-      system.stateVersion = lib.mkDefault "25.11";
 
+      boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+      boot.initrd.systemd.emergencyAccess = true;
+      system.stateVersion = lib.mkDefault "25.11";
+      nix.settings.extra-platforms = config.boot.binfmt.emulatedSystems;
+      environment = {
+        systemPackages = [ pkgs.bluez ];
+      };
+      hardware.bluetooth.enable = true;
+      services.dbus = {
+        implementation = "broker";
+        enable = true;
+      };
+      services.msg_q = {
+        enable = true;
+        port = 9000;
+        openFirewall = true;
+      };
+      sops.secrets."nut/nut_password" = {
+        owner = "nutmon";
+      };
     };
 }

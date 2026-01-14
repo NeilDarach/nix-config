@@ -80,11 +80,6 @@ in
             mountpoint = "/keys";
             options.mountpoint = "legacy";
           };
-          "strong/home" = {
-            type = "zfs_fs";
-            mountpoint = "/home";
-            options.mountpoint = "legacy";
-          };
           reserved = {
             type = "zfs_fs";
             options."com.sun:auto-snapshot" = "true";
@@ -101,6 +96,5 @@ in
     "/keys".neededForBoot = true;
     "/persist".neededForBoot = true;
     "/boot".neededForBoot = true;
-    "/home".neededForBoot = true;
   };
 }

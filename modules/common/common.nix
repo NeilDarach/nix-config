@@ -61,6 +61,8 @@
           "nix-command"
           "flakes"
         ];
+        networking.firewall.enable = true;
+        networking.networkmanager.enable = true;
         time.timeZone = "Europe/London";
 
         security.sudo.wheelNeedsPassword = false;
