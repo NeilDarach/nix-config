@@ -1,13 +1,6 @@
-{
-  config,
-  lib,
-  inputs,
-  ...
-}:
-{
+{ config, lib, inputs, ... }: {
   flake.modules = {
-    nixos.svc-ups =
-      nixosArgs@{ pkgs, config, ... }:
+    nixos.svc-ups = nixosArgs@{ pkgs, config, ... }:
       let
         # How many seconds the system should wait for the UPS to come back
         systemGraceTime = "600";
@@ -32,8 +25,7 @@
               esac
             '';
         };
-      in
-      {
+      in {
         options.local.nut-client = {
           enable = lib.mkEnableOption "nut client monitoring on this host";
         };
@@ -45,46 +37,16 @@
             upsmon.settings = {
               POWERDOWNFLAG = "/var/state/ups/killpower";
               NOTIFYFLAG = [
-                [
-                  "ONLINE"
-                  "SYSLOG+WALL"
-                ]
-                [
-                  "ONBATT"
-                  "SYSLOG+WALL"
-                ]
-                [
-                  "LOWBATT"
-                  "SYSLOG+WALL"
-                ]
-                [
-                  "FSD"
-                  "SYSLOG+WALL"
-                ]
-                [
-                  "ONLINE"
-                  "SYSLOG+WALL"
-                ]
-                [
-                  "COMBAD"
-                  "EXEC"
-                ]
-                [
-                  "SHUTDOWN"
-                  "SYSLOG+WALL"
-                ]
-                [
-                  "REPLBATT"
-                  "SYSLOG+WALL"
-                ]
-                [
-                  "NOCOMM"
-                  "SYSLOG+WALL+EXEC"
-                ]
-                [
-                  "NOPARENT"
-                  "SYSLOG+WALL"
-                ]
+                [ "ONLINE" "SYSLOG+WALL" ]
+                [ "ONBATT" "SYSLOG+WALL" ]
+                [ "LOWBATT" "SYSLOG+WALL" ]
+                [ "FSD" "SYSLOG+WALL" ]
+                [ "ONLINE" "SYSLOG+WALL" ]
+                [ "COMBAD" "EXEC" ]
+                [ "SHUTDOWN" "SYSLOG+WALL" ]
+                [ "REPLBATT" "SYSLOG+WALL" ]
+                [ "NOCOMM" "SYSLOG+WALL+EXEC" ]
+                [ "NOPARENT" "SYSLOG+WALL" ]
               ];
             };
 
@@ -96,51 +58,48 @@
               type = "secondary";
             };
 
-            schedulerRules =
-              pkgs.lib.pipe
-                ''
-                  CMDSCRIPT ${pkgs.lib.getExe upssched-dispatch}
-                  PIPEFN /var/state/ups/upssched.pipe
-                  LOCKFN /var/state/ups/upssched.lock
-                  # Syntax: 
-                  # AT <notifyType> <upsName> <command>
-                  AT ONLINE * CANCEL-TIMER halt
+            schedulerRules = pkgs.lib.pipe ''
+              CMDSCRIPT ${pkgs.lib.getExe upssched-dispatch}
+              PIPEFN /var/state/ups/upssched.pipe
+              LOCKFN /var/state/ups/upssched.lock
+              # Syntax: 
+              # AT <notifyType> <upsName> <command>
+              AT ONLINE * CANCEL-TIMER halt
 
-                  # If the UPS is on battery -- start a countdown timer and die
-                  AT ONBATT * START-TIMER halt ${systemGraceTime}
-                  # If the batter is low, just shut down
-                  AT LOWBATT * EXECUTE halt
-                  # Halt on a forced shutdown
-                  AT FSD * EXECUTE halt
+              # If the UPS is on battery -- start a countdown timer and die
+              AT ONBATT * START-TIMER halt ${systemGraceTime}
+              # If the batter is low, just shut down
+              AT LOWBATT * EXECUTE halt
+              # Halt on a forced shutdown
+              AT FSD * EXECUTE halt
 
-                  # If communication is lost, start a shutdown timer
-                  AT COMMBAD * START-TIMER halt ${systemGraceTime}
-                  AT NOCOMM * START-TIMER halt ${systemGraceTime}
-                  # Cancel if communication is restored
-                  AT COMMOK * CANCEL-TIMER halt
+              # If communication is lost, start a shutdown timer
+              AT COMMBAD * START-TIMER halt ${systemGraceTime}
+              AT NOCOMM * START-TIMER halt ${systemGraceTime}
+              # Cancel if communication is restored
+              AT COMMOK * CANCEL-TIMER halt
 
-                  # Do nothing, this will be caught by monitoring
-                  AT REPLBATT * EXECUTE REPLBAT
-                  AT NOPARENT * EXECUTE NOPARENT
-                  AT CAL * EXECUTE CAL
-                  AT NOTCAL * EXECUTE NOTCAL
-                  AT OFF * EXECUTE OFF
-                  AT NOTOFF * EXECUTE NOTOFF
-                  AT BYPASS * EXECUTE BYPASS
-                  AT NOTBYPASS * EXECUTE NOTBYPASS
-                  AT SUSPEND_STARTING * EXECUTE SUSPEND_STARTING
-                  AT SUSPEND_FINISHED * EXECUTE SUSPEND_FINISHED
-                ''
-                [
-                  (pkgs.writeText "upssched.conf")
-                  toString
-                ];
+              # Do nothing, this will be caught by monitoring
+              AT REPLBATT * EXECUTE REPLBAT
+              AT NOPARENT * EXECUTE NOPARENT
+              AT CAL * EXECUTE CAL
+              AT NOTCAL * EXECUTE NOTCAL
+              AT OFF * EXECUTE OFF
+              AT NOTOFF * EXECUTE NOTOFF
+              AT BYPASS * EXECUTE BYPASS
+              AT NOTBYPASS * EXECUTE NOTBYPASS
+              AT SUSPEND_STARTING * EXECUTE SUSPEND_STARTING
+              AT SUSPEND_FINISHED * EXECUTE SUSPEND_FINISHED
+            '' [ (pkgs.writeText "upssched.conf") toString ];
 
           };
 
-          sops.secrets."nut/nut_password" = {
-            owner = "nutmon";
+          users.groups.nutmon = { };
+          users.users.nutmon = {
+            isNormalUser = true;
+            group = "nutmon";
           };
+          sops.secrets."nut/nut_password" = { owner = "nutmon"; };
         };
       };
   };
