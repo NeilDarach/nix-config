@@ -52,7 +52,7 @@
             default = { };
           };
         };
-        config = {
+        config = lib.mkIf (0 != lib.length (lib.attrNames cfg.service)) {
           systemd.services =
             (lib.attrsets.mapAttrs' (k: v: {
               name = v.serviceName;
@@ -74,7 +74,7 @@
                 after = [ "registration.timer" ];
               };
             }) cfg.service)
-            // lib.optionals (0 != lib.length (lib.attrNames cfg.service)) {
+            // {
               registration = {
                 description = "Renew ETCD leases for running services";
                 script = ''
@@ -87,7 +87,7 @@
               };
             };
 
-          systemd.timers.registration = lib.optionals (0 != lib.length (lib.attrNames cfg.service)) {
+          systemd.timers.registration = {
             wantedBy = [ "timers.target" ];
             timerConfig = {
               OnBootSec = "1m";

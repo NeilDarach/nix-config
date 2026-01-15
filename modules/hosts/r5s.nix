@@ -29,17 +29,18 @@ in
         nixos.user-root
         inputs.home-manager.nixosModules.home-manager
         self.diskoConfigurations.r5s
-        nixos.svc-jellyfin
       ];
       boot.supportedFilesystems = [ "vfat" ];
       local = {
         useZfs = true;
         useDistributedBuilds = true;
+        jellyfin.enable = true;
+        espresence.enable = true;
       };
 
       networking = {
         hostName = "r5s";
-        useDHCP = true;
+        useDHCP = lib.mkForce true;
         hostId = "d9165aff";
       };
       system.stateVersion = lib.mkDefault "25.11";

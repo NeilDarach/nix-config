@@ -29,7 +29,6 @@ in
         nixos.user-root
         inputs.home-manager.nixosModules.home-manager
         self.diskoConfigurations.gregor
-        nixos.svc-jellyfin
         nixos.ups
         inputs.msg_q.nixosModules.msg_q
       ];

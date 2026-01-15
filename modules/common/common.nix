@@ -8,16 +8,22 @@
   flake.modules = {
     nixos.common =
       nixosArgs@{ pkgs, config, ... }:
+      let
+        services = lib.attrValues (lib.filterAttrs (n: v: lib.hasPrefix "svc-" n) inputs.self.modules.nixos);
+      in
       {
-        imports = with inputs.self.modules.nixos; [
-          common-zfs
-          distributedBuilds
-          ssh
-          git
-          strongStateDir
-          registration
-          inputs.sops-nix.nixosModules.sops
-        ];
+        imports =
+          with inputs.self.modules.nixos;
+          [
+            common-zfs
+            distributedBuilds
+            ssh
+            git
+            strongStateDir
+            registration
+            inputs.sops-nix.nixosModules.sops
+          ]
+          ++ services;
         nixpkgs.config.allowUnfree = true;
         registration.etcdHost = "arde.darach.org.uk:2379";
         environment.systemPackages = with pkgs; [

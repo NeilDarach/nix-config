@@ -14,7 +14,7 @@ in {
     boot.tmp.useTmpfs = true;
     networking = {
       hostName = "nixos";
-      useDHCP = true;
+      useDHCP = lib.mkForce true;
       hostId = "d9165afe";
     };
     nix.settings.experimental-features = [ "nix-command" "flakes" ];

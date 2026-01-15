@@ -57,7 +57,7 @@
             type = lib.types.package;
             default = pkgs.strongStateDir;
             defaultText = "pkgs.strongStateDir";
-            description = "The packages used to implemnt stongStateDir creation";
+            description = "The packages used to implement stongStateDir creation";
           };
           service = lib.mkOption {
             type = lib.types.attrsOf strongStateDirType;

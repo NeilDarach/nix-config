@@ -11,7 +11,11 @@
       {
         imports = with inputs.self.modules.nixos; [
         ];
-        config = {
+        options.local.jellyfin = {
+          enable = lib.mkEnableOption "Jellyfin media server on this host";
+        };
+        config = lib.mkIf config.local.jellyfin.enable 
+        {
           strongStateDir.service.jellyfin.enable = true;
           registration.service.jellyfin = {
             port = 8096;
