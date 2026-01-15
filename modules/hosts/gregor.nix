@@ -33,6 +33,7 @@ in {
       nginx.enable = true;
       transmission.enable = true;
       zigbee2mqtt.enable = true;
+      nut-client.enable = true;
     };
     boot.zfs.extraPools = [ "linstore" "silent" ];
     fileSystems."/home" = {
