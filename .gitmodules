@@ -1,3 +1,0 @@
-[submodule "boot-yellow/usbboot"]
-	path = boot-yellow/usbboot
-	url = https://github.com/raspberrypi/usbboot

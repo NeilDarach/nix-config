@@ -1,0 +1,82 @@
+diff --git a/src/nixos-anywhere.sh b/src/nixos-anywhere.sh
+index 3644d0b..7c34f6d 100755
+--- a/src/nixos-anywhere.sh
++++ b/src/nixos-anywhere.sh
+@@ -64,7 +64,9 @@ trap 'rm -rf "$tempDir"' EXIT
+ mkdir -p "$tempDir"
+ 
+ declare -A diskEncryptionKeys=()
++declare -A encryptionKeys=()
+ declare -A extraFilesOwnership=()
++declare -a extraCommands=()
+ declare -a nixCopyOptions=()
+ declare -a sshArgs=("-o" "IdentitiesOnly=yes" "-i" "$tempDir/nixos-anywhere" "-o" "UserKnownHostsFile=/dev/null" "-o" "StrictHostKeyChecking=no")
+ 
+@@ -162,6 +164,12 @@ Options:
+ * --disk-encryption-keys <remote_path> <local_path>
+   copy the contents of the file or pipe in local_path to remote_path in the installer environment,
+   after kexec but before installation. Can be repeated.
++* --encryption-keys <remote_path> <local_path>
++  copy the contents of the file or pipe in local_path to remote_path in the mounted environment,
++  after the closures are copied but before installation.  Can be repeated.
++* --extra-commands <command>
++  a command to run on the remote host after all the extra files have been copied across.
++  Can be repeated.
+ * --no-substitute-on-destination
+   disable passing --substitute-on-destination to nix-copy
+   implies --no-use-machine-substituters
+@@ -217,6 +225,7 @@ parseArgs() {
+   local printBuildLogs=n
+   local buildOnRemote=n
+   while [[ $# -gt 0 ]]; do
++    #echo "\$1 is \'$1\'"
+     case "$1" in
+     -f | --flake)
+       flake=$2
+@@ -342,6 +351,15 @@ parseArgs() {
+       shift
+       shift
+       ;;
++    --encryption-keys)
++      encryptionKeys["$2"]="$3"
++      shift
++      shift
++      ;;
++    --extra-commands)
++      extraCommands+=("$2")
++      shift
++      ;;
+     --phases)
+       phases[kexec]=0
+       phases[disko]=0
+@@ -515,6 +533,14 @@ runVmTest() {
+     echo "--vm-test is not supported with --disk-encryption-keys" >&2 
+     exit 1 
+   fi
++  if [ ${#encryptionKeys[@]} -gt 0 ]; then
++    echo "--vm-test is not supported with --encryption-keys" >&2
++    exit 1
++  fi
++  if [ ${#extraCommands[@]} -gt 0 ]; then
++    echo "--vm-test is not supported with --extra-commands" >&2
++    exit 1
++  fi
+   nix build \
+     --print-out-paths \
+     --no-link \
+@@ -879,6 +905,15 @@ nixosInstall() {
+     printf "%s\n" "${!extraFilesOwnership[@]}" "${extraFilesOwnership[@]}" | pr -2t | runSsh 'while read file ownership; do chown -R "$ownership" "/mnt/$file"; done'
+   fi
+
++  set -x
++  for path in "${!encryptionKeys[@]}"; do
++    step "Uploading ${encryptionKeys[$path]} to $path"
++    runSsh "umask 077; mkdir -p \"/mnt$(dirname "$path")\"; cat > \"/mnt${path}\"" <"${encryptionKeys[$path]}"
++  done
++  for cmd in "${extraCommands[@]}"; do
++    step "Executing ${cmd}"
++    runSsh "cd /; ${cmd}"
++  done
+   step Installing NixOS
+   runSsh sh <<SSH
+ set -eu ${enableDebug}
