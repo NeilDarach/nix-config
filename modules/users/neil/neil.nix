@@ -70,6 +70,7 @@
           };
           users.users.neil = {
             description = "Neil Darach";
+            shell = pkgs.fish;
             extraGroups = [
               "networkmanager"
               "wheel"
