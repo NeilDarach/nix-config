@@ -9,7 +9,9 @@
     nixos.common =
       nixosArgs@{ pkgs, config, ... }:
       let
-        services = lib.attrValues (lib.filterAttrs (n: v: lib.hasPrefix "svc-" n) inputs.self.modules.nixos);
+        services = lib.attrValues (
+          lib.filterAttrs (n: v: lib.hasPrefix "svc-" n) inputs.self.modules.nixos
+        );
       in
       {
         imports =
@@ -24,7 +26,21 @@
             inputs.sops-nix.nixosModules.sops
           ]
           ++ services;
+        environment.etc = {
+          "systemd/journald.conf.d/99-storage.conf".text = ''
+            [Journal]
+            Storage=volatile
+          '';
+        }
+        // (lib.mapAttrs' (name: value: {
+          name = "nix/path/${name}";
+          value.source = value.flake;
+        }) config.nix.registry);
         nixpkgs.config.allowUnfree = true;
+        nix.registry = (lib.mapAttrs (_: flake: { inherit flake; })) (
+          (lib.filterAttrs (_: lib.isType "flake")) inputs
+        );
+        nix.nixPath = [ "/etc/nix/path" ];
         registration.etcdHost = "arde.darach.org.uk:2379";
         environment.systemPackages = with pkgs; [
           bat
@@ -71,7 +87,12 @@
         networking.networkmanager.enable = true;
         time.timeZone = "Europe/London";
 
-        security.sudo.wheelNeedsPassword = false;
+        security.sudo = {
+          wheelNeedsPassword = false;
+          extraConfig = ''
+            Defaults lecture = never
+          '';
+        };
         nix.settings.trusted-users = [
           "root"
           "@wheel"
@@ -79,12 +100,6 @@
         services.openssh.enable = true;
         i18n = {
           defaultLocale = "en_GB.UTF-8";
-        };
-        environment.etc = {
-          "systemd/journald.conf.d/99-storage.conf".text = ''
-            [Journal]
-            Storage=volatile
-          '';
         };
         home-manager = {
           extraSpecialArgs = { inherit inputs; };

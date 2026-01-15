@@ -24,9 +24,6 @@
           enable = lib.mkEnableOption "homeassistant on this host";
         };
         config = lib.mkIf config.local.homeassistant.enable {
-          imports = [
-          ];
-
           sops.secrets = {
 
             twilio_sid = {

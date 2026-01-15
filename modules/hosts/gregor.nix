@@ -27,6 +27,7 @@ in
         nixos.common
         nixos.user-neil
         nixos.user-root
+        nixos.udev
         inputs.home-manager.nixosModules.home-manager
         self.diskoConfigurations.gregor
         nixos.ups
@@ -67,6 +68,12 @@ in
 
       boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
       boot.initrd.systemd.emergencyAccess = true;
+      boot.loader = {
+        systemd-boot.enable = true;
+        efi.canTouchEfiVariables = true;
+        efi.efiSysMountPoint = "/boot";
+        timeout = 3;
+      };
       system.stateVersion = lib.mkDefault "25.11";
       nix.settings.extra-platforms = config.boot.binfmt.emulatedSystems;
       environment = {
