@@ -1,1 +1,0 @@
-rootwait earlycon=uart8250,mmio32,0xfe215040 console=serial0,115200 loglevel=3 nr_cpus=1 
