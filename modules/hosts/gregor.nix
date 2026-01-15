@@ -64,7 +64,7 @@ in {
       enable = true;
     };
     services.msg_q = {
-      enable = false;
+      enable = true;
       port = 9000;
       openFirewall = true;
     };
