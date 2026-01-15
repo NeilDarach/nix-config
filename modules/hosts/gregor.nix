@@ -36,6 +36,18 @@ in
       local = {
         useZfs = true;
         useDistributedBuilds = true;
+        plex.enable = true;
+        appdaemon.enable = true;
+        esphome.enable = true;
+        espresense.enable = true;
+        gitea.enable = true;
+        grafana.enable = true;
+        homeassistant.enable = true;
+        influxdb.enable = true;
+        nginx.enable = true;
+        transmission.enable = true;
+        ups.enable = true;
+        zigbee2mqtt.enable = true;
       };
       boot.zfs.extraPools = [
         "linstore"

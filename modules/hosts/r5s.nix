@@ -35,7 +35,6 @@ in
         useZfs = true;
         useDistributedBuilds = true;
         jellyfin.enable = true;
-        espresence.enable = true;
       };
 
       networking = {
