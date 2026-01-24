@@ -3,6 +3,11 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    gff = {
+      url = "github:NeilDarach/gff";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixnvim.follows = "nixNvim";
+    };
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";

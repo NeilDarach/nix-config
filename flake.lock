@@ -245,6 +245,24 @@
         "systems": "systems"
       },
       "locked": {
+        "lastModified": 1731533236,
+        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "flake-utils_2": {
+      "inputs": {
+        "systems": "systems_2"
+      },
+      "locked": {
         "lastModified": 1726560853,
         "narHash": "sha256-X6rJYSESBVr3hBoH0WbKE5KvhPU5bloyZ2L4K60/fPQ=",
         "owner": "numtide",
@@ -258,9 +276,9 @@
         "type": "github"
       }
     },
-    "flake-utils_2": {
+    "flake-utils_3": {
       "inputs": {
-        "systems": "systems_2"
+        "systems": "systems_3"
       },
       "locked": {
         "lastModified": 1710146030,
@@ -294,6 +312,31 @@
       "original": {
         "owner": "mrcjkb",
         "repo": "nix-gen-luarc-json",
+        "type": "github"
+      }
+    },
+    "gff": {
+      "inputs": {
+        "nixnvim": [
+          "nixNvim"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust": "rust",
+        "rust-overlay": "rust-overlay"
+      },
+      "locked": {
+        "lastModified": 1769259887,
+        "narHash": "sha256-a1Vg1iLeKjk6YWeKs83vyXGdH+wPFRtJkzIezfMm+tg=",
+        "owner": "NeilDarach",
+        "repo": "gff",
+        "rev": "eec3ded8d4be8d93cb02d393c8ca64ca21c123b1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NeilDarach",
+        "repo": "gff",
         "type": "github"
       }
     },
@@ -626,12 +669,12 @@
     },
     "msg_q": {
       "inputs": {
-        "flake-utils": "flake-utils",
+        "flake-utils": "flake-utils_2",
         "nixNvim": "nixNvim",
         "nixpkgs": [
           "nixpkgs"
         ],
-        "rust-overlay": "rust-overlay_2"
+        "rust-overlay": "rust-overlay_3"
       },
       "locked": {
         "lastModified": 1729842058,
@@ -742,11 +785,11 @@
     },
     "nixNvim": {
       "inputs": {
-        "flake-utils": "flake-utils_2",
+        "flake-utils": "flake-utils_3",
         "lze": "lze",
         "nixCats": "nixCats",
         "nixpkgs": "nixpkgs_7",
-        "rust-overlay": "rust-overlay"
+        "rust-overlay": "rust-overlay_2"
       },
       "locked": {
         "lastModified": 1727623967,
@@ -1037,6 +1080,7 @@
       "inputs": {
         "disko": "disko",
         "flake-parts": "flake-parts",
+        "gff": "gff",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
         "import-tree": "import-tree",
@@ -1047,7 +1091,56 @@
         "sops-nix": "sops-nix"
       }
     },
+    "rust": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "nixpkgs": [
+          "gff",
+          "nixpkgs"
+        ],
+        "rust-overlay": [
+          "gff",
+          "rust-overlay"
+        ]
+      },
+      "locked": {
+        "dir": "rust",
+        "lastModified": 1764052958,
+        "narHash": "sha256-zdJ2ZcijvAAkYNEm8N2ajnXkRy08/LuZrmE96arZzPY=",
+        "owner": "NeilDarach",
+        "repo": "flakes",
+        "rev": "5567b74cd04f60147ad3c83b833dd8ffbadebc03",
+        "type": "github"
+      },
+      "original": {
+        "dir": "rust",
+        "owner": "NeilDarach",
+        "repo": "flakes",
+        "type": "github"
+      }
+    },
     "rust-overlay": {
+      "inputs": {
+        "nixpkgs": [
+          "gff",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1769091129,
+        "narHash": "sha256-Jj/vIHjiu4OdDIrDXZ3xOPCJrMZZKzhE2UIVXV/NYzY=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "131e22d6a6d54ab72aeef6a5a661ab7005b4c596",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-overlay_2": {
       "inputs": {
         "nixpkgs": [
           "msg_q",
@@ -1069,7 +1162,7 @@
         "type": "github"
       }
     },
-    "rust-overlay_2": {
+    "rust-overlay_3": {
       "inputs": {
         "nixpkgs": [
           "msg_q",
@@ -1093,10 +1186,10 @@
     "secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1768070710,
-        "narHash": "sha256-mqOtefyb85j9wigzgmPgXeb+ALhYrxGQvciwghx/7eU=",
+        "lastModified": 1769257072,
+        "narHash": "sha256-xyOFvf61w1N+++Zy+xplWtiy2mC2DFMJlisnHCheQeM=",
         "ref": "refs/heads/main",
-        "rev": "be4bbc7c858b6303fd7587c989296e0a4effbb73",
+        "rev": "41d7084edb54c2cd09864f32655c7bfb7a3beff3",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/NeilDarach/secrets.git"
@@ -1143,6 +1236,21 @@
       }
     },
     "systems_2": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "systems_3": {
       "locked": {
         "lastModified": 1681028828,
         "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",

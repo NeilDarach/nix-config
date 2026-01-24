@@ -34,6 +34,7 @@ in {
       transmission.enable = true;
       zigbee2mqtt.enable = true;
       nut-client.enable = true;
+      gff.enable = true;
     };
     boot.zfs.extraPools = [ "linstore" "silent" ];
     fileSystems."/home" = {
