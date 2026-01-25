@@ -7,6 +7,7 @@
       url = "github:NeilDarach/gff";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nixnvim.follows = "nixNvim";
+      inputs.secrets.follows = "secrets";
     };
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
