@@ -61,6 +61,7 @@ in {
     nix.settings.extra-platforms = config.boot.binfmt.emulatedSystems;
     environment = { systemPackages = [ pkgs.bluez ]; };
     hardware.bluetooth.enable = true;
+    hardware.firmware = [ pkgs.linux-firmware ];
     services.dbus = {
       implementation = "broker";
       enable = true;
