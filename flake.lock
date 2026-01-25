@@ -324,14 +324,17 @@
           "nixpkgs"
         ],
         "rust": "rust",
-        "rust-overlay": "rust-overlay"
+        "rust-overlay": "rust-overlay",
+        "secrets": [
+          "secrets"
+        ]
       },
       "locked": {
-        "lastModified": 1769259887,
-        "narHash": "sha256-a1Vg1iLeKjk6YWeKs83vyXGdH+wPFRtJkzIezfMm+tg=",
+        "lastModified": 1769284251,
+        "narHash": "sha256-H+f81m8YFkaVoTStKdZ5YFxiK55Q34l25RE01VKOuFg=",
         "owner": "NeilDarach",
         "repo": "gff",
-        "rev": "eec3ded8d4be8d93cb02d393c8ca64ca21c123b1",
+        "rev": "2ec706524b787ad90763b2595f29823e144a99fc",
         "type": "github"
       },
       "original": {
