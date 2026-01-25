@@ -1,6 +1,6 @@
 { config, lib, ... }: {
   flake.modules = {
-    nixos.r5s-sd-firstboot = nixosArgs@{ pkgs, config, ... }: {
+    nixos.sd-firstboot = nixosArgs@{ pkgs, config, ... }: {
       options = { };
       config = {
         boot.growPartition = true;

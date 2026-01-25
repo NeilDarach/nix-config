@@ -2,7 +2,7 @@
 let inherit (config.flake.modules) nixos;
 in {
   configurations.nixos.r5s-sd.module = args@{ pkgs, lib, ... }: {
-    imports = [ nixos.common-zfs nixos.hardware-r5s nixos.r5s-sd-firstboot nixos.overlays-nvim ];
+    imports = [ nixos.common-zfs nixos.hardware-r5s nixos.sd-firstboot nixos.overlays-nvim ];
     local.useZfs = true;
     fileSystems = {
       "/" = {
