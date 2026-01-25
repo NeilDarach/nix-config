@@ -15,6 +15,10 @@
             SUBSYSTEM=="tty",   ENV{ID_VENDOR_ID}=="0403", ENV{ID_USB_MODEL_ID}=="6001", GROUP="plugdev", MODE="0660"
             # Detect an Eaton UPS plugged in to a USB port and name it /dev/ups
             SUBSYSTEM=="usb", ATTRS{idVendor}=="0463", ATTRS{idProduct}=="ffff", GROUP="nut", MODE="0660", SYMLINK+="ups"
+            # Detect the USB zigbee coordinator
+            SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", SYMLINK+="/dev/zigbee-usb"
+            # Detect the USB serial adapter
+            SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", SYMLINK+="/dev/uart-usb"
 
           '';
         };

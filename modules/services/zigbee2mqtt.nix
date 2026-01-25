@@ -57,7 +57,8 @@
               };
 
               serial = {
-                port = "/dev/ttyUSB0";
+                port = "/dev/zigbee-usb";
+                adapter = "zstack";
               };
               homeassistant_discovery_topic = "homeassistant";
               homeassistant_status_topic = "homeassistant/status";
