@@ -7,61 +7,65 @@
   ...
 }:
 {
+  configurations.nixos.rpi4-sd.module =
+    args@{ pkgs, lib, ... }:
+    let
+      efiArch = pkgs.stdenv.hostPlatform.efiArch;
+      configTxt = pkgs.writeText "config.txt" thisConfig.rpi4.configTxt;
+      thisConfig = config.flake.nixosConfigurations.rpi4-sd.config;
+    in
+    {
+      imports = [ "${inputs.nixpkgs}/nixos/modules/image/repart.nix" ];
+
+      systemd.repart.enable = true;
+      systemd.repart.partitions."01-root".Type = "root";
+
+      image.repart = {
+        name = "rpi4-sd";
+        compression = {
+          enable = true;
+          algorithm = "xz";
+        };
+        partitions = {
+          "01-esp" = {
+            contents = {
+              "/EFI/BOOT/BOOT${lib.toUpper efiArch}.EFI".source =
+                "${pkgs.systemd}/lib/systemd/boot/efi/systemd-boot${efiArch}.efi";
+              "/EFI/Linux/${thisConfig.system.boot.loader.ukiFile}".source =
+                "${thisConfig.system.build.uki}/${thisConfig.system.boot.loader.ukiFile}";
+              "/u-boot.bin".source = "${pkgs.ubootRaspberryPi4_64bit}/u-boot.bin";
+              "/armstub8-gic.bin".source = "${pkgs.raspberrypi-armstubs}/armstub8-gic.bin";
+              "/config.txt".source = configTxt;
+              "/".source = "${pkgs.raspberrypifw}/share/raspberrypi/boot";
+            };
+            repartConfig = {
+              Type = "esp";
+              Format = "vfat";
+              LABEL = "ESP";
+              SizeMinBytes = "512M";
+            };
+          };
+          "02-root" = {
+            storePaths = [ thisConfig.system.build.toplevel ];
+            repartConfig = {
+              Type = "root";
+              Format = "ext4";
+              Label = "nixos";
+              Minimize = "guess";
+              GrowFileSystem = true;
+            };
+          };
+        };
+      };
+    };
   perSystem =
     per@{ inputs', pkgs, ... }:
+    let
+      image = config.flake.nixosConfigurations.rpi4-sd;
+    in
     {
       packages = {
-        rpi4-image = inputs.nixos-generators.nixosGenerate {
-          system = "aarch64-linux";
-          format = "sd-aarch64";
-          modules = [
-            config.flake.modules.nixos.common-zfs
-            ({
-              local.useZfs = true;
-              networking = {
-                hostId = "d8165afe";
-              };
-              nix.settings.experimental-features = [
-                "nix-command"
-                "flakes"
-              ];
-              time.timeZone = "Europe/London";
-              environment.systemPackages = with pkgs; [
-                git
-                curl
-                dnsutils
-                jq
-                unzip
-                usbutils
-                lsof
-              ];
-              security.sudo.wheelNeedsPassword = false;
-              nix.settings.trusted-users = [
-                "root"
-                "@wheel"
-              ];
-              users.users.nix = {
-                isNormalUser = true;
-                description = "nix";
-                extraGroups = [
-                  "networkmanager"
-                  "wheel"
-                ];
-                password = "nix";
-                openssh.authorizedKeys.keys = [
-                  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIJ0nGtONOY4QnJs/xj+N4rKf4pCWfl25BOfc8hEczUg neil.darach@gmail.com"
-                ];
-              };
-              services.openssh.enable = true;
-              i18n = {
-                defaultLocale = "en_GB.UTF-8";
-              };
-              system.stateVersion = lib.mkDefault "25.11";
-              image.baseName = "nixos-rpi4-sd";
-              image.filePath = config.image.fileName;
-            })
-          ];
-        };
+        rpi4-sd-image = image.config.system.build.image;
       };
     };
 }
