@@ -30,7 +30,6 @@
       ];
 
       services.openssh.enable = true;
-      networking.hostName = "nixos";
       users.users.nix = {
         password = "nix";
         isNormalUser = true;
@@ -43,6 +42,7 @@
         ];
       };
       networking = {
+        hostName = "nixos";
         useDHCP = lib.mkForce true;
         hostId = "d9165afe";
       };
