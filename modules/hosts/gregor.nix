@@ -35,6 +35,8 @@ in {
       zigbee2mqtt.enable = true;
       nut-client.enable = true;
       gff.enable = true;
+      haproxy.enable = true;
+      acme.enable = true;
     };
     boot.zfs.extraPools = [ "linstore" "silent" ];
     fileSystems."/home" = {

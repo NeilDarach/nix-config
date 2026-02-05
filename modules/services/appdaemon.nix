@@ -40,7 +40,7 @@
                 verbose: true
             time_zone: Europe/London
           http:
-            url: http://192.168.4.5:5050
+            url: http://0.0.0.0:5050
           admin:
           api:
           hadashboard:
