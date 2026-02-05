@@ -193,6 +193,7 @@
               "bthome"
               "esphome"
               "local_calendar"
+              "google"
               "caldav"
               "xiaomi_ble"
             ];
