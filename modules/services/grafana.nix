@@ -28,7 +28,7 @@
             openFirewall = true;
             settings = {
               server = {
-                http_addr = "192.168.4.5";
+                http_addr = "0.0.0.0";
                 # gitea is using 3000
                 http_port = 3001;
                 domain = "grafana.darach.org.uk";

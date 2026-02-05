@@ -17,14 +17,15 @@
         config = lib.mkIf config.local.nginx.enable {
           services.nginx = {
             enable = true;
-            virtualHosts."192.168.4.5" = {
+            defaultHTTPListenPort = 81;
+            virtualHosts."gregor.darach.org.uk" = {
               locations."/" = {
                 root = "/var/lib/nginx/www";
               };
             };
           };
 
-          networking.firewall.allowedTCPPorts = [ 80 ];
+          networking.firewall.allowedTCPPorts = [ 81 ];
 
           environment.persistence."/persist".directories = [
             {
