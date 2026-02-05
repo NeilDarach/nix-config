@@ -84,6 +84,7 @@
           "flakes"
         ];
         networking.firewall.enable = true;
+        networking.enableIPv6 = false;
         networking.networkmanager.enable = true;
         time.timeZone = "Europe/London";
 
