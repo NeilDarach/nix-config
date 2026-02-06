@@ -1,0 +1,17 @@
+{
+  "name": "update-proxy",
+  "version": "0.1.0",
+  "main": "dist/update-proxy.js",
+  "bin": {
+    "update-proxy": "dist/update-proxy.js"
+  },
+  "scripts": {
+    "build": "mkdir dist; cp update-proxy.js dist",
+    "start": "node dist/update-proxy.js"
+  },
+  "description": "Monitor the ETCD channels and re-create the ha-proxy configuration when it changes",
+  "dependencies": {
+    "etcd3": "^1.1.1",
+    "nunjucks": "^3.2.4"
+  }
+}
