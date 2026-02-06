@@ -45,14 +45,12 @@
         '';
         cfg_stub = pkgs.writeText "ha-config-stub.cfg" ''
           global
-          pidfile  /var/run/haproxy.pid
         '';
 
         haproxy_config_template = pkgs.writeText "ha-config.tmpl" ''
           global
             daemon
             maxconn 4096
-            pidfile /var/run/haproxy.pid
             ssl-default-bind-options ssl-min-ver TLSv1.2
 
           defaults
@@ -150,7 +148,7 @@
             ];
             serviceConfig = {
               Type = "oneshot";
-              ExecStart = "${pkgs.systemd}/bin/systemctl restart haproxy";
+              ExecStart = "${pkgs.systemd}/bin/systemctl reload haproxy";
             };
           };
           systemd.paths.haproxy-watcher = {
