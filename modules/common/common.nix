@@ -41,7 +41,7 @@
           (lib.filterAttrs (_: lib.isType "flake")) inputs
         );
         nix.nixPath = [ "/etc/nix/path" ];
-        registration.etcdHost = "arde.darach.org.uk:2379";
+        registration.etcdHost = "etcd.darach.org.uk:2379";
         environment.systemPackages = with pkgs; [
           bat
           curl

@@ -37,6 +37,7 @@ in {
       gff.enable = true;
       haproxy.enable = true;
       acme.enable = true;
+      etcd.enable = true;
     };
     boot.zfs.extraPools = [ "linstore" "silent" ];
     fileSystems."/home" = {
