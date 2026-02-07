@@ -46,12 +46,43 @@
         cfg_stub = pkgs.writeText "ha-config-stub.cfg" ''
           global
         '';
+        webhook_lua = pkgs.writeText "webhook.lua" ''
+        core.register_service("webhook_http", "http", function(applet)
+          local s = core.tcp()
+          s:connect("127.0.0.1",80)
+          s:settimeout(1)
+          s:send("GET /api/webhook" .. applet.path .. " HTTP/1.1\r\n" .. 
+          "Host: home-assistant.darach.org.uk\r\n" ..
+          "Keep-alive: no\r\n" ..
+          "\r\n\r\n")
+          local msg = s:receive("*l")
+          local response = ""
+          if msg == nil then
+            response = "Error contacting home-assistant"
+            applet:set_status(503)
+          else
+            local code = tonumber(string.sub(msg,9,12))
+            applet:set_status(code)
+            response = s:receive("*l")
+            response = response .. "\r\n" .. s:receive("*a")
+            if code == 200 then
+              response = "<html><body><h1>Success</h1><p>HomeAssistant has accepted the request</p></body></html>"
+            end
+            s:close()
+          end
+          applet:add_header("content-length",string.len(response))
+          applet:start_response()
+          applet:send(response)
+        end)
+        '';
 
         haproxy_config_template = pkgs.writeText "ha-config.tmpl" ''
           global
             daemon
             maxconn 4096
             ssl-default-bind-options ssl-min-ver TLSv1.2
+            tune.lua.bool-sample-conversion normal
+            lua-load ${webhook_lua}
 
           defaults
             mode tcp
@@ -69,6 +100,7 @@
             stats uri /
 
           frontend default
+            mode http
             bind *:80
             bind *:443 ssl crt /var/lib/acme/darach.org.uk/full.pem ca-file /tmp/darach-ca.crt verify optional crl-file /tmp/darach_crl.pem
             http-request set-header X-SSL-Client-DN %{+Q}[ssl_c_s_dn] if { ssl_c_used 1 } { ssl_c_verify 0 }
@@ -76,7 +108,7 @@
             http-request set-header X-Forwarded-Proto https if { ssl_fc }
             http-request set-header X-Forwarded-Proto https unless { ssl_fc }
             http-request set-header X-Forwarded-Port %fp
-            mode http
+            http-request use-service lua.webhook_http if { hdr(host) -i webhook.darach.org.uk }
             acl ACL_Local hdr(host) -i gregor.darach.org.uk
             use_backend be_Local if ACL_Local
 
