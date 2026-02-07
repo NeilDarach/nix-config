@@ -15,19 +15,6 @@
           enable = lib.mkEnableOption "etcd on this host";
         };
         config = lib.mkIf config.local.etcd.enable {
-          sops.secrets.mqtt-user = {
-          };
-          sops.secrets.mqtt-password = {
-          };
-
-          sops.templates."z2m-secret.yaml" = {
-            content = ''
-              mqtt_user: ${config.sops.placeholder.mqtt-user}
-              mqtt_password: ${config.sops.placeholder.mqtt-password}
-            '';
-            owner = "zigbee2mqtt";
-          };
-
           services.etcd = {
             enable = true;
             name = "etcd";
