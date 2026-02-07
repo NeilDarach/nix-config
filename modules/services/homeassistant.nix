@@ -196,6 +196,7 @@
               "google"
               "caldav"
               "xiaomi_ble"
+              "pushover"
             ];
 
             extraPackages =
