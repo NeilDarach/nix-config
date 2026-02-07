@@ -51,7 +51,8 @@
           local s = core.tcp()
           s:connect("127.0.0.1",80)
           s:settimeout(1)
-          s:send("GET /api/webhook" .. applet.path .. " HTTP/1.1\r\n" .. 
+          core.Debug("qs is " .. applet.qs)
+          s:send("GET /api/webhook" .. applet.path .. "?" .. applet.qs .. " HTTP/1.1\r\n" .. 
           "Host: home-assistant.darach.org.uk\r\n" ..
           "Keep-alive: no\r\n" ..
           "\r\n\r\n")
@@ -201,7 +202,7 @@
               "haproxy.service"
             ];
             environment = {
-              ETCD_HOST = "192.168.4.1";
+              ETCD_HOST = "etcd.darach.org.uk";
               CFG_TEMPLATE = "${haproxy_config_template}";
               INDEX_TEMPLATE = "${index_template}";
             };
