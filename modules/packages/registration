@@ -8,7 +8,7 @@ usage() {
 }
 
 RENEW=FALSE
-export ETCDCTL_ENDPOINTS="192.168.4.1:2379"
+export ETCDCTL_ENDPOINTS="etcd.darach.org.uk:2379"
 LEASE_DIR=/var/run/registration-leases
 
 while getopts "rd:" opt; do
