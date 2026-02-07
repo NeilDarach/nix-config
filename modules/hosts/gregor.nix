@@ -38,6 +38,7 @@ in {
       haproxy.enable = true;
       acme.enable = true;
       etcd.enable = true;
+      mqtt.enable = true;
     };
     boot.zfs.extraPools = [ "linstore" "silent" ];
     fileSystems."/home" = {
