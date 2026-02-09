@@ -68,6 +68,7 @@
           unzip
           usbutils
           wget
+          xxd
         ];
         sops = {
           secrets = {
