@@ -6,7 +6,7 @@
 }:
 let
   inherit (config.flake.modules) nixos home-manager;
-  devmode = true;
+  devmode = false;
 in
 {
   configurations.nixos.r5s.module =
@@ -55,7 +55,10 @@ in
 
       environment.etc."ppp/pap-secrets" = {
         mode = "0600";
-        text = "pppoe-username * @${config.sops.secrets."pppoe/cuckoo/username".path} *";
+        text = ''
+          #Client   Server   Secret                                               Valid ips
+          *         cuckoo        @${config.sops.secrets."pppoe/cuckoo/username".path} *
+        '';
       };
       services.pppd = {
         enable = true;
@@ -69,11 +72,15 @@ in
               persist
               maxfail 0
               holdoff 5
-              name pppoe-username
+              name cuckoo
               password anything
 
+              noaccomp
+              nopocomp
+              lock
               noipdefault
               defaultroute
+              +ipv6
             '';
           };
         };
@@ -82,7 +89,6 @@ in
       local = {
         useZfs = true;
         useDistributedBuilds = true;
-        jellyfin.enable = true;
       };
 
       environment.systemPackages = with pkgs; [
@@ -94,7 +100,23 @@ in
       networking = {
         hostName = "r5s";
         useDHCP = false;
-        firewall.allowedUDPPorts = [ 51820 ];
+        firewall.enable = true;
+        firewall.allowedTCPPorts = [
+          22
+          53
+          #67
+          #68
+          80
+          88
+          443
+          1883
+        ];
+        firewall.allowedUDPPorts = [
+          53
+          #67
+          #68
+          51820
+        ];
         enableIPv6 = lib.mkForce true;
         nftables = {
           enable = true;
@@ -113,7 +135,7 @@ in
               chain input {
                 type filter hook input priority filter;  policy drop;
                 # Allow trusted networks access to the router
-                iifname { "br0", "wg0" } counter accept
+                iifname { "lo", "br0", "wg0" } counter accept
 
                 # Allow returning traffic from ppp0 and drop everything else
                 iifname "ppp0" ct state { established, related } counter accept
@@ -129,11 +151,11 @@ in
                  #ip protocol { tcp, udp } flow offload @f
 
                  # Allow trusted network wan access
-                 iifname { "br0", "wg0" } 
+                 iifname { "lo", "br0", "wg0" } 
                    oifname { "ppp0" } 
                    counter accept comment "Trusted network to WAN"
                  iifname { "ppp0" } 
-                   oifname { "br0", "wg0" } 
+                   oifname { "lo", "br0", "wg0" } 
                    ct state established, related counter accept comment "Return established connection data"
                  }
                }
@@ -152,11 +174,29 @@ in
         nat = {
           enable = true;
           enableIPv6 = true;
-          externalInterface = "pppoe-wan";
+          externalInterface = "ppp0";
           internalInterfaces = [
             "br0"
             "wg0"
           ];
+          forwardPorts = [
+            {
+              destination = "192.168.4.5:32400";
+              proto = "tcp";
+              sourcePort = 32400;
+            }
+            {
+              destination = "192.168.4.5:1883";
+              proto = "tcp";
+              sourcePort = 1883;
+            }
+            {
+              destination = "192.168.4.5:8123";
+              proto = "tcp";
+              sourcePort = 8123;
+            }
+          ];
+
         };
       };
       systemd.network = {
@@ -231,24 +271,9 @@ in
             routes = lib.optionals devmode [ { Gateway = "192.168.4.1"; } ];
             DHCP = "no";
             networkConfig = {
-              DHCPServer = if devmode then "no" else "yes";
+              DHCPServer = "no";
               IPv6AcceptRA = false;
             };
-            dhcpServerConfig = {
-              PoolOffset = 100;
-              PoolSize = 150;
-              DefaultLeaseTimeSec = 900;
-              EmitDNS = "yes";
-              DNS = "192.168.4.2";
-              EmitNTP = "yes";
-              NTP = "192.168.4.2";
-            };
-            dhcpServerStaticLeases = [
-              {
-                Address = "192.168.4.5";
-                MACAddress = "00:30:18:cc:7d:3e";
-              }
-            ];
             linkConfig.RequiredForOnline = "routable";
           };
           "40-vlan-iot" = {
@@ -257,17 +282,8 @@ in
             routes = lib.optionals devmode [ { Gateway = "192.168.5.1"; } ];
             DHCP = "no";
             networkConfig = {
-              DHCPServer = if devmode then "no" else "yes";
+              DHCPServer = "no";
               IPv6AcceptRA = false;
-            };
-            dhcpServerConfig = {
-              PoolOffset = 100;
-              PoolSize = 150;
-              DefaultLeaseTimeSec = 900;
-              EmitDNS = "yes";
-              DNS = "192.168.5.2";
-              EmitNTP = "yes";
-              NTP = "192.168.5.2";
             };
             dhcpServerStaticLeases = [
             ];
@@ -293,33 +309,106 @@ in
           "vlan-iot@br0"
         ];
       };
-      services.dhcpd4 = lib.mkIf (!devmode) {
-        enable = true;
-        interfaces = [
-          "br0"
-          "vlan-iot@br0"
-        ];
-        extraConfig = ''
-          option domain-name-servers 192.168.4.2;
-          option subnet-mask 255.255.255.0;
-
-          subnet 192.168.4.0 netmask 255.255.255.0 {
-            option broadcast-address 192.168.4.255;
-            option routers 192.168.4.1;
-            interface br0;
-            range 192.168.4.100 192.168.4.200;
-            }
-
-          subnet 192.168.5.0 netmask 255.255.255.0 {
-            option broadcast-address 192.168.5.255;
-            option routers 192.168.5.1;
-            interface vlan-iot@br0;
-            range 192.168.5.100 192.168.5.200;
-            }
-        '';
-
+      services.resolved.enable = false;
+      services.dnsmasq = {
+        enable = false;
+        resolveLocalQueries = true;
+        settings = {
+          domain-needed = true;
+          dhcp-authoritative = true;
+          read-ethers = false;
+          expand-hosts = true;
+          bind-dynamic = true;
+          address = [
+            "/mqtt.darach.org.uk/192.168.4.5"
+            "/mqtt.iot/192.168.4.5"
+            "/darach.org.uk/192.168.4.5"
+            "/etcd.darach.org.uk/192.168.4.5"
+            "/r5s.darach.org.uk/192.168.4.2"
+          ];
+          except-interface = [
+            "ppp0"
+            "wan0"
+          ];
+          stop-dns-rebind = true;
+          rebind-localhost-ok = true;
+          dhcp-broadcast = "tag:needs-broadcast";
+          dhcp-ignore-names = "tag:dhcp_bogus_hostname";
+          dhcp-host = [
+            "00:30:18:cc:7d:3e,192.168.4.5"
+            "7c:2f:80:89:1b:9e,192.168.4.6"
+          ];
+          domain = [
+            "darach.org.uk,192.168.4.1/24,local"
+            "iot,192.168.5.1/24,local"
+          ];
+          dhcp-range = [
+            "set:lan,192.168.4.100,192.168.4.200,255.255.255.0,12h"
+            "set:iot,192.168.5.50,192.168.5.200,255.255.255.0,12h"
+          ];
+          dhcp-option = [
+            "lan,option:router,192.168.4.2"
+            "lan,option:dns-server,192.168.4.2"
+            "lan,option:domain-name,darach.org.uk"
+            "iot,option:router,192.168.5.2"
+            "iot,option:dns-server,192.168.5.2"
+            "iot,option:domain-name,iot"
+          ];
+        };
       };
+      systemd.services.pihole-ftl = {
+        serviceConfig.StateDirectory = "/var/lib/misc";
+        serviceConfig.RuntimeDirectory = "pihole";
+        serviceConfig.BindPaths = [ "/var/lib/misc" ];
+      };
+      services.pihole-ftl = {
+        enable = true;
+        lists = [
+          {
+            url = "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts";
+            type = "block";
+            enabled = true;
+            description = "Steven Black's HOSTS";
+          }
+        ];
 
+        openFirewallDNS = true;
+        openFirewallDHCP = !devmode;
+        openFirewallWebserver = true;
+        queryLogDeleter.enable = true;
+        settings = {
+          dhcp.active = false;
+          misc.readOnly = false;
+
+          files.pid = "/run/pihole/pihole-FTL.pid";
+          dns = {
+            upstreams = [
+              "1.1.1.1"
+              "1.1.1.2"
+            ];
+            interface = [
+              "br0"
+              "iot-vlan@br0"
+            ];
+          };
+          webserver = {
+            api = {
+              pwhash = "$BALLOON-SHA256$v=1$s=1024,t=32$+Xda1U5YIgOBuRYFYuxjBg==$lPaHrBGSYKonbgxVnDNJl9Xq7TXHsxIPJO7mqsWIc5k=";
+            };
+            session = {
+              timeout = 43200; # 12h
+            };
+          };
+        };
+        useDnsmasqConfig = true;
+      };
+      services.pihole-web = {
+        enable = true;
+        ports = [ 88 ];
+      };
+      systemd.tmpfiles.rules = [
+        "f /etc/pihole/versions 0644 pihole pihole - -"
+      ];
       system.stateVersion = lib.mkDefault "25.11";
     };
 }
