@@ -18,6 +18,15 @@
           npmDeps = pkgs.importNpmLock { npmRoot = ./update-proxy; };
           npmConfigHook = pkgs.importNpmLock.npmConfigHook;
         };
+        darach-ca = pkgs.stdenv.mkDerivation {
+        name = "darach-ca";
+        src = ./darach-ca;
+        phases = [ "installPhase" ];
+        installPhase = ''
+        mkdir -p $out
+        cp $src/* $out
+        '';
+        };
         unauth = pkgs.writeText "unauth.html" ''
           HTTP/1.0 403 Unauthorized
           Cache-Control: no-cache
@@ -47,34 +56,34 @@
           global
         '';
         webhook_lua = pkgs.writeText "webhook.lua" ''
-        core.register_service("webhook_http", "http", function(applet)
-          local s = core.tcp()
-          s:connect("127.0.0.1",80)
-          s:settimeout(1)
-          core.Debug("qs is " .. applet.qs)
-          s:send("GET /api/webhook" .. applet.path .. "?" .. applet.qs .. " HTTP/1.1\r\n" .. 
-          "Host: home-assistant.darach.org.uk\r\n" ..
-          "Keep-alive: no\r\n" ..
-          "\r\n\r\n")
-          local msg = s:receive("*l")
-          local response = ""
-          if msg == nil then
-            response = "Error contacting home-assistant"
-            applet:set_status(503)
-          else
-            local code = tonumber(string.sub(msg,9,12))
-            applet:set_status(code)
-            response = s:receive("*l")
-            response = response .. "\r\n" .. s:receive("*a")
-            if code == 200 then
-              response = "<html><body><h1>Success</h1><p>HomeAssistant has accepted the request</p></body></html>"
+          core.register_service("webhook_http", "http", function(applet)
+            local s = core.tcp()
+            s:connect("127.0.0.1",80)
+            s:settimeout(1)
+            core.Debug("qs is " .. applet.qs)
+            s:send("GET /api/webhook" .. applet.path .. "?" .. applet.qs .. " HTTP/1.1\r\n" .. 
+            "Host: home-assistant.darach.org.uk\r\n" ..
+            "Keep-alive: no\r\n" ..
+            "\r\n\r\n")
+            local msg = s:receive("*l")
+            local response = ""
+            if msg == nil then
+              response = "Error contacting home-assistant"
+              applet:set_status(503)
+            else
+              local code = tonumber(string.sub(msg,9,12))
+              applet:set_status(code)
+              response = s:receive("*l")
+              response = response .. "\r\n" .. s:receive("*a")
+              if code == 200 then
+                response = "<html><body><h1>Success</h1><p>HomeAssistant has accepted the request</p></body></html>"
+              end
+              s:close()
             end
-            s:close()
-          end
-          applet:add_header("content-length",string.len(response))
-          applet:start_response()
-          applet:send(response)
-        end)
+            applet:add_header("content-length",string.len(response))
+            applet:start_response()
+            applet:send(response)
+          end)
         '';
 
         haproxy_config_template = pkgs.writeText "ha-config.tmpl" ''
@@ -103,7 +112,7 @@
           frontend default
             mode http
             bind *:80
-            bind *:443 ssl crt /var/lib/acme/darach.org.uk/full.pem ca-file /tmp/darach-ca.crt verify optional crl-file /tmp/darach_crl.pem
+            bind *:443 ssl crt /var/lib/acme/darach.org.uk/full.pem ca-file ${darach-ca}/darach-ca.crt verify optional crl-file ${darach-ca}/darach_crl.pem
             http-request set-header X-SSL-Client-DN %{+Q}[ssl_c_s_dn] if { ssl_c_used 1 } { ssl_c_verify 0 }
             http-request set-header X-SSL-Client-CN %{+Q}[ssl_c_s_dn(cn)] if { ssl_c_used 1 } { ssl_c_verify 0 }
             http-request set-header X-Forwarded-Proto https if { ssl_fc }
@@ -171,14 +180,22 @@
           ];
           users.users.haproxy.extraGroups = [ "acme" ];
           services.haproxy.enable = true;
+          systemd.services.haproxy.preStart = ''
+            ${pkgs.coreutils}/bin/[ -f /var/lib/haproxy/haproxy.cfg ] || ${pkgs.coreutils}/bin/cp -v --no-preserve mode,ownership --force ${cfg_stub} /var/lib/haproxy/haproxy.cfg
+            ${pkgs.coreutils}/bin/chown ${config.services.haproxy.user}:${config.services.haproxy.group} /var/lib/haproxy/haproxy.cfg
+          '';
+          systemd.services.haproxy.serviceConfig.RuntimeDirectory = "haproxy";
+          systemd.services.haproxy.serviceConfig.StateDirectory = "haproxy";
           services.haproxy.config = "";
           environment.etc."haproxy.cfg".source = lib.mkForce "/var/lib/haproxy/haproxy.cfg";
+
           systemd.services.haproxy-watcher = {
             description = "Restart the haproxy service when it's config file changes";
             after = [ "network.target" ];
             wantedBy = [
               "multi-user.target"
             ];
+            wants = [ "haproxy.service" ];
             serviceConfig = {
               Type = "oneshot";
               ExecStart = "${pkgs.systemd}/bin/systemctl reload haproxy";
@@ -189,7 +206,7 @@
               "multi-user.target"
             ];
             pathConfig = {
-              PathChanged = "/var/lib/haproxy";
+              PathChanged = "/var/lib/haproxy/haproxy.cfg";
             };
           };
 
@@ -199,8 +216,11 @@
             path = [ pkgs.haproxy ];
             wantedBy = [
               "multi-user.target"
+            ];
+            wants = [
               "haproxy.service"
             ];
+
             environment = {
               ETCD_HOST = "etcd.darach.org.uk";
               CFG_TEMPLATE = "${haproxy_config_template}";
@@ -210,11 +230,10 @@
               User = config.services.haproxy.user;
               Group = config.services.haproxy.group;
               Type = "simple";
-              ExecStartPre = "${pkgs.coreutils}/bin/cp -v --no-preserve mode,ownership --force ${cfg_stub} /var/lib/haproxy/haproxy.cfg";
               ExecStart = "${update-proxy}/bin/update-proxy";
               Restart = "always";
               RuntimeDirectory = "haproxy";
-              WorkingDirectory = "/var/lib/haproxy";
+              StateDirectory = "haproxy";
             };
           };
         };
