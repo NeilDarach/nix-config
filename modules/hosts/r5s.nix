@@ -63,25 +63,32 @@ in
         '';
       };
       services.pppd = {
-        enable = false;
-
+        enable = true;
         peers = {
           cuckoo = {
             autostart = true;
             enable = true;
             config = ''
               plugin pppoe.so wan0
-              persist
-              maxfail 0
-              holdoff 5
-              name cuckoo
+              debug
+              name "cuckoo"
               password anything
-
-              noaccomp
-              nopcomp
               noipdefault
-              defaultroute
-              +ipv6
+              lcp-echo-interval 20
+              lcp-echo-failure 4
+              noauth
+              persist
+              maxfail 1
+              holdoff 5
+              ipcp-accept-local
+              ipcp-accept-remote
+              usepeerdns
+              replacedefaultroute
+              persist
+              noipv6
+              mtu 1492
+              mru 1492
+              ifname ppp0
             '';
           };
         };
@@ -220,7 +227,27 @@ in
             vlanConfig.Id = 5;
           };
         };
+        #links = {
+          #"10-wan0" = {
+            #matchConfig.Path = "platform-fe2a0000.ethernet";
+            #linkConfig.MACAddress = "c6:90:ff:02:dc:eb";
+            #linkConfig.MACAddressPolicy = "none";
+          #};
+        #};
         networks = {
+          "30-ppp0" = {
+            matchConfig.Name = "ppp*";
+            linkConfig.Unmanaged = "yes";
+          };
+          "30-wan" = {
+            matchConfig.Name = "wan0";
+            networkConfig = {
+              DHCP = "no";
+              LinkLocalAddressing = "no";
+              IPv6AcceptRA = false;
+            };
+            linkConfig.Unmanaged = "yes";
+          };
           "30-lan1" = {
             matchConfig.Name = "lan1";
             networkConfig.Bridge = "br0";
@@ -271,7 +298,7 @@ in
       };
 
       services.avahi = {
-        enable = true;
+        enable = false;
         reflector = true;
         allowInterfaces = [
           "br0"
