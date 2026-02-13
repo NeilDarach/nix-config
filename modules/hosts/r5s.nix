@@ -47,7 +47,6 @@ in
         "net.ipv6.conf.wan0.autoconf" = 1;
       };
       sops.secrets = {
-        "pppoe/cuckoo/username" = { };
         "wireguard/server/private" = {
           mode = "640";
           owner = "systemd-network";
@@ -55,15 +54,8 @@ in
         };
       };
 
-      environment.etc."ppp/pap-secrets" = {
-        mode = "0600";
-        text = ''
-          #Client   Server   Secret                                               Valid ips
-          *         cuckoo        @${config.sops.secrets."pppoe/cuckoo/username".path} *
-        '';
-      };
       services.pppd = {
-        enable = true;
+        enable = false;
         peers = {
           cuckoo = {
             autostart = true;
@@ -103,7 +95,6 @@ in
         tcpdump
         conntrack-tools
         ethtool
-        ppp
       ];
       networking = {
         hostName = "r5s";
@@ -235,14 +226,10 @@ in
           #};
         #};
         networks = {
-          "30-ppp0" = {
-            matchConfig.Name = "ppp*";
-            linkConfig.Unmanaged = "yes";
-          };
           "30-wan" = {
             matchConfig.Name = "wan0";
             networkConfig = {
-              DHCP = "no";
+              DHCP = "yes";
               LinkLocalAddressing = "no";
               IPv6AcceptRA = false;
             };
@@ -324,7 +311,6 @@ in
             "/r5s.iot/${iot_ip}"
           ];
           except-interface = [
-            "ppp0"
             "wan0"
             "wg0"
           ];
