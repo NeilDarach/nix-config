@@ -54,38 +54,6 @@ in
         };
       };
 
-      services.pppd = {
-        enable = false;
-        peers = {
-          cuckoo = {
-            autostart = true;
-            enable = true;
-            config = ''
-              plugin pppoe.so wan0
-              debug
-              name "cuckoo"
-              password anything
-              noipdefault
-              lcp-echo-interval 20
-              lcp-echo-failure 4
-              noauth
-              persist
-              maxfail 1
-              holdoff 5
-              ipcp-accept-local
-              ipcp-accept-remote
-              usepeerdns
-              replacedefaultroute
-              persist
-              noipv6
-              mtu 1492
-              mru 1492
-              ifname ppp0
-            '';
-          };
-        };
-      };
-
       local = {
         useZfs = true;
         useDistributedBuilds = true;
@@ -99,7 +67,7 @@ in
       networking = {
         hostName = "r5s";
         useDHCP = false;
-        firewall.enable = lib.mkForce false;
+        firewall.enable = true;
         firewall.allowedTCPPorts = [
           22
           53
@@ -118,58 +86,47 @@ in
         ];
         enableIPv6 = lib.mkForce true;
         nftables = {
-          enable = false;
+          enable = true;
           ruleset = ''
-            table inet filter {
-              #enable flow offloading for better throughput
-              #flowtable f {
-                #hook ingress priority 0;
-                #devices = { ppp0, br0 };
-              #}
+            define IOT = 192.168.5.0/24
+            define LAN = 192.168.4.0/24
+            define HA = 192.168.4.5/32
 
+            table inet filter {
               chain output {
                 type filter hook output priority 100; policy accept;
-              }
-
-              chain input {
-                type filter hook input priority filter;  policy drop;
-                # Allow trusted networks access to the router
-                iifname { "lo", "br0", "vlan-iot", "wg0" } counter accept
-
-                # Allow returning traffic from ppp0 and drop everything else
-                #iifname "ppp0" ct state { established, related } counter accept
-                #iifname "ppp0" drop
-
-                # mDNS for avahi reflection
-                iifname "vlan-iot" tcp dport { llmnr } counter accept
-                iifname "vlan-iot" udp dport { mdns, llmnr } counter accept
                 }
 
-               chain forward {
-                 type filter hook forward priority filter; policy drop;
-                 # enable flow offloading for better througput
-                 #ip protocol { tcp, udp } flow offload @f
+              chain input {
+                type filter hook input priority 0; policy drop;
 
-                 # Allow trusted network wan access
-                # iifname { "lo", "br0", "wg0" } 
-                #   oifname { "ppp0" } 
-                #   counter accept comment "Trusted network to WAN"
-                # iifname { "ppp0" } 
-                #   oifname { "lo", "br0", "wg0" } 
-                #   ct state established, related counter accept comment "Return established connection data"
-                iifname { "vlan-iot" } ip daddr 192.168.4.5 counter accept
-                iifname { "br0" } oifname { "vlan-iot" } ct state established, related counter accept
-                 }
-               }
-               #table ip nat {
-               #  chain prerouting {
-               #    type nat hook prerouting priority filter; policy accept;
-               #    }
-               #  chain postrouting {
-               #    type nat hook postrouting priority filter; policy accept;
-               #    oifname "ppp0" masquerade
-               #  }
-               #}
+                # Established/related connections
+                ct state established,related accept
+
+                # Loopback interface
+                iifname lo accept
+                ip saddr { $IOT, $LAN } accept
+                accept
+                }
+
+              chain forward {
+                type filter hook forward priority filter; policy drop; 
+                ct state established, related accept
+                ip saddr { $IOT } ip daddr { $HA, 192.168.5.2/32 } accept
+                ip saddr { $LAN } accept
+              }
+              }
+
+              table ip nat {
+                chain prerouting { 
+                  type nat hook prerouting priority filter; policy accept;
+                  }
+
+                chain postrouting {
+                  type nat hook postrouting priority filter; policy accept;
+                  oifname "wan0" masquerade
+                  }
+                }
           '';
         };
 
@@ -218,13 +175,6 @@ in
             vlanConfig.Id = 5;
           };
         };
-        #links = {
-          #"10-wan0" = {
-            #matchConfig.Path = "platform-fe2a0000.ethernet";
-            #linkConfig.MACAddress = "c6:90:ff:02:dc:eb";
-            #linkConfig.MACAddressPolicy = "none";
-          #};
-        #};
         networks = {
           "30-wan" = {
             matchConfig.Name = "wan0";
@@ -233,7 +183,8 @@ in
               LinkLocalAddressing = "no";
               IPv6AcceptRA = false;
             };
-            linkConfig.Unmanaged = "yes";
+            linkConfig.RequiredForOnline = "no";
+            #linkConfig.Unmanaged = "yes";
           };
           "30-lan1" = {
             matchConfig.Name = "lan1";
@@ -252,11 +203,6 @@ in
             bridgeConfig = { };
             vlan = [ "vlan-iot" ];
             address = [ "${main_ip}/24" ];
-            routes = [
-              {
-                Gateway = "${main_ip}";
-              }
-            ];
             DHCP = "no";
             networkConfig = {
               IPv4Forwarding = true;
@@ -269,11 +215,6 @@ in
             matchConfig.Name = "vlan-iot";
             DHCP = "no";
             address = [ "${iot_ip}/24" ];
-            routes = [
-              {
-                Gateway = "${main_ip}";
-              }
-            ];
             networkConfig = {
               IPv4Forwarding = true;
               DHCPServer = "no";
