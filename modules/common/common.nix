@@ -20,6 +20,7 @@
             common-zfs
             distributedBuilds
             ssh
+            fail2ban
             git
             strongStateDir
             registration
