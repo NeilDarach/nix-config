@@ -18,6 +18,23 @@ in
       config,
       ...
     }:
+    let
+      internalUDP = [
+        53
+        67
+        68
+      ];
+      internalTCP = [
+        22
+        53
+        67
+        68
+        80
+        88
+        443
+        1883
+      ];
+    in
     {
       imports = [
         nixos.hardware-r5s
@@ -68,22 +85,20 @@ in
         hostName = "r5s";
         useDHCP = false;
         firewall.enable = true;
-        firewall.allowedTCPPorts = [
+        firewall.interfaces.wan0.allowedTCPPorts = [
           22
-          53
-          67
-          68
           80
-          88
           443
-          1883
         ];
-        firewall.allowedUDPPorts = [
-          53
-          67
-          68
-          51820
-        ];
+        firewall.interfaces.wan0.allowedUDPPorts = [ 51820 ];
+        firewall.interfaces = {
+        "br0".allowedTCPPorts = internalTCP;
+        "br0".allowedUDPPorts = internalUDP;
+        "vlan-iot".allowedTCPPorts = internalTCP;
+        "vlan-iot".allowedUDPPorts = internalUDP;
+        "wg0".allowedTCPPorts = internalTCP;
+        "wg0".allowedUDPPorts = internalUDP;
+        };
         enableIPv6 = lib.mkForce true;
         nftables = {
           enable = true;
