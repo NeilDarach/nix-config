@@ -7,9 +7,10 @@
 {
   flake.modules = {
     nixos.fail2ban =
-      { config, ... }:
+      { config, pkgs, ... }:
       {
         config = lib.mkIf config.services.openssh.enable {
+          systemd.services.fail2ban.partOf = [ "nftables.service" ];
           services.endlessh = {
             enable = true;
             port = 2222;
@@ -22,6 +23,10 @@
               "192.168.9.0/24"
             ];
             bantime = "24h";
+            extraPackages = [
+              pkgs.gnugrep
+              pkgs.gnused
+            ];
             bantime-increment.enable = true;
             jails = {
               sshd.settings = {
