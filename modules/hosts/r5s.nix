@@ -90,6 +90,7 @@ in
           ruleset = ''
             define IOT = 192.168.5.0/24
             define LAN = 192.168.4.0/24
+            define WG = 192.168.9.0/24
             define HA = 192.168.4.5/32
 
             table inet filter {
@@ -105,7 +106,7 @@ in
 
                 # Loopback interface
                 iifname lo accept
-                ip saddr { $IOT, $LAN } accept
+                ip saddr { $IOT, $LAN, $WG } accept
                 accept
                 }
 
@@ -113,7 +114,7 @@ in
                 type filter hook forward priority filter; policy drop; 
                 ct state established, related accept
                 ip saddr { $IOT } ip daddr { $HA, 192.168.5.2/32 } accept
-                ip saddr { $LAN } accept
+                ip saddr { $LAN, $WG } accept
               }
               }
 
@@ -158,6 +159,7 @@ in
 
         };
       };
+      networking.networkmanager.enable = lib.mkForce false;
       systemd.network = {
         enable = true;
         netdevs = {
@@ -174,17 +176,50 @@ in
             };
             vlanConfig.Id = 5;
           };
+          "50-wg0" = {
+            netdevConfig = {
+              Kind = "wireguard";
+              Name = "wg0";
+            };
+            wireguardConfig = {
+              RouteTable = "main";
+              FirewallMark = 42;
+              ListenPort = 51820;
+              PrivateKeyFile = "${config.sops.secrets."wireguard/server/private".path}";
+            };
+            wireguardPeers = [
+              {
+                # Neil's iPhone
+                PublicKey = "DNxpMqjysu33ZC82l+4fov2+7p4eA8pp2ZsVHG4Kuzs=";
+                AllowedIPs = [ "192.168.9.9/32" ];
+              }
+              {
+                # Neil's Laptop
+                PublicKey = "jzq1KL7o110tOiOUu1qAoi5HlMKcN3fpkRhYm7WakQQ=";
+                AllowedIPs = [ "192.168.9.7/32" ];
+              }
+              {
+                # Marion's iPad
+                PublicKey = "1IKRTwh+cckkkffgdKAojX1TI3ceUoE8jN/EQDEmvW4=";
+                AllowedIPs = [ "192.168.9.21/32" ];
+              }
+              {
+                # Marion's iPhone
+                PublicKey = "yWcgqaFB35liq1nKsDyzPjGdkp2FV1w38EQGjsO1y3g=";
+                AllowedIPs = [ "192.168.9.22/32" ];
+              }
+            ];
+          };
         };
         networks = {
           "30-wan" = {
             matchConfig.Name = "wan0";
             networkConfig = {
               DHCP = "yes";
-              LinkLocalAddressing = "no";
-              IPv6AcceptRA = false;
+              #LinkLocalAddressing = "no";
+              IPv6AcceptRA = true;
             };
-            linkConfig.RequiredForOnline = "no";
-            #linkConfig.Unmanaged = "yes";
+            linkConfig.RequiredForOnline = "routable";
           };
           "30-lan1" = {
             matchConfig.Name = "lan1";
@@ -222,6 +257,14 @@ in
             };
             linkConfig.RequiredForOnline = "routable";
           };
+          "50-wg0" = {
+            matchConfig.Name = "wg0";
+            address = [ "192.168.9.2/32" ];
+            networkConfig = {
+              IPv4Forwarding = true;
+              IPv6Forwarding = true;
+            };
+          };
         };
       };
 
@@ -253,7 +296,6 @@ in
           ];
           except-interface = [
             "wan0"
-            "wg0"
           ];
           stop-dns-rebind = true;
           rebind-localhost-ok = true;
