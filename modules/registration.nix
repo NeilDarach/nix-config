@@ -63,11 +63,11 @@
                 serviceConfig = {
                   ExecStartPost = [
                     ''
-                      +${pkgs.registration}/bin/registration ${v.alias} ${v.serviceHost} "${toString v.port}" "${v.description}"
+                      +-${pkgs.registration}/bin/registration ${v.alias} ${v.serviceHost} "${toString v.port}" "${v.description}"
                     ''
                   ];
                   ExecStop = [
-                    "+${pkgs.coreutils}/bin/rm /var/run/registration-leases/${v.alias}"
+                    "+-${pkgs.coreutils}/bin/rm /var/run/registration-leases/${v.alias}"
                   ];
                 };
                 requires = [ "registration.timer" ];
