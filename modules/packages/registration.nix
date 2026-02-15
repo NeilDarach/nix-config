@@ -24,6 +24,7 @@
         ++ (with pkgs; [
           etcd
           findutils
+          coreutils
         ]);
         buildInputs = [ pkgs.makeWrapper ];
         postBuild = "wrapProgram $out/bin/registration --prefix PATH : $out/bin";

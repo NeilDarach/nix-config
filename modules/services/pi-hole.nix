@@ -109,10 +109,19 @@
             useDnsmasqConfig = true;
           };
           local.firewall.allowedInternalTCPPorts = [ 88 ];
-          local.firewall.allowedInternalUDPPorts = [ 53 67 68 ];
+          local.firewall.allowedInternalUDPPorts = [
+            53
+            67
+            68
+          ];
           services.pihole-web = {
             enable = config.services.pihole-ftl.enable;
             ports = [ 88 ];
+          };
+          registration.service.pihole-ftl = {
+            port = 88;
+            description = "Ad-blocking DNS server";
+            alias = "pi-hole";
           };
         };
       };

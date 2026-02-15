@@ -84,7 +84,7 @@
                   ETCDCTL_ENDPOINTS = cfg.etcdHost;
                 };
                 serviceConfig = {
-                  type = "oneshot";
+                  Type = "oneshot";
                   User = "root";
                 };
               };
