@@ -20,6 +20,7 @@
             common-zfs
             distributedBuilds
             ssh
+            fail2ban
             git
             strongStateDir
             registration
@@ -68,6 +69,7 @@
           unzip
           usbutils
           wget
+          xxd
         ];
         sops = {
           secrets = {
@@ -86,6 +88,9 @@
         networking.firewall.enable = true;
         networking.enableIPv6 = false;
         networking.networkmanager.enable = true;
+        networking.hostId = lib.mkDefault (
+          builtins.substring 0 8 (builtins.hashString "md5" config.networking.hostName)
+        );
         time.timeZone = "Europe/London";
 
         security.sudo = {

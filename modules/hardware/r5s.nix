@@ -15,11 +15,11 @@
             }
             {
               name = "lan1";
-              path = "platform-3c000000.ethernet";
+              path = "platform-3c0000000.pcie-*";
             }
             {
               name = "lan2";
-              path = "platform-3c040000.ethernet";
+              path = "platform-3c0400000.pcie-*";
             }
           ];
           description =

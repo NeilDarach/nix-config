@@ -11,10 +11,11 @@
       {
         config = lib.mkIf config.services.openssh.enable {
           services.openssh.settings = {
-            PermitRootLogin = "prohibit-password";
+            PermitRootLogin = "no";
             PasswordAuthentication = false;
             StreamLocalBindUnlink = "yes";
             GatewayPorts = "clientspecified";
+            AllowUsers = [ "neil" ];
           };
         };
       };
