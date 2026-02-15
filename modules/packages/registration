@@ -7,8 +7,38 @@ usage() {
     exit 0
 }
 
+register_service() {
+    local NAME=$1
+    local HOST=$2
+    local PORT=$3
+    local DESC="$4"
+
+    LEASE="$(etcdctl lease grant 120 || echo "<NONE>")"
+    LEASE="${LEASE#* }"
+    LEASE="${LEASE%% *}"
+
+    cat > "${LEASE_DIR}/${NAME}" <<EOF
+    LEASE="${LEASE}"
+    NAME=${NAME}
+    HOST=${HOST}
+    PORT=${PORT}
+    DESC="${DESC}"
+    ENDPOINTS="${ETCDCTL_ENDPOINTS}"
+EOF
+
+    if [[ "${LEASE}" != "<NONE>" ]] ; then
+    etcdctl put --lease "${LEASE}" "/services/${NAME}/local/host" "${HOST}"
+    etcdctl put --lease "${LEASE}" "/services/${NAME}/local/mode" http
+    etcdctl put --lease "${LEASE}" "/services/${NAME}/local/port" "${PORT}"
+    etcdctl put --lease "${LEASE}" "/services/${NAME}/description" "${DESC}"
+    etcdctl put --lease "${LEASE}" "/services/${NAME}/publishedPort" "${PORT}"
+    fi
+}
 RENEW=FALSE
-export ETCDCTL_ENDPOINTS="etcd.darach.org.uk:2379"
+if [[ -z "${ETCDCTL_ENDPOINTS:-}" ]] ; then
+    echo "$ETCDCTL_ENDPOINTS is not set"
+    exit 1
+fi
 LEASE_DIR=/var/run/registration-leases
 
 while getopts "rd:" opt; do
@@ -30,10 +60,14 @@ mkdir -p "${LEASE_DIR}"
 
 if [[ "${RENEW}" == "TRUE" ]]; then
     while IFS= read -r file; do
-        lease=$(cat "${file}")
-        etcdctl lease keep-alive --once "${lease}"
-        echo "ok"
-    done < <(find /var/run/registration-leases -type f -print)
+        . "${file}"
+        if [[ "${LEASE:-<NONE>}" != "<NONE>" ]] ; then
+          etcdctl lease keep-alive --once "${LEASE}" || register_service ${NAME} ${HOST} ${PORT} "${DESC}"
+          echo "ok"
+        else
+          register_service ${NAME} ${HOST} ${PORT} "${DESC}"
+        fi
+    done < <(find "${LEASE_DIR}" -type f -print)
     exit 0
 fi
 
@@ -41,19 +75,5 @@ if [[ $# != 4 ]]; then
     usage
 fi
 
-NAME=$1
-HOST=$2
-PORT=$3
-DESC=$4
+register_service $1 $2 $3 "$4"
 
-LEASE="$(etcdctl lease grant 120)"
-LEASE="${LEASE#* }"
-LEASE="${LEASE%% *}"
-
-echo "${LEASE}" >"${LEASE_DIR}/${NAME}"
-
-etcdctl put --lease "${LEASE}" "/services/${NAME}/local/host" "${HOST}"
-etcdctl put --lease "${LEASE}" "/services/${NAME}/local/mode" http
-etcdctl put --lease "${LEASE}" "/services/${NAME}/local/port" "${PORT}"
-etcdctl put --lease "${LEASE}" "/services/${NAME}/description" "${DESC}"
-etcdctl put --lease "${LEASE}" "/services/${NAME}/publishedPort" "${PORT}"

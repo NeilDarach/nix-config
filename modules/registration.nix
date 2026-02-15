@@ -80,6 +80,9 @@
                 script = ''
                   ${pkgs.registration}/bin/registration -r
                 '';
+                environment = {
+                  ETCDCTL_ENDPOINTS = cfg.etcdHost;
+                };
                 serviceConfig = {
                   type = "oneshot";
                   User = "root";
