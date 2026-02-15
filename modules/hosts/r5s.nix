@@ -18,23 +18,6 @@ in
       config,
       ...
     }:
-    let
-      internalUDP = [
-        53
-        67
-        68
-      ];
-      internalTCP = [
-        22
-        53
-        67
-        68
-        80
-        88
-        443
-        1883
-      ];
-    in
     {
       imports = [
         nixos.hardware-r5s
@@ -63,17 +46,13 @@ in
         "net.ipv6.conf.wan0.accept_ra" = 2;
         "net.ipv6.conf.wan0.autoconf" = 1;
       };
-      sops.secrets = {
-        "wireguard/server/private" = {
-          mode = "640";
-          owner = "systemd-network";
-          group = "systemd-network";
-        };
-      };
 
       local = {
         useZfs = true;
         useDistributedBuilds = true;
+        pi-hole.enable = true;
+        router-firewall.enable = true;
+        wireguard.enable = true;
       };
 
       environment.systemPackages = with pkgs; [
@@ -84,96 +63,9 @@ in
       networking = {
         hostName = "r5s";
         useDHCP = false;
-        firewall.enable = true;
-        firewall.interfaces.wan0.allowedTCPPorts = [
-          22
-          80
-          443
-        ];
-        firewall.interfaces.wan0.allowedUDPPorts = [ 51820 ];
-        firewall.interfaces = {
-        "br0".allowedTCPPorts = internalTCP;
-        "br0".allowedUDPPorts = internalUDP;
-        "vlan-iot".allowedTCPPorts = internalTCP;
-        "vlan-iot".allowedUDPPorts = internalUDP;
-        "wg0".allowedTCPPorts = internalTCP;
-        "wg0".allowedUDPPorts = internalUDP;
-        };
         enableIPv6 = lib.mkForce true;
-        nftables = {
-          enable = true;
-          ruleset = ''
-            define IOT = 192.168.5.0/24
-            define LAN = 192.168.4.0/24
-            define WG = 192.168.9.0/24
-            define HA = 192.168.4.5/32
-
-            table inet filter {
-              chain output {
-                type filter hook output priority 100; policy accept;
-                }
-
-              chain input {
-                type filter hook input priority 0; policy drop;
-
-                # Established/related connections
-                ct state established,related accept
-
-                # Loopback interface
-                iifname lo accept
-                ip saddr { $IOT, $LAN, $WG } accept
-                accept
-                }
-
-              chain forward {
-                type filter hook forward priority filter; policy drop; 
-                ct state established, related accept
-                ip saddr { $IOT } ip daddr { $HA, 192.168.5.2/32 } accept
-                ip saddr { $LAN, $WG } accept
-              }
-              }
-
-              table ip nat {
-                chain prerouting { 
-                  type nat hook prerouting priority filter; policy accept;
-                  }
-
-                chain postrouting {
-                  type nat hook postrouting priority filter; policy accept;
-                  oifname "wan0" masquerade
-                  }
-                }
-          '';
-        };
-
-        nat = {
-          enable = false;
-          enableIPv6 = true;
-          externalInterface = "ppp0";
-          internalInterfaces = [
-            "br0"
-            "wg0"
-          ];
-          forwardPorts = [
-            {
-              destination = "192.168.4.5:32400";
-              proto = "tcp";
-              sourcePort = 32400;
-            }
-            {
-              destination = "192.168.4.5:1883";
-              proto = "tcp";
-              sourcePort = 1883;
-            }
-            {
-              destination = "192.168.4.5:8123";
-              proto = "tcp";
-              sourcePort = 8123;
-            }
-          ];
-
-        };
       };
+
       networking.networkmanager.enable = lib.mkForce false;
       systemd.network = {
         enable = true;
@@ -190,40 +82,6 @@ in
               Name = "vlan-iot";
             };
             vlanConfig.Id = 5;
-          };
-          "50-wg0" = {
-            netdevConfig = {
-              Kind = "wireguard";
-              Name = "wg0";
-            };
-            wireguardConfig = {
-              RouteTable = "main";
-              FirewallMark = 42;
-              ListenPort = 51820;
-              PrivateKeyFile = "${config.sops.secrets."wireguard/server/private".path}";
-            };
-            wireguardPeers = [
-              {
-                # Neil's iPhone
-                PublicKey = "DNxpMqjysu33ZC82l+4fov2+7p4eA8pp2ZsVHG4Kuzs=";
-                AllowedIPs = [ "192.168.9.9/32" ];
-              }
-              {
-                # Neil's Laptop
-                PublicKey = "jzq1KL7o110tOiOUu1qAoi5HlMKcN3fpkRhYm7WakQQ=";
-                AllowedIPs = [ "192.168.9.7/32" ];
-              }
-              {
-                # Marion's iPad
-                PublicKey = "1IKRTwh+cckkkffgdKAojX1TI3ceUoE8jN/EQDEmvW4=";
-                AllowedIPs = [ "192.168.9.21/32" ];
-              }
-              {
-                # Marion's iPhone
-                PublicKey = "yWcgqaFB35liq1nKsDyzPjGdkp2FV1w38EQGjsO1y3g=";
-                AllowedIPs = [ "192.168.9.22/32" ];
-              }
-            ];
           };
         };
         networks = {
@@ -272,14 +130,6 @@ in
             };
             linkConfig.RequiredForOnline = "routable";
           };
-          "50-wg0" = {
-            matchConfig.Name = "wg0";
-            address = [ "192.168.9.2/32" ];
-            networkConfig = {
-              IPv4Forwarding = true;
-              IPv6Forwarding = true;
-            };
-          };
         };
       };
 
@@ -291,104 +141,5 @@ in
           "vlan-iot"
         ];
       };
-      services.resolved.enable = false;
-      services.dnsmasq = {
-        enable = false;
-        resolveLocalQueries = true;
-        settings = {
-          domain-needed = true;
-          dhcp-authoritative = true;
-          read-ethers = false;
-          expand-hosts = true;
-          bind-dynamic = true;
-          address = [
-            "/mqtt.darach.org.uk/192.168.4.5"
-            "/mqtt.iot/192.168.4.5"
-            "/darach.org.uk/192.168.4.5"
-            "/etcd.darach.org.uk/192.168.4.5"
-            "/r5s.darach.org.uk/${main_ip}"
-            "/r5s.iot/${iot_ip}"
-          ];
-          except-interface = [
-            "wan0"
-          ];
-          stop-dns-rebind = true;
-          rebind-localhost-ok = true;
-          dhcp-broadcast = "tag:needs-broadcast";
-          dhcp-ignore-names = "tag:dhcp_bogus_hostname";
-          dhcp-host = [
-            "00:30:18:cc:7d:3e,192.168.4.5"
-            "7c:2f:80:89:1b:9e,192.168.4.6"
-          ];
-          domain = [
-            "darach.org.uk,${main_ip}/24,local"
-            "iot,${iot_ip}/24,local"
-          ];
-          dhcp-range = [
-            "set:lan,192.168.4.100,192.168.4.200,255.255.255.0,12h"
-            "set:iot,192.168.5.50,192.168.5.200,255.255.255.0,12h"
-          ];
-          dhcp-option = [
-            "lan,option:router,${main_ip}"
-            "lan,option:dns-server,${main_ip}"
-            "lan,option:domain-name,darach.org.uk"
-            "iot,option:router,${iot_ip}"
-            "iot,option:dns-server,${iot_ip}"
-            "iot,option:domain-name,iot"
-          ];
-        };
-      };
-      systemd.services.pihole-ftl = lib.mkIf config.services.pihole-ftl.enable {
-        serviceConfig.StateDirectory = "pihole";
-        serviceConfig.RuntimeDirectory = "pihole";
-        serviceConfig.BindPaths = [ "/var/lib/misc" ];
-      };
-      systemd.tmpfiles.rules = lib.mkIf config.services.pihole-ftl.enable [
-        "f /etc/pihole/versions 0644 pihole pihole - -"
-        "d /var/lib/misc 0777 root root - -"
-      ];
-      services.pihole-ftl = {
-        enable = true;
-        lists = [
-          {
-            url = "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts";
-            type = "block";
-            enabled = true;
-            description = "Steven Black's HOSTS";
-          }
-        ];
-
-        openFirewallDNS = true;
-        openFirewallDHCP = !devmode;
-        openFirewallWebserver = true;
-        queryLogDeleter.enable = true;
-        settings = {
-          dhcp.active = false;
-          misc.readOnly = false;
-
-          files.pid = "/run/pihole/pihole-FTL.pid";
-          dns = {
-            upstreams = [
-              "1.1.1.1"
-              "1.1.1.2"
-            ];
-            interface = "";
-          };
-          webserver = {
-            api = {
-              pwhash = "$BALLOON-SHA256$v=1$s=1024,t=32$+Xda1U5YIgOBuRYFYuxjBg==$lPaHrBGSYKonbgxVnDNJl9Xq7TXHsxIPJO7mqsWIc5k=";
-            };
-            session = {
-              timeout = 43200; # 12h
-            };
-          };
-        };
-        useDnsmasqConfig = true;
-      };
-      services.pihole-web = {
-        enable = config.services.pihole-ftl.enable;
-        ports = [ 88 ];
-      };
-      system.stateVersion = lib.mkDefault "25.11";
     };
 }
