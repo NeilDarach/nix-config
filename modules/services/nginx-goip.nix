@@ -36,7 +36,7 @@
                       autoindex on;
                     '';
                   };
-                  "/gff" = {
+                  "/gff/" = {
                     proxyPass = "http://darach.org.uk:3020/";
                   };
                 };

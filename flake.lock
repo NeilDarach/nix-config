@@ -330,11 +330,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1769284251,
-        "narHash": "sha256-H+f81m8YFkaVoTStKdZ5YFxiK55Q34l25RE01VKOuFg=",
+        "lastModified": 1769797001,
+        "narHash": "sha256-KN3Z/yetoF/6WX6WnyXJZuHFz4tcvZ4lg36VZil4mhc=",
         "owner": "NeilDarach",
         "repo": "gff",
-        "rev": "2ec706524b787ad90763b2595f29823e144a99fc",
+        "rev": "3b7ba24a51bebbb12d3c360626c25219c6ad53da",
         "type": "github"
       },
       "original": {
