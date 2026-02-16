@@ -50,3 +50,55 @@ sudo nix-store --verify --check-contents --repair
  Make sure the host age key in in /mnt/persist/var/lib/sops-nix/key.txt
  sudo nixos-install --flake .#gregor
 
+= GOIP configuration
+zfs datapool contains backups
+postfix docker image
+nginx web server
+backup user (duplicati) can run zfs commands
+```
+zfs snapshot
+zfs destroy*@*
+zfs mount
+zfs list -t snap*
+zfs send*
+zfs recv*
+zfs mount*
+zfs umount*
+zfs create*
+zfs list
+```
+ - vda1     bios boot   1M
+ - vda2     root        23G
+ - vda3     swap        1G
+ - vda4     zfs         1TB
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: ens3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 00:16:3c:4f:01:de brd ff:ff:ff:ff:ff:ff
+    altname enp0s3
+    inet 78.128.99.39/26 brd 78.128.99.63 scope global dynamic ens3
+       valid_lft 15744942sec preferred_lft 15744942sec
+    inet6 2a01:8740:1:ffd7::349b/64 scope global 
+       valid_lft forever preferred_lft forever
+    inet6 fe80::216:3cff:fe4f:1de/64 scope link 
+       valid_lft forever preferred_lft forever
+3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default 
+    link/ether 02:42:30:1d:3c:e1 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+    inet6 2a01:8740:1:ffd7:1::1/80 scope global 
+       valid_lft forever preferred_lft forever
+    inet6 fe80::1/64 scope link 
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:30ff:fe1d:3ce1/64 scope link 
+       valid_lft forever preferred_lft forever
+98: br-57154fbf27f7: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default 
+    link/ether 02:42:40:be:f3:90 brd ff:ff:ff:ff:ff:ff
+    inet 172.24.0.1/16 brd 172.24.255.255 scope global br-57154fbf27f7
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:40ff:febe:f390/64 scope link 
+       valid_lft forever preferred_lft forever
