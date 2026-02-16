@@ -53,7 +53,7 @@
               filename: /var/log/appdaemon/error.log
             main_log:
               filename: /var/log/appdaemon/appdaemon.log
-          secrets: ${config.sops.templates."appdaemon-secrets.yaml".path} 
+          secrets: ${config.sops.templates."appdaemon_secrets.yaml".path} 
         '';
 
       in
@@ -64,16 +64,18 @@
           enable = lib.mkEnableOption "appdaemon on this host";
         };
         config = lib.mkIf config.local.appdaemon.enable {
-          sops.secrets.appdaemon_secrets = {
-            restartUnits = [ "appdaemon.service" ];
-          };
-
-          sops.templates."appdaemon-secrets.yaml" = {
+          sops.templates."appdaemon_secrets.yaml" = {
             content = ''
-              ${config.sops.placeholder.appdaemon_secrets}
+              homeassistant_key: "${config.sops.placeholder."appdaemon/homeassistant_key"}"
+              mqtt_user: ${config.sops.placeholder."mqtt/user"}
+              mqtt_password: ${config.sops.placeholder."mqtt/password"}
             '';
             owner = "appdaemon";
+
           };
+          sops.secrets."appdaemon/homeassistant_key" = { };
+          sops.secrets."mqtt/user" = { };
+          sops.secrets."mqtt/password" = { };
 
           strongStateDir.service.appdaemon.enable = true;
           registration.service.appdaemon = {

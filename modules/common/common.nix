@@ -73,7 +73,7 @@
         ];
         sops = {
           secrets = {
-            "keys/${config.networking.hostName}/ed25519/private" = {
+            "host_keys/${config.networking.hostName}/ed25519/private" = {
               path = "/etc/ssh/ssh_host_ed25519_key";
             };
           };

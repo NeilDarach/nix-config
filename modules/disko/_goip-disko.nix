@@ -1,5 +1,5 @@
 let
-  main = "/dev/vda";
+  main = "/dev/disk/by-path/pci-0000:00:04.0";
 in
 {
   disko.devices = {
@@ -10,10 +10,10 @@ in
         content = {
           type = "gpt";
           partitions = {
-          boot = {
-          size = "1M";
-          type = "EF02"; # for the grub MBR
-          };
+            boot = {
+              size = "1M";
+              type = "EF02"; # for the grub MBR
+            };
             ESP = {
               size = "512M";
               type = "EF00";
@@ -77,6 +77,11 @@ in
           "strong/persist" = {
             type = "zfs_fs";
             mountpoint = "/persist";
+            options.mountpoint = "legacy";
+          };
+          "strong/home" = {
+            type = "zfs_fs";
+            mountpoint = "/home";
             options.mountpoint = "legacy";
           };
           "strong/keys" = {

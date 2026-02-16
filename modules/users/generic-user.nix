@@ -10,14 +10,8 @@
     {
       systemd.tmpfiles.rules = [ "d /home/${username}/.ssh 0700 ${username} ${username}" ];
       sops.secrets = {
-        "users/${username}/ssh_ed25519_key" = {
+        "user_keys/${username}/ed25519/private" = {
           path = "/home/${username}/.ssh/id_ed25519";
-          owner = "${username}";
-          group = "${username}";
-          mode = "0600";
-        };
-        "users/${username}/ssh_rsa_key" = {
-          path = "/home/${username}/.ssh/id_rsa";
           owner = "${username}";
           group = "${username}";
           mode = "0600";

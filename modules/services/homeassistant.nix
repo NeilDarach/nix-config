@@ -25,35 +25,34 @@
         };
         config = lib.mkIf config.local.homeassistant.enable {
           sops.secrets = {
-
-            twilio_sid = {
+            "twilio/sid" = {
               restartUnits = [ "home-assistant.service" ];
             };
-            twilio_token = {
+            "twilio/token" = {
               restartUnits = [ "home-assistant.service" ];
             };
-            influx-ha-token = {
+            "influx/ha-token" = {
               restartUnits = [ "home-assistant.service" ];
             };
-            "home/latitude" = {
+            "home-assistant/latitude" = {
               restartUnits = [ "home-assistant.service" ];
             };
-            "home/longitude" = {
+            "home-assistant/longitude" = {
               restartUnits = [ "home-assistant.service" ];
             };
-            "home/elevation" = {
+            "home-assistant/elevation" = {
               restartUnits = [ "home-assistant.service" ];
             };
           };
 
           sops.templates."home-assistant-secret.yaml" = {
             content = ''
-              twilio_sid=${config.sops.placeholder.twilio_sid}
-              twilio_token=${config.sops.placeholder.twilio_token}
-              influx_token=${config.sops.placeholder.influx-ha-token}
-              latitude=${config.sops.placeholder."home/latitude"}
-              longitude=${config.sops.placeholder."home/longitude"}
-              elevation=${config.sops.placeholder."home/elevation"}
+              twilio_sid=${config.sops.placeholder."twilio/sid"}
+              twilio_token=${config.sops.placeholder."twilio/token"}
+              influx_token=${config.sops.placeholder."influx/ha-token"}
+              latitude=${config.sops.placeholder."home-assistant/latitude"}
+              longitude=${config.sops.placeholder."home-assistant/longitude"}
+              elevation=${config.sops.placeholder."home-assistant/elevation"}
             '';
             owner = "hass";
           };
