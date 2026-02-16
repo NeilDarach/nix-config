@@ -79,6 +79,7 @@
             22
             80
             443
+            3020
           ];
           local.firewall.allowedExternalUDPPorts = [ ];
           local.firewall.allowedInternalUDPPorts = [ ];

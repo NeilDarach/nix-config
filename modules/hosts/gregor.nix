@@ -34,9 +34,8 @@ in {
       transmission.enable = true;
       zigbee2mqtt.enable = true;
       nut-client.enable = true;
-      gff.enable = true;
       haproxy.enable = true;
-      acme.enable = true;
+      acme-darach.enable = true;
       etcd.enable = true;
       mqtt.enable = true;
     };

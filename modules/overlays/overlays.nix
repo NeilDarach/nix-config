@@ -18,7 +18,9 @@ in
             zfs-backup
             strongStateDir
             registration
+            http-tarpit
             transcode;
+
 
             msg_q = inputs.msg_q.packages.${final.stdenv.hostPlatform.system}.default;
         })

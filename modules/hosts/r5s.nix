@@ -53,7 +53,10 @@ in
         pi-hole.enable = true;
         router-firewall.enable = true;
         wireguard.enable = true;
+        gff.enable = true;
       };
+
+      local.firewall.allowedExternalTCPPorts = [ 3020 ];
 
       environment.systemPackages = with pkgs; [
         tcpdump

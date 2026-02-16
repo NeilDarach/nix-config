@@ -37,6 +37,9 @@ in
       local = {
         useZfs = true;
         useDistributedBuilds = true;
+        acme-goip.enable = true;
+        acme-garageofinfiniteplenitude.enable = true;
+        nginx-goip.enable = true;
       };
       boot.loader = {
         systemd-boot.enable = false;
@@ -52,6 +55,18 @@ in
       };
 
       networking.interfaces.ens3.useDHCP = true;
+      networking.nftables.enable = true;
+      networking.firewall = {
+        enable = true;
+        allowedTCPPorts = [
+          22
+          443
+        ];
+        allowedUDPPorts = [
+          67
+          68
+        ];
+      };
 
       boot.initrd.systemd.emergencyAccess = true;
       boot.loader = {

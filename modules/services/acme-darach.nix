@@ -6,7 +6,7 @@
 }:
 {
   flake.modules = {
-    nixos.svc-acme =
+    nixos.svc-acme-darach =
       nixosArgs@{ pkgs, config, ... }:
 
       let
@@ -15,13 +15,11 @@
         imports = with inputs.self.modules.nixos; [
         ];
         options = {
-          local.acme.enable = lib.mkEnableOption "Haproxy instance to handle dynamic service hostnames";
+          local.acme-darach.enable = lib.mkEnableOption "Letsencrypt certificates for darach.org.uk";
         };
-        config = lib.mkIf config.local.acme.enable {
+        config = lib.mkIf config.local.acme-darach.enable {
           sops.secrets = {
             "cloudflare/dns_tokens/darach" = { };
-            "cloudflare/account_id" = { };
-            "cloudflare/zone_ids/darach" = { };
           };
           sops.templates."cloudflare-acme-darach" = {
             content = ''
