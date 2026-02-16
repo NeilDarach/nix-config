@@ -22,17 +22,17 @@
           enable = lib.mkEnableOption "zigbee2mqtt on this host";
         };
         config = lib.mkIf config.local.zigbee2mqtt.enable {
-          sops.secrets.mqtt-user = {
+          sops.secrets."mqtt/user" = {
             restartUnits = [ "zigbee2mqtt.service" ];
           };
-          sops.secrets.mqtt-password = {
+          sops.secrets."mqtt/password" = {
             restartUnits = [ "zigbee2mqtt.service" ];
           };
 
           sops.templates."z2m-secret.yaml" = {
             content = ''
-              mqtt_user: ${config.sops.placeholder.mqtt-user}
-              mqtt_password: ${config.sops.placeholder.mqtt-password}
+              mqtt_user: ${config.sops.placeholder."mqtt/user"}
+              mqtt_password: ${config.sops.placeholder."mqtt/password"}
             '';
             owner = "zigbee2mqtt";
           };

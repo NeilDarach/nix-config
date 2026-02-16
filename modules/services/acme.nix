@@ -19,13 +19,13 @@
         };
         config = lib.mkIf config.local.acme.enable {
           sops.secrets = {
-            cloudflare_dns_token = { };
-            cloudflare_account_id = { };
-            cloudflare_zone_id_darach = { };
+            "cloudflare/dns_tokens/darach" = { };
+            "cloudflare/account_id" = { };
+            "cloudflare/zone_ids/darach" = { };
           };
           sops.templates."cloudflare-acme-darach" = {
             content = ''
-              CLOUDFLARE_DNS_API_TOKEN=${config.sops.placeholder.cloudflare_dns_token}
+              CLOUDFLARE_DNS_API_TOKEN=${config.sops.placeholder."cloudflare/dns_tokens/darach"}
             '';
           };
 

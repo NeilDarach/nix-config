@@ -21,3 +21,12 @@ deploy_r5s:
     nixos-anywhere --flake .#r5s --target-host nix@nixos --phases install
 
 
+deploy_goip:
+    # Use nixos-anywhere to partition the target disks according to the disko specs
+    nixos-anywhere --flake .#goip --target-host root@goip.org.uk --phases kexec,disko
+    # Extract the age key for the host from secrets and make it available to the new host
+    (cat "${SECRETS}" | sops decrypt /dev/stdin --extract '["keys"]["goip"]["age"]["private"]' --input-type yaml) | ssh root@goip.org.uk "dd of=/mnt/keys/key.txt"
+    # Finish the build with nixos-anywhere. 
+    nixos-anywhere --flake .#goip --target-host root@goip.org.uk --phases install
+
+

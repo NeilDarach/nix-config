@@ -30,10 +30,10 @@
             ];
             logType = [ "debug" ];
           };
-          sops.secrets.mqtt-password = { };
+          sops.secrets."mqtt/password" = { };
           sops.templates."mqtt-tasmota.pw" = {
             content = ''
-              ${config.sops.placeholder.mqtt-password}
+              ${config.sops.placeholder."mqtt/password"}
             '';
           };
           networking.firewall.allowedTCPPorts = [ 1883 ];

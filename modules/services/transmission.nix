@@ -6,10 +6,10 @@
         enable = lib.mkEnableOption "transmission on this host";
       };
       config = lib.mkIf config.local.transmission.enable {
-        sops.secrets."plex_token" = { };
-        sops.templates."plex_token" = {
+        sops.secrets."plex/token" = { };
+        sops.templates."plex/token" = {
           content = ''
-            header = "X-Plex-Token: ${config.sops.placeholder.plex_token}"
+            header = "X-Plex-Token: ${config.sops.placeholder."plex/token"}"
           '';
           path = "/var/lib/transmission/plex_token";
           mode = "0400";

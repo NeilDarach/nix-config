@@ -57,11 +57,11 @@
         ];
         config = {
           sops.secrets = {
-            "user_password_hashed" = {
+            "hashed_passwords/neil" = {
               neededForUsers = true;
             };
             "neil_nixbuild" = lib.mkIf config.local.useDistributedBuilds {
-              key = "ssh_privatekey_nixbuild";
+              key = "user_keys/nixbuild/ed25519/private";
               path = "/home/neil/.ssh/id_nixbuild";
               owner = "neil";
               group = "neil";
@@ -75,7 +75,7 @@
               "networkmanager"
               "wheel"
             ];
-            hashedPasswordFile = config.sops.secrets.user_password_hashed.path;
+            hashedPasswordFile = config.sops.secrets."hashed_passwords/neil".path;
             openssh.authorizedKeys.keys = [
               "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIJ0nGtONOY4QnJs/xj+N4rKf4pCWfl25BOfc8hEczUg neil.darach@gmail.com"
             ];

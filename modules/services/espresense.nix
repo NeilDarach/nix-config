@@ -48,10 +48,10 @@
         };
         config = lib.mkIf config.local.espresense.enable {
 
-          sops.secrets.mqtt-user = {
+          sops.secrets."mqtt/user" = {
             restartUnits = [ "espresense.service" ];
           };
-          sops.secrets.mqtt-password = {
+          sops.secrets."mqtt/password" = {
             restartUnits = [ "espresense.service" ];
           };
 

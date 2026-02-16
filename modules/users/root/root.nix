@@ -27,7 +27,7 @@
         };
         home.file.".ssh/system_known_hosts" = {
           text = ''
-            vps.goip.org.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMrqQK4MqFsQNmtUQO0giT/ixn01RM9fgLdm4lgUEJkQ
+            vps.goip.org.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOEvCdE2EkfumIXKKY9lixReNsKh9rL+1dhGjrMemXWk neil@gregor
           '';
         };
         programs = {
@@ -40,7 +40,7 @@
               };
               "backup" = {
                 hostname = "vps.goip.org.uk";
-                user = "duplicati";
+                user = "backup";
                 identityFile = "~/.ssh/id_backup";
                 addressFamily = "inet";
               };
@@ -73,25 +73,26 @@
         ];
         config = {
           sops.secrets = {
-            "root_password_hashed" = {
+            "hashed_passwords/root" = {
               neededForUsers = true;
             };
             "root_nixbuild" = lib.mkIf config.local.useDistributedBuilds {
-              key = "ssh_privatekey_nixbuild";
+              key = "user_keys/nixbuild/ed25519/private";
               path = "/root/.ssh/id_nixbuild";
               owner = "root";
               group = "root";
               mode = "0400";
             };
-            "ssh_privatekey_backup" = {
+            "privatekey_backup" = {
               path = "/root/.ssh/id_backup";
+              key = "user_keys/backup/ed25519/private";
               owner = "root";
               group = "root";
               mode = "0400";
             };
           };
           users.users.root = {
-            hashedPasswordFile = config.sops.secrets.root_password_hashed.path;
+            hashedPasswordFile = config.sops.secrets."hashed_passwords/root".path;
             openssh.authorizedKeys.keys = [
               "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIJ0nGtONOY4QnJs/xj+N4rKf4pCWfl25BOfc8hEczUg neil.darach@gmail.com"
             ];

@@ -23,11 +23,11 @@
                 organization = "Darach";
                 bucket = "default";
                 username = "admin";
-                passwordFile = config.sops.secrets.influx-admin-pw.path;
-                tokenFile = config.sops.secrets.influx-admin-token.path;
+                passwordFile = config.sops.secrets."influx/admin-pw".path;
+                tokenFile = config.sops.secrets."influx/admin-token".path;
               };
               users = {
-                homeassistant.passwordFile = config.sops.secrets.influx-ha-pw.path;
+                homeassistant.passwordFile = config.sops.secrets."influx/ha-pw".path;
               };
               organizations = {
                 "Darach" = {
@@ -37,7 +37,7 @@
                   };
                   auths."ha" = {
                     description = "Token for Homeassistant authentication";
-                    tokenFile = config.sops.secrets.influx-ha-token.path;
+                    tokenFile = config.sops.secrets."influx/ha-token".path;
                     allAccess = true;
                   };
                 };
@@ -56,16 +56,16 @@
               requires = [ "strongStateDir-influxdb.mount" ];
             }
           ];
-          sops.secrets.influx-ha-pw = {
+          sops.secrets."influx/ha-pw" = {
             owner = "influxdb2";
           };
-          sops.secrets.influx-admin-pw = {
+          sops.secrets."influx/admin-pw" = {
             owner = "influxdb2";
           };
-          sops.secrets.influx-ha-token = {
+          sops.secrets."influx/ha-token" = {
             owner = "influxdb2";
           };
-          sops.secrets.influx-admin-token = {
+          sops.secrets."influx/admin-token" = {
             owner = "influxdb2";
           };
 
