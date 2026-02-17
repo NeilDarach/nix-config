@@ -1,0 +1,34 @@
+# Fail2Ban filter to match web requests for selected URLs that don't exist
+#
+[Init]
+
+# Block is the actual non-found directories to block
+block = \/?(<webmail>|<phpmyadmin>|<wordpress>|cgi-bin|mysqladmin|<local>)[^,]*
+
+# These are just convenient definitions that assist the blocking of stuff that 
+# isn't installed
+webmail = roundcube|(ext)?mail|horde|(v-?)?webmail
+
+phpmyadmin = (typo3/|xampp/|admin/|)(pma|(php)?[Mm]y[Aa]dmin)
+
+wordpress = wp-(login|signup|admin)\.php
+
+local = (\.vscode|\.env|\.git|.*\.php|auth.json|credentials\.json|node\/|django\/|admin\/|api\/|\.aws|aws-config.js|aws-credentials|docker-compose|\.s3cfg|secrets.json|settings.json|wp-admin|wp-content|wp-includes|wp-json|)
+
+[INCLUDES]
+
+[Definition]
+failregex = \S+ nginx\[\d+\]: [0-9/ :]+\[error\] \d+#\d+: \*\d+ (\S+ )?\"\S+\" (failed|is not found) \(2\: No such file or directory\), client\: <HOST>\, server\: \S*\, request: \"(GET|POST|HEAD) \/<block> \S+\"\, .*?
+
+ignoreregex = 
+
+datepattern = {^LN-BEG}%%ExY(?P<_sep>[-/.])%%m(?P=_sep)%%d[T ]%%H:%%M:%%S(?:[.,]%%f)?(?:\s*%%z)?
+              ^[^\[]*\[({DATE})
+              {^LN-BEG}
+
+journalmatch = _SYSTEMD_UNIT=nginx.service + _COMM=nginx
+
+# DEV Notes:
+# Based on apache-botsearch filter
+# 
+# Author: Frantisek Sumsal

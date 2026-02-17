@@ -36,15 +36,15 @@
             bantime-increment.enable = true;
             jails = {
               nginx-https.settings = {
-              enable = true;
-              port = 443;
-              filter = "nginx-botsearch";
-              backend = "systemd";
-              action = "nftables-redirect-https";
+                enable = true;
+                port = 443;
+                filter = "nginx-filter";
+                backend = "systemd";
+                action = "nftables-redirect-https";
                 maxretry = 5;
                 findtime = 300;
                 bantime = "24h";
-                };
+              };
               sshd.settings = {
                 enabled = true;
                 port = 22;
@@ -57,6 +57,10 @@
               };
             };
           };
+          environment.etc = {
+            "fail2ban/filter.d/nginx-filter.local".source = ./nginx-filter.local;
+          };
+
           environment.etc = {
             "fail2ban/action.d/nftables-redirect-ssh.local".text = ''
               [Definition]
