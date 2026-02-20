@@ -24,6 +24,12 @@ in
                 mountOptions = [ "umask=0077" ];
               };
             };
+            swap = {
+              size = "8G";
+              content = {
+                type = "swap";
+              };
+            };
             zfs = {
               size = "100%";
               content = {
@@ -88,6 +94,10 @@ in
             type = "zfs_fs";
             mountpoint = "/keys";
             options.mountpoint = "legacy";
+          };
+          "datapool" = {
+            type = "zfs_fs";
+            options.mountpoint = "none";
           };
           reserved = {
             type = "zfs_fs";
