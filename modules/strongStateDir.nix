@@ -70,6 +70,21 @@
             anyEnabled = 0 != lib.length (lib.attrValues enabled);
           in
           lib.mkIf anyEnabled {
+            programs.ssh = {
+              extraConfig = ''
+                Host backup
+                  HostName vps.goip.org.uk
+                  User backup
+                  IdentityFile ~/.ssh/id_backup
+                  AddressFamily inet
+              '';
+              knownHosts = {
+                "backup" = {
+                  hostNames = [ "vps.goip.org.uk" ];
+                  publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOEvCdE2EkfumIXKKY9lixReNsKh9rL+1dhGjrMemXWk neil@gregor";
+                };
+              };
+            };
             systemd.timers = lib.attrsets.mapAttrs' (k: v: {
               name = "strongStateDir-backup-${v.serviceName}";
               value = zfsBackup "${v.dataDir}" "${v.dataDir}";
@@ -100,6 +115,9 @@
               // {
                 "strongStateDir@" = {
                   description = "Set up the state dir";
+                  requires = [ "network-online.target" ];
+                  after = [ "network-online.target" ];
+
                   serviceConfig = {
                     Type = "oneshot";
                     User = "root";

@@ -27,7 +27,6 @@
         };
         home.file.".ssh/system_known_hosts" = {
           text = ''
-            vps.goip.org.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOEvCdE2EkfumIXKKY9lixReNsKh9rL+1dhGjrMemXWk neil@gregor
           '';
         };
         programs = {
@@ -37,12 +36,6 @@
             matchBlocks = {
               "*" = {
                 userKnownHostsFile = "~/.ssh/known_hosts ~/.ssh/system_known_hosts";
-              };
-              "backup" = {
-                hostname = "vps.goip.org.uk";
-                user = "backup";
-                identityFile = "~/.ssh/id_backup";
-                addressFamily = "inet";
               };
             };
           };

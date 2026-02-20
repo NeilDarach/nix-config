@@ -22,7 +22,7 @@ IFS=':' read -ra ARGS <<<"$1"
 NAME=${ARGS[0]}
 USR=${ARGS[1]}
 GROUP=${ARGS[2]}
-BACKUP="datapool/backups/${ARGS[3]}"
+BACKUP="zroot/datapool/backups/${ARGS[3]}"
 CREATED=FALSE
 SRC_DATASET="zroot/strong/strongStateDir/${NAME}"
 
@@ -36,14 +36,14 @@ if ! zfs list "${SRC_DATASET}" >/dev/null 2>&1; then
     if ! zfs list "zroot/strong/strongStateDir" >/dev/null 2>&1; then
         zfs create -p -o mountpoint=none zroot/strong/strongStateDir
     fi
-    present=$(ssh backup "bash -c $(printf '%q' "grep -q ${BACKUP} <(sudo /usr/bin/zfs list) && echo YES || echo NO")")
+    present=$(ssh backup "bash -c $(printf '%q' "sudo zfs list ${BACKUP} >/dev/null 2>&1") && echo YES || echo NO")
     if [[ "${present}" == "YES" ]]; then
         echo "Backup dataset ${BACKUP} found, restoring it"
-        latest=$(ssh backup "bash -c $(printf '%q' "sudo /usr/sbin/zfs list -t snap ${BACKUP} | tail -1")")
+        latest=$(ssh backup "bash -c $(printf '%q' "sudo zfs list -t snap ${BACKUP} | tail -1")")
         latest=${latest##*@}
         latest=${latest%% *}
         echo "Restoring ${latest} to local"
-        ssh backup "bash -c $(printf '%q' "sudo /usr/bin/zfs send ${BACKUP}@${latest}") | gzip -9" |
+        ssh backup "bash -c $(printf '%q' "sudo zfs send ${BACKUP}@${latest}") | gzip -9" |
             gunzip | zfs recv -u "${SRC_DATASET}@${latest}"
         zfs set mountpoint=legacy "${SRC_DATASET}"
     else
@@ -55,18 +55,23 @@ fi
 
 if [[ "$CREATED" = "TRUE" ]]; then
     unmount=0
+    mountpoint="/strongStateDir/${NAME}"
     if ! zfs mount | grep -q "zroot/strong/strongStateDir/${NAME}"; then
         echo "Mounting the dataset"
-        mount -t zfs "${SRC_DATASET}" "/strongStateDir/${NAME}"
+        mountpoint="/mnt/${NAME}"
+        mkdir -p "/mnt/${NAME}"
+        mount -t zfs "${SRC_DATASET}" "/mnt/${NAME}"
+        echo "Mounts are:"
         mount | grep strongStateDir
+        #require unmount here because strongStateDir-<service>.mount should run next
         unmount=1
     fi
 
     echo "Chowning the contents of the dataset after creation"
-    chown -R "${USR}":"${GROUP}" "/strongStateDir/${NAME}"
-    chmod 775 "/strongStateDir/${NAME}"
+    chown -R "${USR}":"${GROUP}" "${mountpoint}"
+    chmod 775 "${mountpoint}"
     if [[ "${unmount}" == "1" ]]; then
-        umount "strongStateDir/${NAME}"
+        umount "${mountpoint}"
     fi
 fi
 echo "Done: ${SRC_DATASET} is available for /strongStateDir/${NAME}"

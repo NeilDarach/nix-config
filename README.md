@@ -102,3 +102,13 @@ zfs list
        valid_lft forever preferred_lft forever
     inet6 fe80::42:40ff:febe:f390/64 scope link 
        valid_lft forever preferred_lft forever
+
+
+==Rebuilding the goip vps host
+* Log in to the web console and change boot order to CD-ROM & ISO to netboot.xyz
+* Reboot, open a noVNC console and select Linux Network Installs (64-bit) / NixOS / most recent
+* Add an SSH key to ~nixos/.ssh/authorized_keys
+* Run 'just deploy_goip' which will partition the disk, install the flake config and leave the system ready to accept the datapool restore
+* sudo zfs send -R linstore/datapool/backups@nixrebuild | ssh -oUserKnownHostsFile=/dev/null nixos@goip.org.uk "sudo zfs recv -u zroot/datapool/backups"
+* Reset the boot order and reboot
+ 
