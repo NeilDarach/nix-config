@@ -147,6 +147,8 @@
                   chain forward {
                     type filter hook forward priority filter; policy drop; 
                     ct state established, related accept
+                    #Allow all forwarded packets through
+                    iif "wan0" oif { $LAN, $WG } ct status dnat accept
                     ip saddr { $IOT } ip daddr { $HA, 192.168.5.2/32 } accept
                     ip saddr { $LAN, $WG } accept
                   }
@@ -155,6 +157,9 @@
                   table ip nat {
                     chain prerouting { 
                       type nat hook prerouting priority filter; policy accept;
+                      # Transmission port forward to gregor
+                      udp dport 51413 dnat to 192.168.4.5:51413
+                      tcp dport 51413 dnat to 192.168.4.5:51413
                       }
 
                     chain postrouting {
