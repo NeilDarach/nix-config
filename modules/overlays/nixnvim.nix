@@ -3,7 +3,8 @@
 
     nixpkgs.overlays = [
       (final: prev: {
-        nixNvim = inputs.nixNvim.packages.${final.system}.nixnvim;
+        nixNvim = inputs.nixNvim.packages.${final.system}.neovim;
+        nixNvimLocal = inputs.nixNvim.packages.${final.system}.neovimlocal;
       })
     ];
   };

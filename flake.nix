@@ -3,10 +3,10 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     gff = {
       url = "github:NeilDarach/gff";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.nixnvim.follows = "nixNvim";
       inputs.secrets.follows = "secrets";
     };
     flake-parts = {
@@ -15,8 +15,8 @@
     };
     import-tree.url = "github:vic/import-tree";
     nixNvim = {
-      url = "github:NeilDarach/nixNvim/updated";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "git+https://codeberg.org/NeilDarach/nvimWrapper";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     msg_q = {
       url = "github:NeilDarach/msg_q";

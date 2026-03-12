@@ -65,6 +65,7 @@
           python3
           ripgrep
           sysstat
+          tmux
           tree
           unzip
           usbutils
